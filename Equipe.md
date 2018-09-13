@@ -66,3 +66,10 @@ Perfil do Git: https://github.com/lolorenzetti
 Perfil do Git: https://github.com/danielrares1
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 
+
+
+## Background
+
+* Mauro Zackiewicz
+* Juliana Planck
+* Ulisses Gandini
