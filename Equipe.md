@@ -7,7 +7,7 @@ Nossa equipe é composta pelas unidades do INOVA de Praia Grande e de São José
 
 ### Nilson (Praia Grande)
 
-![nilson](https://user-images.githubusercontent.com/43144590/45424948-5e53ad00-b66e-11e8-9cad-ae28d64ac3ec.png)
+![nilson v2](https://user-images.githubusercontent.com/43144590/45499829-8537df00-b753-11e8-83e8-900e9230c344.png)
 
 
 ### Lucas Nadalete (São José dos Campos)
@@ -18,9 +18,9 @@ Nossa equipe é composta pelas unidades do INOVA de Praia Grande e de São José
 
 ## Dev Team
 
-### Italo (Praia Grande)
+### Italo (Praia Grande) 
 
-![italo](https://user-images.githubusercontent.com/43144590/45423774-aec90b80-b66a-11e8-9f1c-770b4bd18b60.png)
+![italo v2](https://user-images.githubusercontent.com/43144590/45499824-8537df00-b753-11e8-8732-6bbbc5ffeeb3.png)
 
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 Perfil do Git: http://github.com/italo998carvalho
@@ -30,7 +30,7 @@ Perfil do Git: http://github.com/italo998carvalho
 
 ### Lucas Gomes (Praia Grande)
 
-![lucas](https://user-images.githubusercontent.com/43144590/45424524-239d4500-b66d-11e8-9d20-307790efbe60.png)
+![lucas v2](https://user-images.githubusercontent.com/43144590/45499826-8537df00-b753-11e8-848b-146aacb5a837.png)
 
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 Perfil do Git: https://github.com/Gomes1610
@@ -40,7 +40,7 @@ Perfil do Git: https://github.com/Gomes1610
 
 ### Renan (Praia Grande)
 
-![renan](https://user-images.githubusercontent.com/43144590/45494425-66cbe680-b747-11e8-9275-6a0382f9d162.png)
+ ![renan v2](https://user-images.githubusercontent.com/43144590/45499820-849f4880-b753-11e8-8d40-7ec218ee109d.png)
 
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 Perfil do Git: https://github.com/lolorenzetti
@@ -50,26 +50,33 @@ Perfil do Git: https://github.com/lolorenzetti
 
 ### Eduardo (Praia Grande)
 
-![eduardo](https://user-images.githubusercontent.com/43144590/45427797-25b7d180-b676-11e8-8373-1ddc0c49df89.png)
+![eduardo v2](https://user-images.githubusercontent.com/43144590/45499822-849f4880-b753-11e8-818d-7dbd143296e4.png)
 
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
-Perfil do Git: https://github.com/lolorenzetti
+Perfil do Git: https://github.com/EduardoSimao
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 
 
 
 ### Daniel (Praia Grande)
 
-![daniel](https://user-images.githubusercontent.com/43144590/45425354-70821b00-b66f-11e8-8cbc-beffdfb7eeef.png)
+![daniel v2](https://user-images.githubusercontent.com/43144590/45499934-c7612080-b753-11e8-8429-3d3c5976f12b.png)
 
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 Perfil do Git: https://github.com/danielrares1
 ![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
 
 
-
 ## Background
 
-* Mauro Zackiewicz
-* Juliana Planck
-* Ulisses Gandini
+### Mauro Zackiewicz
+
+Git: https://github.com/Maurozac
+
+### Juliana Planck
+
+Git: https://github.com/julianaplanck
+
+### Ulisses Gandini
+
+Git: https://github.com/iceoffire
