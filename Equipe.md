@@ -12,7 +12,7 @@ Nossa equipe é composta pelas unidades do INOVA de Praia Grande e de São José
 
 ### Lucas Nadalete (São José dos Campos)
 
-[foto]
+![lucas nadalete v2](https://user-images.githubusercontent.com/43144590/45500618-718d7800-b755-11e8-872b-25af87f4948c.png)
 
 
 
