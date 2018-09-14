@@ -246,3 +246,68 @@ def post_evento():
         db.session.commit()
     
     return jsonify({'message': 'Cadastrado com sucesso!'})
+
+@cp.route('/evento/<evento_id>', methods=['PUT'])
+def edit_evento(evento_id):
+    data = request.get_json()
+
+    atividade = Atividade.query.filter_by(id = evento_id).first()
+
+    atividade.titulo = data['titulo'], 
+    atividade.descricao = data['descricao'], 
+    atividade.tipo = data['tipo'], 
+    atividade.duracao = data['duracao'], 
+    atividade.banner = data['banner']
+
+    eventos = data['eventos']
+
+    post_evento = [e for e in eventos if not e[0]]
+    put_evento = [e for e in eventos if e[0]]
+    
+
+    for e in post_evento:
+        evento = Evento(
+            atividade = evento_id, 
+            unidade = e[1], 
+            _data = e[2], 
+            hora = e[3]
+        )
+
+        db.session.add(evento)  
+        db.session.commit()
+
+    for e in put_evento:
+        _evento = Evento.query.filter_by(id = e[0]).first()
+        
+        _evento.unidade = e[1]
+        _evento._data = e[2]
+        _evento.hora = e[3]
+
+        db.session.commit()
+
+#*******************************
+    materiais = data['materiais']
+
+    post_material = [m for m in materiais if not m[0]]
+    put_material = [m for m in materiais if m[0]]
+    
+
+    for m in post_material:
+        material = Material(
+            atividade = evento_id, 
+            materia = m[1]
+        )
+
+        db.session.add(material)  
+        db.session.commit()
+
+    for m in put_material:
+        _material = Material.query.filter_by(id = m[0]).first()
+        
+        _material.materia = m[1]
+
+        db.session.commit()
+
+
+
+    return jsonify({'Message': "Obrigado Senhor!"})
