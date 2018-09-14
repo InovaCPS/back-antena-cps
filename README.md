@@ -129,6 +129,12 @@ Exemplo json PUT
 		["1", "caminho do material 10"],
 		["2", "caminho do material 15"],
 		["", "caminho do material 40"]
+	], 
+	"exclui_eventos": [
+		["ID do evento"]
+	], 
+	"exclui_materiais": [
+		["ID do material"]
 	]
 }
 

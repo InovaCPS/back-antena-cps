@@ -313,6 +313,20 @@ def edit_evento(evento_id):
 
         db.session.commit()
 
+#*******************************
+    exclui_eventos = data['exclui_eventos']
 
+    for e in exclui_eventos:
+        evento = Evento.query.filter_by(id = e[0]).first()
+        db.session.delete(evento)
+        db.session.commit()
+
+    
+    exclui_materiais = data['exclui_materiais']
+
+    for m in exclui_materiais:
+        material = Material.query.filter_by(id = m[0]).first()
+        db.session.delete(material)
+        db.session.commit()
 
     return jsonify({'Message': "Obrigado Senhor!"})
