@@ -1,10 +1,14 @@
 from webapp import app, db
 from models.parceiro import Parceiro
+from models.table_atividade import Atividade
+from models.table_evento import Evento
+from models.table_material import Material
 from flask import request, jsonify, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 
-cp = Blueprint('cp', __name__)
+cp = Blueprint('cp', __name__, url_prefix = '/cp')
 
+#======================== ROTAS DE PARCEIROS =============================
 @cp.route('/parceiro', methods=['GET'])
 def get_parceiro():
     #pesquisar todos os parceiros no BD e gerar e exibir um json geral, com todos os parceiros
@@ -111,3 +115,55 @@ def del_parceiro(parceiro_id):
     db.session.commit()
 
     return jsonify({'message': 'Deletado com sucesso!'})
+
+#********** Rotas do evento ********************
+@cp.route('/evento', methods=['POST'])
+def post_evento():
+    data = request.get_json()
+
+    # objeto da atividade
+    atividade = Atividade(
+        titulo = data['titulo'], 
+        descricao = data['descricao'], 
+        tipo = data['tipo'], 
+        duracao = data['duracao'], 
+        banner = data['banner']
+    )
+
+    # objetos dos eventos
+    eventos = data['eventos']
+
+    obj_eventos = []
+    for e in eventos:
+        evento = Evento(
+            atividade = e[0], 
+            unidade = e[1], 
+            _data = e[2], 
+            hora = e[3]
+        )
+        obj_eventos.append(evento)
+
+    # objetos dos materiais
+    materiais = data['materiais']
+
+    obj_materiais = []
+    for m in materiais:
+        material = Material(
+            atividade = m[0],
+            materia = m[1]
+        )
+        obj_materiais.append(material)
+
+    # inserções no banco
+    db.session.add(atividade)
+    db.session.commit()
+
+    for material in obj_materiais:
+        db.session.add(material)
+        db.session.commit()
+
+    for evento in obj_eventos:
+        db.session.add(evento)
+        db.session.commit()
+    
+    return jsonify({'message': 'Cadastrado com sucesso!'})
