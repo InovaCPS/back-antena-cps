@@ -46,3 +46,44 @@ CREATE TABLE parceiro_tema (
 );
 
 --rollback DROP TABLE LOG_LOG;
+
+CREATE TABLE unidade (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(500) NOT NULL
+) WITH (
+    OIDS=FALSE
+);
+
+
+CREATE TABLE atividade(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(500) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    duracao INTEGER,
+    banner VARCHAR(500) NOT NULL
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE material(
+    id SERIAL PRIMARY KEY,
+    atividade integer,
+    materia VARCHAR(500) NOT NULL,
+    FOREIGN KEY (atividade) REFERENCES atividade(id)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE evento(
+    id SERIAL PRIMARY KEY,
+    atividade INTEGER,
+    unidade INTEGER,
+    _data DATE,
+    hora TIME,
+    FOREIGN KEY (atividade) REFERENCES atividade(id),
+    FOREIGN KEY (unidade) REFERENCES unidade(id)
+) WITH (
+    OIDS=FALSE
+);
