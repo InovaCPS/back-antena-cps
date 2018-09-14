@@ -116,6 +116,7 @@ def del_parceiro(parceiro_id):
 
     return jsonify({'message': 'Deletado com sucesso!'})
 
+
 #********** Rotas do evento ********************
 @cp.route('/evento', methods=['GET'])
 def get_eventos():
@@ -136,6 +137,7 @@ def get_eventos():
 
         for e in _eventos:
             eve = {}
+            eve['id'] = e.id
             eve['unidade'] = e.unidade
             eve['_data'] = str(e._data)
             eve['hora'] = str(e.hora)
@@ -149,6 +151,7 @@ def get_eventos():
         mat = []
         for m in _materiais:
             material = {}
+            material['id'] = m.id
             material['material'] = m.materia
             mat.append(material)
         
@@ -174,6 +177,7 @@ def get_one_evento(evento_id):
 
     for e in _eventos:
         eve = {}
+        eve['id'] = e.id
         eve['unidade'] = e.unidade
         eve['_data'] = str(e._data)
         eve['hora'] = str(e.hora)
@@ -187,6 +191,7 @@ def get_one_evento(evento_id):
     mat = []
     for m in _materiais:
         material = {}
+        material['id'] = m.id
         material['material'] = m.materia
         mat.append(material)
         
@@ -246,7 +251,7 @@ def post_evento():
         db.session.commit()
     
     return jsonify({'message': 'Cadastrado com sucesso!'})
-
+    
 @cp.route('/evento/<evento_id>', methods=['PUT'])
 def edit_evento(evento_id):
     data = request.get_json()
