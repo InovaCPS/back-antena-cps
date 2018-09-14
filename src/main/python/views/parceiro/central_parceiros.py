@@ -158,6 +158,43 @@ def get_eventos():
 
     return jsonify(eventos)
 
+@cp.route('/evento/<evento_id>', methods=['GET'])
+def get_one_evento(evento_id):
+    a = Atividade.query.filter_by(id = evento_id).first()
+
+    ativ = {}
+    ativ['titulo'] = a.titulo
+    ativ['descricao'] = a.descricao
+    ativ['tipo'] = a.tipo
+    ativ['duracao'] = a.duracao
+    ativ['banner'] = a.banner
+
+    _eventos = Evento.query.filter_by(atividade = a.id).all()
+    evento = []
+
+    for e in _eventos:
+        eve = {}
+        eve['unidade'] = e.unidade
+        eve['_data'] = str(e._data)
+        eve['hora'] = str(e.hora)
+
+        evento.append(eve)
+
+    ativ['evento'] = evento
+        
+
+    _materiais  = Material.query.filter_by(atividade = a.id).all()
+    mat = []
+    for m in _materiais:
+        material = {}
+        material['material'] = m.materia
+        mat.append(material)
+        
+    ativ['material'] = mat
+
+    
+
+    return jsonify(ativ)
 
 @cp.route('/evento', methods=['POST'])
 def post_evento():
