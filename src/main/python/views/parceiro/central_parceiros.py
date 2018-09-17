@@ -330,3 +330,29 @@ def edit_evento(evento_id):
         db.session.commit()
 
     return jsonify({'Message': "Obrigado Senhor!"})
+
+
+@cp.route('/evento/<evento_id>', methods=['DELETE'])
+def del_evento(evento_id):
+    atividade = Atividade.query.filter_by(id = evento_id).first()
+
+    if not atividade:
+        return jsonify({'Message': 'Evento não encontrado!'})
+
+    _materiais  = Material.query.filter_by(atividade = atividade.id).all()
+    
+    _eventos = Evento.query.filter_by(atividade = atividade.id).all()
+    
+
+    for m in _materiais:        
+        db.session.delete(m)
+        db.session.commit()
+    
+    for e in _eventos:        
+        db.session.delete(e)
+        db.session.commit()
+
+    db.session.delete(atividade)
+    db.session.commit()
+
+    return jsonify({'message': 'Evento deletado com sucesso!'})
