@@ -164,6 +164,8 @@ def get_eventos():
 @cp.route('/evento/<evento_id>', methods=['GET'])
 def get_one_evento(evento_id):
     a = Atividade.query.filter_by(id = evento_id).first()
+    if not a:
+        return jsonify({'Message': 'Evento não encontrado!'})
 
     ativ = {}
     ativ['titulo'] = a.titulo
@@ -257,6 +259,8 @@ def edit_evento(evento_id):
     data = request.get_json()
 
     atividade = Atividade.query.filter_by(id = evento_id).first()
+    if not atividade:
+        return jsonify({'Message': 'Evento não encontrado!'})
 
     atividade.titulo = data['titulo'], 
     atividade.descricao = data['descricao'], 
