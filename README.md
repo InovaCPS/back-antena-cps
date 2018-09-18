@@ -115,7 +115,17 @@ PUT - Atualiza um parceiro
     "nome": "aluno1", 
     "email": "email@email.com", 
     "cpf": "11111111", 
-    "senha": "1234"
+    "senha": "1234", 
+    "rg": "", 
+    "dt_nascimento": "", 
+    "genero": "", 
+    "telefone": "12345678", 
+    "local_trabalho": "", 
+    "local_estudo": "", 
+    "lattes": "", 
+    "facebook": "", 
+    "linkedin": "", 
+    "twitter": ""
 }
 ```
 ```bash
