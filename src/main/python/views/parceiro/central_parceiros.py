@@ -254,6 +254,7 @@ def post_evento():
     
     return jsonify({'message': 'Cadastrado com sucesso!'})
     
+#================= PUT ==========================
 @cp.route('/evento/<evento_id>', methods=['PUT'])
 def edit_evento(evento_id):
     data = request.get_json()
@@ -294,7 +295,6 @@ def edit_evento(evento_id):
 
         db.session.commit()
 
-#*******************************
     materiais = data['materiais']
 
     post_material = [m for m in materiais if not m[0]]
@@ -317,7 +317,6 @@ def edit_evento(evento_id):
 
         db.session.commit()
 
-#*******************************
     exclui_eventos = data['exclui_eventos']
 
     for e in exclui_eventos:

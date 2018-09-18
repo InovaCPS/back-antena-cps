@@ -6,30 +6,30 @@ Este projeto tem como premissa a criação de ambientes para integração dos pa
 
 A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheça melhor a equipe clicando [aqui](Equipe.md)
 
-(_in construction_)
+(_em construção_)
 
-Instructions to build the project:
-*  Creating a new virtual environment (venv) to run with Python 3
+Instruções para montar o projeto:
+*  Criando um novo ambiente virtual (venv) para rodar junto ao Python 3
     ```bash
     python3 -m venv venv
     ```
-or
+ou
     ```bash
     virtualenv -p python3 venv
     ```
-* Accessing virtual environment **venv**
+* Acessando o ambiente virtual **venv**
     ```bash
     source venv/bin/activate
     ```
-Updating "pip" tool
+* Atualizando a ferramenta "pip"
     ```bash
     pip install --upgrade pip
     ```
-* Exiting of virtual environment **venv**
+* Saindo do ambiente virtual **venv**
     ```bash
     deactivate
     ```
-* Installing PyBuilder - Versioned project
+* Instalando o PyBuilder - Projeto versionado
     ```bash
     git clone https://github.com/cpsinova/inova-log.git
     cd inova-log
@@ -39,52 +39,98 @@ Updating "pip" tool
     pip install pybuilder
     pyb install_dependencies
     pyb
-    After: verifify if target/dist/inova-log* was created
+    Depois: Verifique se target/dist/inova-log* foi criado
     ```
 
-### Optional instructions - Use if necessary: ###
+### OInstruções opcionais - Use se necessário: ###
 
-* Creating a new project structure using PyBuilder
+* Criando uma nova estrutura de projeto usando o PyBuilder
     ```bash
     pip intall pybuilder
     pyb --start-project
     pyb install_dependencies publish
-    After: verifify if target/dist/inova-log* was created
+    Depois: verifique se target/dist/inova-log* foi criado
     
     ```
-* Updating all packages installed in "venv"
+* Atualizando todos os pacotes instalados na "venv"
  	1. Access **venv**
  	2. Execute: 
     ```bash 
     pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U 
     ```
-* Uploading the project do PyPi respository
+* Fazendo upload do projeto para o repositório do PyPi
     ```bash
     pip install twine
     pyb
-    twine upload -r pypi <path and name of the package tar.gz created into the TARGET folder>
+    twine upload -r pypi <caminho e nome do pacote tar.gz criato na pasta TARGET>
     ```
-* Creating the project database
-    * Pre-requirements (software)
+* Criando a base de dados do projeto
+    * Pre-requerimentos (software)
         * Maven
         * JDK 1.8+
         * PostgreSQL Server - [Docker Postgres](https://hub.docker.com/_/postgres/)
-    * Execute the follow command
-        * Create database
+    * Execute o seguinte comando
+        * Criar base de dados
          ```bash
          mvn clean resources:resources liquibase:update
          ```
-         * Clean all database
+         * Limpar todas as bases
          ```bash
           mvn clean resources:resources liquibase:dropAll
          ```   
-* Run the project
-    * Execute:
+* Rode o projeto
+    * Executar:
     ```bash
     ./runserver.sh
 
+### Endpoints: ###
+```bash
+GET - Retorna todos os parceiros
+/cp/parceiro
+```
+```bash
+GET - Retorna um parceiro
+/cp/parceiro/<id>
+```
+```bash
+POST - Cadastra um parceiro
+/cp/parceiro
 
-Exemplo json POST
+{
+    "ra": "123456789", 
+    "nome": "aluno", 
+    "email": "email@email.com", 
+    "cpf": "11111111", 
+    "senha": "1234"
+}
+```
+```bash
+PUT - Atualiza um parceiro
+/cp/parceiro/<id>
+
+{
+    "ra": "22222222222", 
+    "nome": "aluno1", 
+    "email": "email@email.com", 
+    "cpf": "11111111", 
+    "senha": "1234"
+}
+```
+```bash
+DELETE - Apaga um parceiro
+/cp/parceiro/<id>
+```
+```bash
+GET - Retorna todos os eventos
+/cp/evento
+```
+```bash
+GET - Retorna um evento
+/cp/evento/<id>
+```
+```bash
+POST - Cadastra um evento
+/cp/evento
 
 {
 	"titulo": "como programar Orientado a Objeto", 
@@ -103,15 +149,12 @@ Exemplo json POST
 	]
 }
 
-Na hora de dar um Post no Evento os campos da lista eventos são:
-[atividade, unidade, _data, hora]
-
-e os materias são:
-[atividade, caminho do material]
-
-
-Exemplo json PUT
-
+* Campos de "eventos": [id da atividade, id da unidade, data, hora]
+* Campos de "materiais": [atividade, caminho do material]
+```
+```bash
+PUT - Atualiza um evento
+/cp/evento/<id>
 
 {
 	"titulo": "como programar C++", 
@@ -138,11 +181,7 @@ Exemplo json PUT
 	]
 }
 
- Já na hora do PUT, os campos mudam!
- Nos eventos são:
-[id do evento, id da atividade, _data, hora]
-
-e os materias são:
-[id do material, caminho do material]
-
-caso o material e/ou evento não tenham id, eles foram adicionado no front e deve ser feito um post
+* Campos de "eventos": [id do evento, id da atividade, data, hora]
+* Campos de "materiais": [id do material, caminho do material]
+* Se "material" e/ou "evento" não tiverem um id, significa que são registros novos e precisam ser cadastrados
+```
