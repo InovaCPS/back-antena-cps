@@ -84,21 +84,52 @@ def edit_parceiro(parceiro_id):
     
     else:
         data = request.get_json()
+        parceiro.dt_nascimento = '1900-01-01'
 
-        if data['ra'] is not None:
+        if data['ra']:
             parceiro.ra = data['ra']
 
-        if data['nome'] is not None:
+        if data['nome']:
             parceiro.nome = data['nome']
 
-        if data['email'] is not None:
+        if data['email']:
             parceiro.email = data['email']
 
-        if data['cpf'] is not None:
+        if data['cpf']:
             parceiro.cpf = data['cpf']
 
-        if data['senha'] is not None:
+        if data['senha']:
             parceiro.senha = data['senha']
+
+        if data['rg']:
+            parceiro.rg = data['rg']
+
+        if data['dt_nascimento']:
+            parceiro.dt_nascimento = data['dt_nascimento']
+
+        if data['genero']:
+            parceiro.genero = data['genero']
+
+        if data['telefone']:
+            parceiro.telefone = data['telefone']
+
+        if data['local_trabalho']:
+            parceiro.local_trabalho = data['local_trabalho']
+
+        if data['local_estudo']:
+            parceiro.local_estudo = data['local_estudo']
+
+        if data['lattes']:
+            parceiro.lattes = data['lattes']
+
+        if data['facebook']:
+            parceiro.facebook = data['facebook']
+
+        if data['linkedin']:
+            parceiro.linkedin = data['linkedin']
+
+        if data['twitter']:
+            parceiro.twitter = data['twitter']
 
         parceiro.aluno = True
 
