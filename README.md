@@ -6,6 +6,8 @@ Este projeto tem como premissa a criação de ambientes para integração dos pa
 
 A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheça melhor a equipe clicando [aqui](Equipe.md)
 
+## Começando
+
 (_em construção_)
 
 Instruções para montar o projeto:
