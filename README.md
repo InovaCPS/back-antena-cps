@@ -44,7 +44,7 @@ ou
     Depois: Verifique se target/dist/inova-log* foi criado
     ```
 
-### OInstruções opcionais - Use se necessário: ###
+### Instruções opcionais - Use se necessário: ###
 
 * Criando uma nova estrutura de projeto usando o PyBuilder
     ```bash
