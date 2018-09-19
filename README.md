@@ -8,7 +8,7 @@ A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheç
 
 ## Project Charter
 
-![image](https://user-images.githubusercontent.com/43144590/45763218-6c717280-bc06-11e8-83be-e16a411a1b7c.png)
+![image](https://user-images.githubusercontent.com/43144590/45772770-faf1ee00-bc1e-11e8-9f42-843a8ca29e3c.png)
 
 
 ## Começando
