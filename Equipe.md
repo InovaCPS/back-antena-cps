@@ -7,7 +7,7 @@ Nossa equipe é composta pelas unidades do INOVA de Praia Grande e de São José
 
 ### Nilson (Praia Grande)
 
-![nilson v2](https://user-images.githubusercontent.com/43144590/45499829-8537df00-b753-11e8-83e8-900e9230c344.png)
+![image](https://user-images.githubusercontent.com/43144590/45751833-f2cb8b80-bbe9-11e8-8393-3804576f6ff3.png)
 
 
 ### Lucas Nadalete (São José dos Campos)
