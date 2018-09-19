@@ -363,7 +363,7 @@ def edit_evento(evento_id):
         db.session.delete(material)
         db.session.commit()
 
-    return jsonify({'Message': "Obrigado Senhor!"})
+    return jsonify({'Message': "Atualizado com sucesso"})
 
 
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
