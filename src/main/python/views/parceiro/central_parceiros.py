@@ -84,7 +84,6 @@ def edit_parceiro(parceiro_id):
     
     else:
         data = request.get_json()
-        parceiro.dt_nascimento = '1900-01-01'
 
         if data['ra']:
             parceiro.ra = data['ra']
@@ -99,7 +98,8 @@ def edit_parceiro(parceiro_id):
             parceiro.cpf = data['cpf']
 
         if data['senha']:
-            parceiro.senha = data['senha']
+            senha = generate_password_hash(data['senha'])
+            parceiro.senha = senha
 
         if data['rg']:
             parceiro.rg = data['rg']
