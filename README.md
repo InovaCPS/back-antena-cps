@@ -6,6 +6,11 @@ Este projeto tem como premissa a criação de ambientes para integração dos pa
 
 A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheça melhor a equipe clicando [aqui](Equipe.md)
 
+## Project Charter
+
+![image](https://user-images.githubusercontent.com/43144590/45763218-6c717280-bc06-11e8-83be-e16a411a1b7c.png)
+
+
 ## Começando
 
 (_em construção_)
