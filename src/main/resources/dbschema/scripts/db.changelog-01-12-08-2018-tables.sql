@@ -2,30 +2,169 @@
 
 --changeset nadalete:01
 --comment: creation the LOG table structure
-CREATE TABLE parceiro (
-	id SERIAL PRIMARY KEY,
-	aluno boolean,
-	ra integer,
-	nome varchar(100) NOT NULL,
-	email varchar(100) NOT NULL,
-	cpf varchar(50) NULL,
-	senha varchar(1000) NULL,
 
-	rg varchar(15) NULL,
-    dt_nascimento date NULL,
-    genero varchar(15) NULL,
-    telefone varchar(20) NULL,
-    local_trabalho varchar(100) NULL,
-    local_estudo varchar(100) NULL,
+
+
+
+
+
+
+--------------- Usuários do Sistema -------------------
+
+-- Tabela que relaciona todos os usuários do sistema ***
+CREATE TABLE usuarios(
+    id_geral SERIAL PRIMARY KEY,
+    id_especifico INTEGER NOT NULL, -- Esta é uma pseudo-chave estrangeira, 
+                                    --ela armazena a chave primaria das tabelas de usuários
+                                    -- mas atravez do código no back-ens e não pelo código do sql.
+
+    nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back qual é a tabela
     
-    lattes varchar(500) NULL,
-    facebook varchar(500) NULL,
-    linkedin varchar(500) NULL,
-    twitter varchar(500) NULL
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    senha VARCHAR(500) NOT NULL,
+
+    cpf VARCHAR(50) NULL,
+    rg VARCHAR(15) NULL,
+
+    dt_nascimento date NULL,
+    genero VARCHAR(15) NULL,
+    
+    hora TIME NULL,
+    local_trabalho VARCHAR(100) NULL,
+    cargo VARCHAR(100) NULL,
+    local_estudo VARCHAR(100) NULL,
+    
+    telefone VARCHAR(20) NULL,
+    lattes VARCHAR(500) NULL,
+    facebook VARCHAR(500) NULL,
+    linkedin VARCHAR(500) NULL,
+    twitter VARCHAR(500) NULL
+
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de parceiros
+CREATE TABLE parceiros (
+	id SERIAL PRIMARY KEY,
+	aluno BOOLEAN,
+	ra INTEGER,
+    id_usuarios INTEGER,
+    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
 
 ) WITH (
 	OIDS=FALSE
 );
+
+--Tabela de Agentes de Inovação ***
+CREATE TABLE agentes (
+    id SERIAL PRIMARY KEY,
+    matricula VARCHAR(10) NOT NULL,
+    id_unidades INTEGER,
+    id_regioes INTEGER,
+    id_usuarios INTEGER,
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
+    FOREIGN KEY (id_regioes) REFERENCES regioes(id)
+    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+) WITH (
+    OIDS=FALSE
+);
+
+--Tabela de Administradores ***
+CREATE TABLE adm (
+    id SERIAL PRIMARY KEY,
+    id_usuarios INTEGER,
+    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+) WITH(
+    OIDS=FALSE
+);
+
+--Tabela de Diretores ***
+CREATE TABLE diretores(
+    id SERIAL PRIMARY KEY,
+    id_unidades INTEGER,
+    id_usuarios INTEGER,
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
+    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+) WITH(
+    OIDS=FALSE
+);
+
+---------------------------------------
+----------- Central de Parceiros: Atividades e Eventos ------------
+
+-- Tabela de Atividades
+CREATE TABLE atividades(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(500) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    duracao INTEGER,
+    banner VARCHAR(500) NOT NULL
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Eventros
+CREATE TABLE eventos(
+    id SERIAL PRIMARY KEY,
+    id_atividades INTEGER,
+    id_unidades INTEGER,
+    _data DATE,
+    hora TIME,
+    FOREIGN KEY (id_atividades) REFERENCES atividades(id),
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id)
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Materiais
+CREATE TABLE materiais(
+    id SERIAL PRIMARY KEY,
+    id_atividades INTEGER,
+    materia VARCHAR(500) NOT NULL,
+    FOREIGN KEY (id_atividades) REFERENCES atividades(id)
+) WITH (
+    OIDS=FALSE
+);
+
+--------------------------------------
+------------ Localidades -----------------
+
+-- Tabela de Regiões
+CREATE TABLE regioes(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+)
+
+-- Tabela de Unidades
+CREATE TABLE unidades (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(500) NOT NULL,
+    id_regioes INTEGER,
+    FOREIGN KEY (id_regioes) REFERENCES regioes(id)
+) WITH (
+    OIDS=FALSE
+);
+--------------------------------------
+------------- Mensagens ----------------
+
+CREATE TABLE mensagens(
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(500), 
+    visualizacao VARCHAR(50),
+    id_remetentes INTEGER,
+    id_destinatarios INTEGER,
+    FOREIGN KEY (id_remetentes) REFERENCES usuarios(id_geral),
+    FOREIGN KEY (id_destinatarios) REFERENCES usuarios(id_geral)
+) WITH(
+    OIDS=FALSE
+);
+
+----------------------------------------
+------------- Indefinidos --------------
 
 CREATE TABLE tema_interesse ( 
     id SERIAL PRIMARY KEY, 
@@ -37,53 +176,14 @@ CREATE TABLE tema_interesse (
 
 CREATE TABLE parceiro_tema (
     id SERIAL PRIMARY KEY, 
-    tema INTEGER, 
-    parceiro INTEGER, 
-    FOREIGN KEY (tema) REFERENCES tema_interesse(id), 
-    FOREIGN KEY (parceiro) REFERENCES parceiro(id)
+    id_tema INTEGER, 
+    id_parceiros INTEGER, 
+    FOREIGN KEY (id_tema) REFERENCES tema_interesse(id), 
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id)
 ) WITH (
 	OIDS=FALSE
 );
 
 --rollback DROP TABLE LOG_LOG;
 
-CREATE TABLE unidade (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    endereco VARCHAR(500) NOT NULL
-) WITH (
-    OIDS=FALSE
-);
-
-
-CREATE TABLE atividade(
-    id SERIAL PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descricao VARCHAR(500) NOT NULL,
-    tipo VARCHAR(100) NOT NULL,
-    duracao INTEGER,
-    banner VARCHAR(500) NOT NULL
-) WITH (
-    OIDS=FALSE
-);
-
-CREATE TABLE material(
-    id SERIAL PRIMARY KEY,
-    atividade integer,
-    materia VARCHAR(500) NOT NULL,
-    FOREIGN KEY (atividade) REFERENCES atividade(id)
-) WITH (
-    OIDS=FALSE
-);
-
-CREATE TABLE evento(
-    id SERIAL PRIMARY KEY,
-    atividade INTEGER,
-    unidade INTEGER,
-    _data DATE,
-    hora TIME,
-    FOREIGN KEY (atividade) REFERENCES atividade(id),
-    FOREIGN KEY (unidade) REFERENCES unidade(id)
-) WITH (
-    OIDS=FALSE
-);
+---------------------------------------
