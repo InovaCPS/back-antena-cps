@@ -4,7 +4,6 @@ class Usuarios(db.Model):
     __tablename__:'usuarios'
 
     id_geral = db.Column(db.Integer,primary_key=True)
-    id_especifico = db.Column(db.Integer)
 
     nivel = db.Column(db.String(100))
     
@@ -29,8 +28,7 @@ class Usuarios(db.Model):
     linkedin = db.Column(db.String(500))
     twitter = db.Column(db.String(500))
 
-    def __init__(self,id_especifico,nivel,nome,email,senha,cpf,rp,dt_nascimento,genero,hora,local_trabalho,cargo,local_estudo,telefone,lattes,facebook,linkedin,twitter):
-        self.id_especifico = id_especifico
+    def __init__(self,nivel,nome,email,senha,cpf,rp,dt_nascimento,genero,hora,local_trabalho,cargo,local_estudo,telefone,lattes,facebook,linkedin,twitter):
         self.nivel = nivel
         self.nome = nome
         self.email = email

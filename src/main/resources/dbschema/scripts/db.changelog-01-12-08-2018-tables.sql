@@ -14,9 +14,6 @@
 -- Tabela que relaciona todos os usuários do sistema ***
 CREATE TABLE usuarios(
     id_geral SERIAL PRIMARY KEY,
-    id_especifico INTEGER NOT NULL, -- Esta é uma pseudo-chave estrangeira, 
-                                    --ela armazena a chave primaria das tabelas de usuários
-                                    -- mas atravez do código no back-ens e não pelo código do sql.
 
     nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back qual é a tabela
     
@@ -66,18 +63,6 @@ CREATE TABLE regioes(
     OIDS=FALSE
 );
 
--- Tabela de Atividades
-CREATE TABLE atividades(
-    id SERIAL PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descricao VARCHAR(500) NOT NULL,
-    tipo VARCHAR(100) NOT NULL,
-    duracao INTEGER,
-    banner VARCHAR(500) NOT NULL
-) WITH (
-    OIDS=FALSE
-);
-
 -- Tabela de Unidades
 CREATE TABLE unidades (
     id SERIAL PRIMARY KEY,
@@ -85,19 +70,6 @@ CREATE TABLE unidades (
     endereco VARCHAR(500) NOT NULL,
     id_regioes INTEGER,
     FOREIGN KEY (id_regioes) REFERENCES regioes(id)
-) WITH (
-    OIDS=FALSE
-);
-
--- Tabela de Eventros
-CREATE TABLE eventos(
-    id SERIAL PRIMARY KEY,
-    id_atividades INTEGER,
-    id_unidades INTEGER,
-    _data DATE,
-    hora TIME,
-    FOREIGN KEY (id_atividades) REFERENCES atividades(id),
-    FOREIGN KEY (id_unidades) REFERENCES unidades(id)
 ) WITH (
     OIDS=FALSE
 );
@@ -116,12 +88,18 @@ CREATE TABLE agentes (
     OIDS=FALSE
 );
 
---Tabela de Administradores ***
-CREATE TABLE adm (
+-- Tabela de Atividades
+CREATE TABLE atividades(
     id SERIAL PRIMARY KEY,
-    id_usuarios INTEGER,
-    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
-) WITH(
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(500) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    duracao INTEGER,
+    banner VARCHAR(500) NOT NULL,
+    id_agente INTEGER,
+    situacao BOOLEAN,
+    FOREIGN KEY (id_agente) REFERENCES Agentes(ID)
+) WITH (
     OIDS=FALSE
 );
 
@@ -135,6 +113,35 @@ CREATE TABLE diretores(
 ) WITH(
     OIDS=FALSE
 );
+
+-- Tabela de Eventros
+CREATE TABLE eventos(
+    id SERIAL PRIMARY KEY,
+    id_atividades INTEGER,
+    id_unidades INTEGER,
+    _data DATE,
+    hora TIME,
+    id_diretor INTEGER,
+    situacao BOOLEAN,
+    FOREIGN KEY (id_atividades) REFERENCES atividades(id),
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
+    FOREIGN kEY (id_diretor) REFERENCES diretores(id)
+) WITH (
+    OIDS=FALSE
+);
+
+
+
+--Tabela de Administradores ***
+CREATE TABLE adm (
+    id SERIAL PRIMARY KEY,
+    id_usuarios INTEGER,
+    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+) WITH(
+    OIDS=FALSE
+);
+
+
 
 ---------------------------------------
 ----------- Central de Parceiros: Atividades e Eventos ------------
