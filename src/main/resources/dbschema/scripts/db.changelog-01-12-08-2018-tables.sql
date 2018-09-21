@@ -5,7 +5,7 @@
 
 
 
-
+-- *** estão sem sua Classe criada no models
 
 
 
@@ -57,6 +57,51 @@ CREATE TABLE parceiros (
 	OIDS=FALSE
 );
 
+
+-- Tabela de Regiões
+CREATE TABLE regioes(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Atividades
+CREATE TABLE atividades(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(500) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    duracao INTEGER,
+    banner VARCHAR(500) NOT NULL
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Unidades
+CREATE TABLE unidades (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(500) NOT NULL,
+    id_regioes INTEGER,
+    FOREIGN KEY (id_regioes) REFERENCES regioes(id)
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Eventros
+CREATE TABLE eventos(
+    id SERIAL PRIMARY KEY,
+    id_atividades INTEGER,
+    id_unidades INTEGER,
+    _data DATE,
+    hora TIME,
+    FOREIGN KEY (id_atividades) REFERENCES atividades(id),
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id)
+) WITH (
+    OIDS=FALSE
+);
+
 --Tabela de Agentes de Inovação ***
 CREATE TABLE agentes (
     id SERIAL PRIMARY KEY,
@@ -65,7 +110,7 @@ CREATE TABLE agentes (
     id_regioes INTEGER,
     id_usuarios INTEGER,
     FOREIGN KEY (id_unidades) REFERENCES unidades(id),
-    FOREIGN KEY (id_regioes) REFERENCES regioes(id)
+    FOREIGN KEY (id_regioes) REFERENCES regioes(id),
     FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
 ) WITH (
     OIDS=FALSE
@@ -94,30 +139,7 @@ CREATE TABLE diretores(
 ---------------------------------------
 ----------- Central de Parceiros: Atividades e Eventos ------------
 
--- Tabela de Atividades
-CREATE TABLE atividades(
-    id SERIAL PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descricao VARCHAR(500) NOT NULL,
-    tipo VARCHAR(100) NOT NULL,
-    duracao INTEGER,
-    banner VARCHAR(500) NOT NULL
-) WITH (
-    OIDS=FALSE
-);
 
--- Tabela de Eventros
-CREATE TABLE eventos(
-    id SERIAL PRIMARY KEY,
-    id_atividades INTEGER,
-    id_unidades INTEGER,
-    _data DATE,
-    hora TIME,
-    FOREIGN KEY (id_atividades) REFERENCES atividades(id),
-    FOREIGN KEY (id_unidades) REFERENCES unidades(id)
-) WITH (
-    OIDS=FALSE
-);
 
 -- Tabela de Materiais
 CREATE TABLE materiais(
@@ -132,22 +154,7 @@ CREATE TABLE materiais(
 --------------------------------------
 ------------ Localidades -----------------
 
--- Tabela de Regiões
-CREATE TABLE regioes(
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL
-)
 
--- Tabela de Unidades
-CREATE TABLE unidades (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    endereco VARCHAR(500) NOT NULL,
-    id_regioes INTEGER,
-    FOREIGN KEY (id_regioes) REFERENCES regioes(id)
-) WITH (
-    OIDS=FALSE
-);
 --------------------------------------
 ------------- Mensagens ----------------
 

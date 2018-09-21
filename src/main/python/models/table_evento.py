@@ -2,7 +2,7 @@ from webapp import db
 from models.table_unidades import Unidades
 from models.table_atividades import Atividades
 
-class Evento(db.Model):
+class Eventos(db.Model):
     __tablename__:'evento'
 
     id = db.Column(db.Integer, primary_key=True)

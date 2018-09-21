@@ -79,7 +79,7 @@ ou
     * Execute o seguinte comando
         * Criar base de dados
          ```bash
-         mvn clean resources:resources liquibase:update
+          mvn clean resources:resources liquibase:update
          ```
          * Limpar todas as bases
          ```bash

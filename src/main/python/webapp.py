@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, Blueprint
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -71,7 +71,12 @@ api = Api(app)
 CORS(app)
 db = get_db_instance(app, DB_URL)
 
-from models.parceiro import Parceiro
+cp = Blueprint('cp', __name__, url_prefix='/cp')
 
-from views.parceiro.central_parceiros import cp
+from models.table_parceiros import Parceiros
+
+from views.central_parceiros.agentes import cp
+from views.central_parceiros.eventos import cp
+from views.central_parceiros.parceiros import cp
+
 app.register_blueprint(cp)

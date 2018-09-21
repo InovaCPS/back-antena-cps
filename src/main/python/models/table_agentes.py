@@ -4,7 +4,7 @@ class Agentes(db.Model):
     __tablename__:'agentes'
 
     id = db.Column(db.Integer, primary_key = True)
-    matricula db.Column(db.String(10))
+    matricula = db.Column(db.String(10))
     id_unidades = db.Column(db.Integer, db.ForeignKey('unidades.id'))
     id_regioes = db.Column(db.Integer, db.ForeignKey('regioes.id'))
     id_usuarios = db.Column(db.Integer, db.ForeignKey('usuarios.id_geral'))
