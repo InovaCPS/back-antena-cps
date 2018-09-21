@@ -11,11 +11,11 @@
 
 --------------- Usuários do Sistema -------------------
 
--- Tabela que relaciona todos os usuários do sistema ***
-CREATE TABLE usuarios(
+-- Tabela de Parceiros
+CREATE TABLE parceiros(
     id_geral SERIAL PRIMARY KEY,
 
-    nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back qual é a tabela
+    nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back-end qual é a tabela
     
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -42,13 +42,12 @@ CREATE TABLE usuarios(
     OIDS=FALSE
 );
 
--- Tabela de parceiros
-CREATE TABLE parceiros (
+-- Tabela de Alunos
+CREATE TABLE alunos (
 	id SERIAL PRIMARY KEY,
-	aluno BOOLEAN,
 	ra INTEGER,
-    id_usuarios INTEGER,
-    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+    id_parceiros INTEGER,
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 
 ) WITH (
 	OIDS=FALSE
@@ -74,16 +73,16 @@ CREATE TABLE unidades (
     OIDS=FALSE
 );
 
---Tabela de Agentes de Inovação ***
+--Tabela de Agentes de Inovação
 CREATE TABLE agentes (
     id SERIAL PRIMARY KEY,
     matricula VARCHAR(10) NOT NULL,
     id_unidades INTEGER,
     id_regioes INTEGER,
-    id_usuarios INTEGER,
+    id_parceiros INTEGER,
     FOREIGN KEY (id_unidades) REFERENCES unidades(id),
     FOREIGN KEY (id_regioes) REFERENCES regioes(id),
-    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 ) WITH (
     OIDS=FALSE
 );
@@ -98,23 +97,23 @@ CREATE TABLE atividades(
     banner VARCHAR(500) NOT NULL,
     id_agente INTEGER,
     situacao BOOLEAN,
-    FOREIGN KEY (id_agente) REFERENCES Agentes(ID)
+    FOREIGN KEY (id_agente) REFERENCES Agentes(ID) --?
 ) WITH (
     OIDS=FALSE
 );
 
---Tabela de Diretores ***
+--Tabela de Diretores
 CREATE TABLE diretores(
     id SERIAL PRIMARY KEY,
     id_unidades INTEGER,
-    id_usuarios INTEGER,
+    id_parceiros INTEGER,
     FOREIGN KEY (id_unidades) REFERENCES unidades(id),
-    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 ) WITH(
     OIDS=FALSE
 );
 
--- Tabela de Eventros
+-- Tabela de Eventos
 CREATE TABLE eventos(
     id SERIAL PRIMARY KEY,
     id_atividades INTEGER,
@@ -131,21 +130,14 @@ CREATE TABLE eventos(
 );
 
 
-
---Tabela de Administradores ***
+--Tabela de Administradores
 CREATE TABLE adm (
     id SERIAL PRIMARY KEY,
-    id_usuarios INTEGER,
-    FOREIGN KEY (id_usuarios) REFERENCES usuarios(id_geral)
+    id_parceiros INTEGER,
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 ) WITH(
     OIDS=FALSE
 );
-
-
-
----------------------------------------
------------ Central de Parceiros: Atividades e Eventos ------------
-
 
 
 -- Tabela de Materiais
@@ -158,21 +150,17 @@ CREATE TABLE materiais(
     OIDS=FALSE
 );
 
---------------------------------------
------------- Localidades -----------------
 
 
---------------------------------------
-------------- Mensagens ----------------
-
+-- Tabela de Mensagens
 CREATE TABLE mensagens(
     id SERIAL PRIMARY KEY,
     descricao VARCHAR(500), 
     visualizacao VARCHAR(50),
     id_remetentes INTEGER,
     id_destinatarios INTEGER,
-    FOREIGN KEY (id_remetentes) REFERENCES usuarios(id_geral),
-    FOREIGN KEY (id_destinatarios) REFERENCES usuarios(id_geral)
+    FOREIGN KEY (id_remetentes) REFERENCES parceiros(id_geral),
+    FOREIGN KEY (id_destinatarios) REFERENCES parceiros(id_geral)
 ) WITH(
     OIDS=FALSE
 );
@@ -191,9 +179,9 @@ CREATE TABLE tema_interesse (
 CREATE TABLE parceiro_tema (
     id SERIAL PRIMARY KEY, 
     id_tema INTEGER, 
-    id_parceiros INTEGER, 
+    id_alunos INTEGER, 
     FOREIGN KEY (id_tema) REFERENCES tema_interesse(id), 
-    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id)
+    FOREIGN KEY (id_alunos) REFERENCES alunos(id)
 ) WITH (
 	OIDS=FALSE
 );

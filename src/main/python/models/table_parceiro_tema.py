@@ -5,8 +5,8 @@ class Parceiro_tema(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     id_tema = db.Column(db.Integer, db.ForeignKey('tema_interesse.id'))
-    id_parceiros = db.Column(db.Integer, db.ForeignKey('parceiro.id'))
+    id_alunos = db.Column(db.Integer, db.ForeignKey('alunos.id'))
 
-    def __init__(self,id_tema,id_parceiros):
+    def __init__(self,id_tema,id_alunos):
         self.id_tema = id_tema
-        self.id_parceiros = id_parceiros
+        self.id_alunos = id_alunos
