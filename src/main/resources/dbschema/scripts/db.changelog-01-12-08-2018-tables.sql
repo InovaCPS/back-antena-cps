@@ -77,11 +77,9 @@ CREATE TABLE agentes (
     id SERIAL PRIMARY KEY,
     matricula VARCHAR(10) NOT NULL,
     id_unidades INTEGER,
-    id_regioes INTEGER,
     id_parceiros INTEGER,
-    hora TIME NULL,
+    hora VARCHAR(8) NULL,
     FOREIGN KEY (id_unidades) REFERENCES unidades(id),
-    FOREIGN KEY (id_regioes) REFERENCES regioes(id),
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 ) WITH (
     OIDS=FALSE
@@ -189,3 +187,27 @@ CREATE TABLE parceiro_tema (
 --rollback DROP TABLE LOG_LOG;
 
 ---------------------------------------
+
+-- Inserções de teste do banco de desenvolvimento
+-- EXCLUIR QUANDO ENVIAR PARA PRODUÇÃO
+
+INSERT INTO parceiros (nivel, nome, email, senha) 
+VALUES ('Parceiro', 'João', 'joao@gmail.com', '321');
+
+INSERT INTO parceiros (nivel, nome, email, senha) 
+VALUES ('Agente', 'Maria', 'maria@gmail.com', '123');
+
+INSERT INTO parceiros (nivel, nome, email, senha) 
+VALUES ('Diretor', 'José', 'jose@gmail.com', '213');
+
+INSERT INTO regioes (nome)
+VALUES ('Baixada Santista');
+
+INSERT INTO unidades (nome, endereco, id_regioes)
+VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144 - Boqueirão, Praia Grande', 1);
+
+INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
+VALUES (12345679, 1, 2, '30:00');
+
+INSERT INTO diretores (id_unidades, id_parceiros)
+VALUES (1, 3);
