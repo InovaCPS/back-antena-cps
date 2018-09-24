@@ -15,9 +15,8 @@ def get_parceiro():
 
     for info in dados:
         parceiro = {}
-        parceiro['id'] = info.id
-        parceiro['ra'] = info.ra
-        parceiro['aluno'] = info.aluno
+        parceiro['id_geral'] = info.id_geral
+        parceiro['nivel'] = info.nivel
         parceiro['nome'] = info.nome
         parceiro['email'] = info.email
         parceiro['cpf'] = info.cpf
@@ -30,15 +29,14 @@ def get_parceiro():
 @cp.route('/parceiro/<parceiro_id>', methods=['GET'])
 def get_one_parceiro(parceiro_id):
     #pesquisar no BD um parceiro expecifico e gerar e exibir um json com todos os dados desse parceiro!
-    info = Parceiros.query.filter_by(id=parceiro_id).first()
+    info = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not info:
         return jsonify({'message': 'Não encontrado!'})
 
     parceiro = {}
-    parceiro['id'] = info.id
-    parceiro['ra'] = info.ra
-    parceiro['aluno'] = info.aluno
+    parceiro['id_geral'] = info.id_geral
+    parceiro['nivel'] = info.nivel
     parceiro['nome'] = info.nome
     parceiro['email'] = info.email
     parceiro['cpf'] = info.cpf
@@ -59,23 +57,13 @@ def post_parceiro():
     data = request.get_json()
     password = generate_password_hash(data['senha'])
 
-    if not data['ra']:
-        parceiro = Parceiros(
-            aluno=False,
-            ra=None,
-            nome=data['nome'],
-            email=data['email'],
-            cpf=data['cpf'],
-            senha=password)
-    else:
-        parceiro = Parceiros(
-            aluno=True,
-            ra=data['ra'],
-            nome=data['nome'],
-            email=data['email'],
-            cpf=data['cpf'],
-            senha=password)
-
+    parceiro = Parceiros(
+        nivel='Parceiro',
+        nome=data['nome'],
+        email=data['email'],
+        cpf=data['cpf'],
+        senha=password)
+    
     db.session.add(parceiro)
     db.session.commit()
 
