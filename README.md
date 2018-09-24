@@ -104,7 +104,6 @@ POST - Cadastra um parceiro
 /cp/parceiro
 
 {
-    "ra": "123456789", 
     "nome": "aluno", 
     "email": "email@email.com", 
     "cpf": "11111111", 
@@ -116,7 +115,6 @@ PUT - Atualiza um parceiro
 /cp/parceiro/<id>
 
 {
-    "ra": "22222222222", 
     "nome": "aluno1", 
     "email": "email@email.com", 
     "cpf": "11111111", 
@@ -126,7 +124,7 @@ PUT - Atualiza um parceiro
     "genero": "", 
     "telefone": "12345678", 
     "local_trabalho": "", 
-    "local_estudo": "", 
+    "cargo": "",
     "lattes": "", 
     "facebook": "", 
     "linkedin": "", 
@@ -134,7 +132,7 @@ PUT - Atualiza um parceiro
 }
 ```
 ```bash
-DELETE - Apaga um parceiro
+DELETE - Exclui um parceiro
 /cp/parceiro/<id>
 ```
 ```bash
@@ -201,6 +199,53 @@ PUT - Atualiza um evento
 * Campos de "eventos": [id do evento, id da atividade, data, hora]
 * Campos de "materiais": [id do material, caminho do material]
 * Se "material" e/ou "evento" não tiverem um id, significa que são registros novos e precisam ser cadastrados
+```
+```bash
+GET - Retorna todos os agentes
+/cp/agentes
+```
+```bash
+GET - Retorna um agente
+/cp/agentes/<id>
+```
+```bash
+POST - Cadastra um agente
+/cp/agentes
+
+{
+    "id_parceiro": 1, 
+    "hora": "30:00", 
+    "matricula": 123123123, 
+    "id_unidade": 1
+}
+```
+```bash
+PUT - Atualiza um agente
+/cp/agentes/<id>
+
+{
+    "matricula": 123123123, 
+    "hora": "30:00", 
+    "id_unidade": 1, 
+    "nome": "aluno1", 
+    "email": "email@email.com", 
+    "cpf": "11111111", 
+    "senha": "1234", 
+    "rg": "", 
+    "dt_nascimento": "", 
+    "genero": "", 
+    "telefone": "12345678", 
+    "local_trabalho": "", 
+    "cargo": "",
+    "lattes": "", 
+    "facebook": "", 
+    "linkedin": "", 
+    "twitter": ""
+}
+```
+```bash
+DELETE - Exclui um agente
+/cp/agentes/<id>
 ```
 
 

@@ -1,9 +1,8 @@
 from webapp import app, db, cp
 from models.table_parceiros import Parceiros
-from models.table_atividades import Atividades
-from models.table_material import Materiais
 from models.table_agentes import Agentes
-from flask import request, jsonify
+from models.table_unidades import Unidades
+from flask import request, jsonify, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -13,18 +12,19 @@ def get_agentes():
 
     agentes = []
 
-    for info in dados:
+    for a in dados:
+        unidade = Unidades.query.filter_by(id=a.id_unidades).first()
+        parceiro = Parceiros.query.filter_by(id_geral=a.id_parceiros).first()
+
         agente = {}
-        #arrumar
-        agente['matricula'] = info.matricula
-        agente['nome'] = info.nome
-        agente['rg'] = info.rg
-        agente['cpf'] = info.cpf
-        agente['cargo'] = info.cargo
-        agente['unidade'] = info.unidade
-        agente['haeo'] = info.haeo
-        agente['lattes'] = info.lattes
-        agente['regiao'] = info.regiao
+        agente['nome'] = parceiro.nome
+        agente['email'] = parceiro.email
+        agente['telefone'] = parceiro.telefone
+        agente['cpf'] = parceiro.cpf
+        agente['matricula'] = a.matricula
+        agente['hora'] = a.hora
+        agente['unidade'] = unidade.nome
+        agente['endereço'] = unidade.endereco
 
         agentes.append(agente)
 
@@ -32,21 +32,23 @@ def get_agentes():
 
 
 @cp.route('/agentes/<int:id>', methods=['GET'])
-def get_agente():
+def get_agente(id):
     a = Agentes.query.filter_by(id=id).first()
     if not a:
         return jsonify({'Message': 'Agente não encontrado!'})
 
+    unidade = Unidades.query.filter_by(id=a.id_unidades).first()
+    parceiro = Parceiros.query.filter_by(id_geral=a.id_parceiros).first()
+
     agente = {}
-    #arrumar
-    agente['nome'] = info.nome
-    agente['rg'] = info.rg
-    agente['cpf'] = info.cpf
-    agente['cargo'] = info.cargo
-    agente['unidade'] = info.unidade
-    agente['haeo'] = info.haeo
-    agente['lattes'] = info.lattes
-    agente['regiao'] = info.regiao
+    agente['nome'] = parceiro.nome
+    agente['email'] = parceiro.email
+    agente['telefone'] = parceiro.telefone
+    agente['cpf'] = parceiro.cpf
+    agente['matricula'] = a.matricula
+    agente['hora'] = a.hora
+    agente['unidade'] = unidade.nome
+    agente['endereço'] = unidade.endereco
 
     return jsonify(agente)
 
@@ -55,29 +57,37 @@ def get_agente():
 def post_agente():
     data = request.get_json()
 
-    agente = Agentes(
-        nome = data['nome'],
-        rg = data['rg'],
-        cpf = data['cpf'],
-        cargo = data['cargo'],
-        unidade = data['unidade'],
-        haeo = data['haeo'],
-        lattes = data['lattes'],
-        regiao = data['regiao']
-    )
+    parceiro = Parceiros.query.filter_by(id_geral=data['id_parceiro']).first()
 
-    db.session.add(agente)
-    db.session.commit()
+    if parceiro is not None and parceiro.nivel == 'Parceiro':
 
-    return jsonify({'message': 'Cadastrado com sucesso!'})
+        agente = Agentes(
+            matricula = data['matricula'], 
+            hora = data['hora'], 
+            id_unidades = data['id_unidade'], 
+            id_parceiros = data['id_parceiro']
+        )
+
+        db.session.add(agente)
+
+        parceiro.nivel = 'Agente'
+
+        db.session.commit()
+    
+        return jsonify({'message': 'Cadastrado com sucesso!'})
+    return jsonify({'message': 'Impossível cadastrar agente'})
 
 
 @cp.route('/agentes/<int:id>', methods=['DELETE'])
-def del_agente():
+def del_agente(id):
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:
         return jsonify({'message': 'Agente não encontrado!'})
+
+    # Quando o agente é deletado o nível da tabela de parceiros volta a ser 'Parceiro'
+    parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
+    parceiro.nivel = 'Parceiro'
 
     db.session.delete(agente)
     db.session.commit()
@@ -86,39 +96,25 @@ def del_agente():
 
 
 @cp.route('/agentes/<int:id>', methods=['PUT'])
-def put_agente():
+def put_agente(id):
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:
         return jsonify({'message': 'Agente não encontrado!'})
 
-    else:
-        data = request.get_json()
+    data = request.get_json()
 
-        if data['nome']:
-            agente.nome = data['nome']
+    parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
 
-        if data['rg']:
-            agente.rg = data['rg']
+    if data['matricula']:
+        agente.matricula = data['matricula']
 
-        if data['cpf']:
-            agente.cpf = data['cpf']
+    if data['hora']:
+        agente.hora = data['hora']
+    
+    if data['id_unidade']:
+        agente.id_unidade = ['id_unidade']
 
-        if data['cargo']:
-            agente.cargo = data['cargo']
+    db.session.commit()
 
-        if data['unidade']:
-            agente.unidade = data['unidade']
-
-        if data['haeo']:
-            agente.haeo = data['haeo']
-
-        if data['lattes']:
-            agente.lattes = data['lattes']
-
-        if data['regiao']:
-            agente.regiao = data['regiao']
-
-        db.session.commit()
-
-        return jsonify({'message': 'Alterado com sucesso!'})
+    return redirect(url_for('.edit_parceiro', parceiro_id=parceiro.id_geral), code=307)
