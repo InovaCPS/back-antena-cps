@@ -1,7 +1,7 @@
-from webapp import app, db
+from webapp import app
 from models.table_parceiros import Parceiros
 from flask import request, jsonify, make_response
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 import jwt
 import datetime
 from functools import wraps

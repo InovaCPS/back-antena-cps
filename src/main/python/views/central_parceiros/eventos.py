@@ -1,12 +1,12 @@
-from webapp import app, db, cp
+from webapp import db, cp
 from models.table_parceiros import Parceiros
 from models.table_atividades import Atividades
 from models.table_evento import Eventos
 from models.table_material import Materiais
 from models.table_agentes import Agentes
+from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
 from flask import request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
 import random
 from views.central_parceiros.login import token_required
 
@@ -125,7 +125,12 @@ def post_evento(current_user):
     data = request.get_json()
     agentes = Agentes.query.all()
 
-    agente = random.randint(1, len(agentes))
+    id_agente = random.randint(1, len(agentes))
+    # ARRUMAR AMANHÃ
+    # agente = Agentes.quert.filter_by(id=id_agente).first()
+    # parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
+
+    # mensagem = Mensagens('Há uma nova atividade para avaliação', False, '?', parceiro.id_geral)
 
     # objeto da atividade
     atividade = Atividades(
@@ -134,7 +139,7 @@ def post_evento(current_user):
         tipo = data['tipo'], 
         duracao = data['duracao'], 
         banner = data['banner'],
-        id_agente = agente,
+        id_agente = id_agente,
         situacao = False
     )
     db.session.add(atividade)

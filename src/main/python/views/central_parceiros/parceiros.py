@@ -1,10 +1,7 @@
-from webapp import app, db, cp
+from webapp import db, cp
 from models.table_parceiros import Parceiros
-from models.table_atividades import Atividades
-from models.table_evento import Eventos
-from models.table_material import Materiais
 from flask import request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from views.central_parceiros.login import token_required
 
 

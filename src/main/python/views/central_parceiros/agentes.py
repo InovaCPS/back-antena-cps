@@ -1,9 +1,8 @@
-from webapp import app, db, cp
+from webapp import db, cp
 from models.table_parceiros import Parceiros
 from models.table_agentes import Agentes
 from models.table_unidades import Unidades
 from flask import request, jsonify, redirect, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @cp.route('/agentes', methods=['GET'])
@@ -117,4 +116,9 @@ def put_agente(id):
 
     db.session.commit()
 
+    # Ao atualizar as informações pertencentes apenas a tabela de agentes
+    # o restante das informações é atualizado no método de atualizar parceiros
+    # para evitar código duplicado
+    # O código 307 é para o redirect não ser tratado como GET 
+    # e conseguir fazer as alterações
     return redirect(url_for('.edit_parceiro', parceiro_id=parceiro.id_geral), code=307)
