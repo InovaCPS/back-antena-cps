@@ -8,6 +8,7 @@ from models.table_diretores import Diretores
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
+from views.central_parceiros.login import token_required
 
 
 @cp.route('/evento', methods=['GET'])
@@ -119,7 +120,8 @@ def get_one_evento(evento_id):
     return jsonify(ativ)
 
 @cp.route('/evento', methods=['POST'])
-def post_evento():
+@token_required
+def post_evento(current_user):
     data = request.get_json()
     agentes = Agentes.query.all()
 
@@ -183,7 +185,8 @@ def post_evento():
     
 #================= PUT ==========================
 @cp.route('/evento/<evento_id>', methods=['PUT'])
-def edit_evento(evento_id):
+@token_required
+def edit_evento(current_user, evento_id):
     data = request.get_json()
 
     atividade = Atividades.query.filter_by(id = evento_id).first()
@@ -205,6 +208,7 @@ def edit_evento(evento_id):
 
     for e in post_evento:
         d = Diretores.query.filter_by(id_unidades = e[1]).first()
+        
         evento = Eventos(
             id_atividades = evento_id, 
             id_unidades = e[1], 
@@ -267,7 +271,8 @@ def edit_evento(evento_id):
 
 
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
-def del_evento(evento_id):
+@token_required
+def del_evento(current_user, evento_id):
     atividade = Atividades.query.filter_by(id = evento_id).first()
 
     if not atividade:

@@ -202,3 +202,26 @@ PUT - Atualiza um evento
 * Campos de "materiais": [id do material, caminho do material]
 * Se "material" e/ou "evento" não tiverem um id, significa que são registros novos e precisam ser cadastrados
 ```
+
+
+### Instruções Login - Postman ###
+
+```bash
+
+URL -
+    /login
+
+* Aba Authorization:
+
+    type -> Basic Auth
+
+    username -> email cadastrado na tabela Parceiro
+    password -> senha cadastrada na Tabela Parceiro
+
+    clicar em send e copiar a token gerada
+
+* Aba Headers:
+
+    key -> token
+    value -> Token gerada
+```

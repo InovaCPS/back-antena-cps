@@ -5,6 +5,7 @@ from models.table_evento import Eventos
 from models.table_material import Materiais
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from views.central_parceiros.login import token_required
 
 
 @cp.route('/parceiro', methods=['GET'])
@@ -92,7 +93,8 @@ def post_parceiro():
 
 
 @cp.route('/parceiro/<parceiro_id>', methods=['PUT'])
-def edit_parceiro(parceiro_id):
+@token_required
+def edit_parceiro(current_user, parceiro_id):
     #alterar o usuario para aluno, caso ele tenha inserido o RA
     #Ex: Seleciona o não aluno
     #{"ra": "22222222222"}
