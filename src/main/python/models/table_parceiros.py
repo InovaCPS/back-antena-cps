@@ -17,10 +17,8 @@ class Parceiros(db.Model):
     dt_nascimento = db.Column(db.Date())
     genero = db.Column(db.String(15))
     
-    hora = db.Column(db.Time())
     local_trabalho = db.Column(db.String(100))
     cargo = db.Column(db.String(100))
-    local_estudo = db.Column(db.String(100))
     
     telefone = db.Column(db.String(20))
     lattes = db.Column(db.String(500))
@@ -34,3 +32,4 @@ class Parceiros(db.Model):
         self.email = email
         self.senha = senha
         self.cpf = cpf
+       

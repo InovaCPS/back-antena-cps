@@ -27,10 +27,8 @@ CREATE TABLE parceiros(
     dt_nascimento date NULL,
     genero VARCHAR(15) NULL,
     
-    hora TIME NULL,
     local_trabalho VARCHAR(100) NULL,
     cargo VARCHAR(100) NULL,
-    local_estudo VARCHAR(100) NULL,
     
     telefone VARCHAR(20) NULL,
     lattes VARCHAR(500) NULL,
@@ -46,6 +44,7 @@ CREATE TABLE parceiros(
 CREATE TABLE alunos (
 	id SERIAL PRIMARY KEY,
 	ra INTEGER,
+    local_estudo VARCHAR(100) NULL,
     id_parceiros INTEGER,
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 
@@ -80,6 +79,7 @@ CREATE TABLE agentes (
     id_unidades INTEGER,
     id_regioes INTEGER,
     id_parceiros INTEGER,
+    hora TIME NULL,
     FOREIGN KEY (id_unidades) REFERENCES unidades(id),
     FOREIGN KEY (id_regioes) REFERENCES regioes(id),
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)

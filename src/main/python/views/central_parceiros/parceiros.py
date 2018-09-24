@@ -1,6 +1,7 @@
 from webapp import app, db, cp
 from models.table_parceiros import Parceiros
 from models.table_atividades import Atividades
+from models.table_evento import Eventos
 from models.table_material import Materiais
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -20,6 +21,15 @@ def get_parceiro():
         parceiro['nome'] = info.nome
         parceiro['email'] = info.email
         parceiro['cpf'] = info.cpf
+        parceiro['dt_nascimento'] = str(info.dt_nascimento)
+        parceiro['genero'] = info.genero
+        parceiro['telefone'] = info.telefone 
+        parceiro['local_trabalho'] = info.local_trabalho
+        parceiro['cargo'] = info.cargo
+        parceiro['lattes'] = info.lattes
+        parceiro['facebook']= info.facebook
+        parceiro['linkedin'] = info.linkedin 
+        parceiro['twitter'] = info.twitter
 
         parceiros.append(parceiro)
 
@@ -40,6 +50,15 @@ def get_one_parceiro(parceiro_id):
     parceiro['nome'] = info.nome
     parceiro['email'] = info.email
     parceiro['cpf'] = info.cpf
+    parceiro['dt_nascimento'] = str(info.dt_nascimento)
+    parceiro['genero'] = info.genero
+    parceiro['telefone'] = info.telefone
+    parceiro['local_trabalho'] = info.local_trabalho
+    parceiro['cargo'] = info.cargo
+    parceiro['lattes'] = info.lattes
+    parceiro['facebook']= info.facebook
+    parceiro['linkedin'] = info.linkedin 
+    parceiro['twitter'] = info.twitter
 
     return jsonify(parceiro)
 
@@ -62,8 +81,10 @@ def post_parceiro():
         nome=data['nome'],
         email=data['email'],
         cpf=data['cpf'],
-        senha=password)
+        senha=password
+        )
     
+
     db.session.add(parceiro)
     db.session.commit()
 
@@ -75,16 +96,13 @@ def edit_parceiro(parceiro_id):
     #alterar o usuario para aluno, caso ele tenha inserido o RA
     #Ex: Seleciona o não aluno
     #{"ra": "22222222222"}
-    parceiro = Parceiros.query.filter_by(id=parceiro_id).first()
+    parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not parceiro:
         return jsonify({'message': 'Não encontrado!'})
 
     else:
         data = request.get_json()
-
-        if data['ra']:
-            parceiro.ra = data['ra']
 
         if data['nome']:
             parceiro.nome = data['nome']
@@ -113,9 +131,9 @@ def edit_parceiro(parceiro_id):
 
         if data['local_trabalho']:
             parceiro.local_trabalho = data['local_trabalho']
-
-        if data['local_estudo']:
-            parceiro.local_estudo = data['local_estudo']
+        
+        if data['cargo']:
+            parceiro.cargo = data['cargo']
 
         if data['lattes']:
             parceiro.lattes = data['lattes']
@@ -128,8 +146,6 @@ def edit_parceiro(parceiro_id):
 
         if data['twitter']:
             parceiro.twitter = data['twitter']
-
-        parceiro.aluno = True
 
         db.session.commit()
 
