@@ -85,6 +85,14 @@ CREATE TABLE agentes (
     OIDS=FALSE
 );
 
+--Tabela de Eixos Tecnológicos
+CREATE TABLE eixos (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100)
+) WITH (
+    OIDS=FALSE
+);
+
 -- Tabela de Atividades
 CREATE TABLE atividades(
     id SERIAL PRIMARY KEY,
@@ -94,8 +102,9 @@ CREATE TABLE atividades(
     duracao INTEGER,
     banner VARCHAR(500) NOT NULL,
     id_agente INTEGER,
-    situacao BOOLEAN,
-    FOREIGN KEY (id_agente) REFERENCES Agentes(ID) --?
+    id_eixo INTEGER,
+    FOREIGN KEY (id_agente) REFERENCES Agentes(ID),
+    FOREIGN KEY (id_eixo) REFERENCES eixos(id)
 ) WITH (
     OIDS=FALSE
 );

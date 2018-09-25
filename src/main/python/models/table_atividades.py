@@ -11,14 +11,15 @@ class Atividades(db.Model):
     duracao = db.Column(db.Integer)
     banner = db.Column(db.String(500))
     id_agente = db.Column(db.Integer, db.ForeignKey(Agentes.id))
-    situacao = db.Column(db.Boolean)
+    id_eixo = db.Column(db.Integer, db.ForeignKey('eixos.id'))
 
 
-    def __init__(self,titulo,descricao,tipo,duracao,banner, id_agente, situacao):
+    def __init__(self,titulo,descricao,tipo,duracao,banner, id_agente, id_eixo):
         self.titulo = titulo
         self.descricao = descricao
         self.tipo = tipo
         self.duracao = duracao
         self.banner = banner
         self.id_agente = id_agente
-        self.situacao = situacao
+        self.id_eixo = id_eixo
+        
