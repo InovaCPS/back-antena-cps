@@ -247,6 +247,10 @@ PUT - Atualiza um agente
 DELETE - Exclui um agente
 /cp/agentes/<id>
 ```
+```bash
+GET - Retorna as regiões e suas escolas
+/cp/locais
+```
 
 
 ### Instruções Login - Postman ###
