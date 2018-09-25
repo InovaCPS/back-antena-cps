@@ -3,6 +3,7 @@ from models.table_parceiros import Parceiros
 from models.table_agentes import Agentes
 from models.table_unidades import Unidades
 from flask import request, jsonify, redirect, url_for
+from views.central_parceiros.login import token_required
 
 
 @cp.route('/agentes', methods=['GET'])
@@ -53,7 +54,8 @@ def get_agente(id):
 
 
 @cp.route('/agentes', methods=['POST'])
-def post_agente():
+@token_required
+def post_agente(current_user):
     data = request.get_json()
 
     parceiro = Parceiros.query.filter_by(id_geral=data['id_parceiro']).first()
@@ -78,7 +80,8 @@ def post_agente():
 
 
 @cp.route('/agentes/<int:id>', methods=['DELETE'])
-def del_agente(id):
+@token_required
+def del_agente(current_user, id):
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:
@@ -95,7 +98,8 @@ def del_agente(id):
 
 
 @cp.route('/agentes/<int:id>', methods=['PUT'])
-def put_agente(id):
+@token_required
+def put_agente(current_user, id):
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:

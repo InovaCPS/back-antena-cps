@@ -126,11 +126,11 @@ def post_evento(current_user):
     agentes = Agentes.query.all()
 
     id_agente = random.randint(1, len(agentes))
-    # ARRUMAR AMANHÃ
-    # agente = Agentes.quert.filter_by(id=id_agente).first()
-    # parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
+ 
+    agente = Agentes.query.filter_by(id=id_agente).first()
+    parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
 
-    # mensagem = Mensagens('Há uma nova atividade para avaliação', False, '?', parceiro.id_geral)
+    mensagem = Mensagens('Há uma nova atividade para avaliação', False, current_user.id_geral, parceiro.id_geral)
 
     # objeto da atividade
     atividade = Atividades(
@@ -143,9 +143,11 @@ def post_evento(current_user):
         situacao = False
     )
     db.session.add(atividade)
+
+    db.session.add(mensagem)
     db.session.commit()
 
-    return jsonify({'message': 'Evento com sucesso! Espere a aprovaçao do Agente!'})
+    return jsonify({'message': 'Evento cadastrado com sucesso! Espere a aprovaçao do Agente!'})
 
 
 '''
