@@ -154,18 +154,18 @@ POST - Cadastra um evento
 	"duracao": "60", 
 	"banner": "o caminho do banner", 
 	"eventos":[
-		["2", "1", "2018-10-15", "14:00"], 
-		["2", "1", "2018-10-16", "14:00"], 
-		["2", "1", "2018-10-17", "14:00"]
+		["1", "2018-10-15", "14:00"], 
+		["1", "2018-10-16", "14:00"], 
+		["1", "2018-10-17", "14:00"]
 	], 
 	"materiais":[
-		["2", "caminho do material 1"], 
-		["2", "caminho do material 2"]
+		["caminho do material 1"], 
+		["caminho do material 2"]
 	]
 }
 
-* Campos de "eventos": [id da atividade, id da unidade, data, hora]
-* Campos de "materiais": [atividade, caminho do material]
+* Campos de "eventos": [id da unidade, data, hora]
+* Campos de "materiais": [caminho do material]
 ```
 ```bash
 PUT - Atualiza um evento

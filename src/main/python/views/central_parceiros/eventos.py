@@ -6,6 +6,7 @@ from models.table_material import Materiais
 from models.table_agentes import Agentes
 from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
+from models.table_eixos import Eixos
 from flask import request, jsonify
 import random
 from views.central_parceiros.login import token_required
@@ -24,8 +25,13 @@ def get_eventos():
         ativ['tipo'] = a.tipo
         ativ['duracao'] = a.duracao
         ativ['banner'] = a.banner
-        ativ['id_agente'] = a.id_agente
-        ativ['situacao'] = a.situacao
+        ativ['id_agente'] = a.id_agente        
+
+        if not a.id_eixo:
+            ativ['id_eixo'] = 'evento ainda não encaixado em um eixo!'
+        else:
+            eixo = Eixos.query.filter_by(id = a.id_eixo).first()
+            ativ['eixo'] = eixo.nome
 
         _eventos = Eventos.query.filter_by(id_atividades = a.id).all()
 
@@ -80,8 +86,13 @@ def get_one_evento(evento_id):
     ativ['duracao'] = a.duracao
     ativ['banner'] = a.banner
     ativ['id_agente'] = a.id_agente
-    ativ['situacao'] = a.situacao
-
+    
+    if not a.id_eixo:
+        ativ['eixo'] = 'evento ainda não encaixado em um eixo!'
+    else:
+        eixo = Eixos.query.filter_by(id = a.id_eixo).first()
+        ativ['eixo'] = eixo.nome
+    
     _eventos = Eventos.query.filter_by(id_atividades = a.id).all()
 
     if not _eventos:
@@ -126,12 +137,6 @@ def post_evento(current_user):
     agentes = Agentes.query.all()
 
     id_agente = random.randint(1, len(agentes))
-    # ARRUMAR AMANHÃ
-
-    agente = Agentes.query.filter_by(id=id_agente).first()
-    parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
-
-    mensagem = Mensagens('Há uma nova atividade para avaliação: {}'.format(data['titulo']), False, current_user.id_geral, parceiro.id_geral)
 
     # objeto da atividade
     atividade = Atividades(
@@ -140,29 +145,24 @@ def post_evento(current_user):
         tipo = data['tipo'], 
         duracao = data['duracao'], 
         banner = data['banner'],
-        id_agente = id_agente,
-        situacao = False
+        id_agente = id_agente
     )
     db.session.add(atividade)
-
-    db.session.add(mensagem)
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Evento cadastrado com sucesso! Espere a aprovaçao do Agente!'})
-
-
-'''
 
   # objetos dos eventos
     eventos = data['eventos']
 
+    
     obj_eventos = []
     for e in eventos:
-        vento = Evento(
-            atividade = e[0], 
-            unidade = e[1], 
-            _data = e[2], 
-            hora = e[3]
+        d = Diretores.query.filter_by(id_unidades = e[0]).first()
+        evento = Eventos(
+            id_atividades = atividade.id, 
+            id_unidades = e[0], 
+            _data = e[1], 
+            hora = e[2],
+            id_diretor = d.id,
+            situacao = False
         )
         obj_eventos.append(evento)
 
@@ -171,14 +171,14 @@ def post_evento(current_user):
 
     obj_materiais = []
     for m in materiais:
-        material = Material(
-            atividade = m[0],
-            materia = m[1]
+        material = Materiais(
+            id_atividades = atividade.id,
+            materia = m[0]
         )
-    obj_materiais.append(material)
+        obj_materiais.append(material)
 
     # inserções no banco
-    db.session.add(atividade)
+    
     db.session.commit()
 
     for material in obj_materiais:
@@ -188,7 +188,16 @@ def post_evento(current_user):
     for evento in obj_eventos:
         db.session.add(evento)
         db.session.commit()
-'''
+
+    agente = Agentes.query.filter_by(id=id_agente).first()
+    parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
+
+    mensagem = Mensagens('Há uma nova atividade para avaliação: {}'.format(data['titulo']), False, current_user.id_geral, parceiro.id_geral)
+
+    db.session.add(mensagem)
+    db.session.commit()
+
+    return jsonify({'Mensagem': 'Evento cadastrado com sucesso!'})
     
     
 #================= PUT ==========================

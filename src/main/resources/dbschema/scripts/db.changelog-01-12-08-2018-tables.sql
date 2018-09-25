@@ -220,3 +220,9 @@ VALUES (12345679, 1, 2, '30:00');
 
 INSERT INTO diretores (id_unidades, id_parceiros)
 VALUES (1, 3);
+
+INSERT INTO eixos (nome)
+VALUES ('Tecnologia');
+
+INSERT INTO eixos (nome)
+VALUES ('Outros');
