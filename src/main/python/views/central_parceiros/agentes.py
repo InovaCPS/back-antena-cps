@@ -35,7 +35,7 @@ def get_agentes():
 def get_agente(id):
     a = Agentes.query.filter_by(id=id).first()
     if not a:
-        return jsonify({'Message': 'Agente não encontrado!'})
+        return jsonify({'Mensagem': 'Agente não encontrado!'})
 
     unidade = Unidades.query.filter_by(id=a.id_unidades).first()
     parceiro = Parceiros.query.filter_by(id_geral=a.id_parceiros).first()
@@ -56,6 +56,9 @@ def get_agente(id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
+    if not current_user.nivel == "Administrador":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     data = request.get_json()
 
     parceiro = Parceiros.query.filter_by(id_geral=data['id_parceiro']).first()
@@ -75,17 +78,20 @@ def post_agente(current_user):
 
         db.session.commit()
     
-        return jsonify({'message': 'Cadastrado com sucesso!'})
-    return jsonify({'message': 'Impossível cadastrar agente'})
+        return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
+    return jsonify({'Mensagem': 'Impossível cadastrar agente'})
 
 
 @cp.route('/agentes/<int:id>', methods=['DELETE'])
 @token_required
 def del_agente(current_user, id):
+    if not current_user.nivel == "Administrador":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:
-        return jsonify({'message': 'Agente não encontrado!'})
+        return jsonify({'Mensagem': 'Agente não encontrado!'})
 
     # Quando o agente é deletado o nível da tabela de parceiros volta a ser 'Parceiro'
     parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
@@ -94,16 +100,19 @@ def del_agente(current_user, id):
     db.session.delete(agente)
     db.session.commit()
 
-    return jsonify({'message': 'Deletado com sucesso'})
+    return jsonify({'Mensagem': 'Deletado com sucesso'})
 
 
 @cp.route('/agentes/<int:id>', methods=['PUT'])
 @token_required
 def put_agente(current_user, id):
+    if not current_user.nivel == "Agente":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     agente = Agentes.query.filter_by(id=id).first()
 
     if not agente:
-        return jsonify({'message': 'Agente não encontrado!'})
+        return jsonify({'Mensagem': 'Agente não encontrado!'})
 
     data = request.get_json()
 

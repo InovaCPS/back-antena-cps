@@ -71,7 +71,7 @@ def get_eventos():
 def get_one_evento(evento_id):
     a = Atividades.query.filter_by(id = evento_id).first()
     if not a:
-        return jsonify({'Message': 'Evento não encontrado!'})
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
 
     ativ = {}
     ativ['titulo'] = a.titulo
@@ -126,11 +126,12 @@ def post_evento(current_user):
     agentes = Agentes.query.all()
 
     id_agente = random.randint(1, len(agentes))
- 
+    # ARRUMAR AMANHÃ
+
     agente = Agentes.query.filter_by(id=id_agente).first()
     parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
 
-    mensagem = Mensagens('Há uma nova atividade para avaliação', False, current_user.id_geral, parceiro.id_geral)
+    mensagem = Mensagens('Há uma nova atividade para avaliação: {}'.format(data['titulo']), False, current_user.id_geral, parceiro.id_geral)
 
     # objeto da atividade
     atividade = Atividades(
@@ -147,7 +148,7 @@ def post_evento(current_user):
     db.session.add(mensagem)
     db.session.commit()
 
-    return jsonify({'message': 'Evento cadastrado com sucesso! Espere a aprovaçao do Agente!'})
+    return jsonify({'Mensagem': 'Evento cadastrado com sucesso! Espere a aprovaçao do Agente!'})
 
 
 '''
@@ -199,7 +200,7 @@ def edit_evento(current_user, evento_id):
     atividade = Atividades.query.filter_by(id = evento_id).first()
 
     if not atividade:
-        return jsonify({'Message': 'Evento não encontrado!'})
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
 
     #atividade.titulo = data['titulo'], 
     #atividade.descricao = data['descricao'], 
@@ -274,7 +275,7 @@ def edit_evento(current_user, evento_id):
             db.session.delete(material)
             db.session.commit()
 
-    return jsonify({'Message': "Atualizado com sucesso"})
+    return jsonify({'Mensagem': "Atualizado com sucesso"})
 
 
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
@@ -283,7 +284,7 @@ def del_evento(current_user, evento_id):
     atividade = Atividades.query.filter_by(id = evento_id).first()
 
     if not atividade:
-        return jsonify({'Message': 'Evento não encontrado!'})
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
 
     _materiais  = Materiais.query.filter_by(id_atividades = atividade.id).all()
     
@@ -301,4 +302,4 @@ def del_evento(current_user, evento_id):
     db.session.delete(atividade)
     db.session.commit()
 
-    return jsonify({'message': 'Evento deletado com sucesso!'})
+    return jsonify({'Mensagem': 'Evento deletado com sucesso!'})

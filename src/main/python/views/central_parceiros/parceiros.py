@@ -42,7 +42,7 @@ def get_one_parceiro(current_user, parceiro_id):
     info = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not info:
-        return jsonify({'message': 'Não encontrado!'})
+        return jsonify({'Mensagem': 'Não encontrado!'})
 
     parceiro = {}
     parceiro['id_geral'] = info.id_geral
@@ -88,7 +88,7 @@ def post_parceiro():
     db.session.add(parceiro)
     db.session.commit()
 
-    return jsonify({'message': 'Adicionado com sucesso!'})
+    return jsonify({'Mensagem': 'Adicionado com sucesso!'})
 
 
 @cp.route('/parceiro/<parceiro_id>', methods=['PUT'])
@@ -100,7 +100,7 @@ def edit_parceiro(current_user, parceiro_id):
     parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not parceiro:
-        return jsonify({'message': 'Não encontrado!'})
+        return jsonify({'Mensagem': 'Não encontrado!'})
 
     else:
         data = request.get_json()
@@ -150,7 +150,7 @@ def edit_parceiro(current_user, parceiro_id):
 
         db.session.commit()
 
-        return jsonify({'message': 'Alterado com sucesso!'})
+        return jsonify({'Mensagem': 'Alterado com sucesso!'})
 
 
 @cp.route('/parceiro/<parceiro_id>', methods=['DELETE'])
@@ -161,4 +161,4 @@ def del_parceiro(current_user, parceiro_id):
     db.session.delete(parceiro)
     db.session.commit()
 
-    return jsonify({'message': 'Deletado com sucesso!'})
+    return jsonify({'Mensagem': 'Deletado com sucesso!'})

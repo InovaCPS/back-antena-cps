@@ -56,5 +56,6 @@ from views.central_parceiros.agentes import cp
 from views.central_parceiros.eventos import cp
 from views.central_parceiros.parceiros import cp
 from views.central_parceiros.locais import cp
+from views.central_parceiros.mensagem import cp
 
 app.register_blueprint(cp)

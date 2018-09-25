@@ -15,12 +15,12 @@ def token_required(f):
             token = request.headers['token']
         
         if not token:
-            return jsonify({'messagem': 'Você precisa de uma Token para ter acesso!'}), 401
+            return jsonify({'Mensagem': 'Você precisa de uma Token para ter acesso!'}), 401
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
             current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
         except:
-            return jsonify({'messagem': 'Token invalida!'}), 401
+            return jsonify({'Mensagem': 'Token invalida!'}), 401
         
         return f(current_user, *args, **kwargs)
     
@@ -31,19 +31,19 @@ def token_required(f):
 def login():
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     
     parceiro = Parceiros.query.filter_by(email = auth.username).first()
 
     if not parceiro:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     
     if check_password_hash(parceiro.senha, auth.password):
         token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
         
         return jsonify({'token': token.decode('UTF-8')})
     
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     
 
 '''
