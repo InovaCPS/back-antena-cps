@@ -248,11 +248,24 @@ DELETE - Exclui um agente
 /cp/agentes/<id>
 ```
 ```bash
+GET - Retorna as atividades que o agente precisa enquadrar
+/agentes/atividades
+```
+```bash
+GET - Retorna todas as informações da atividade
+/agentes/atividades/<id>
+```
+```bash
+PUT - Atualiza a atividade
+/agentes/atividades/<id>
+
+{
+    "eixo": 1
+}
+```
+```bash
 GET - Retorna as regiões e suas escolas
 /cp/locais
-```
-
-
 ```
 ```bash
 GET - Retorna todos os Diretores
