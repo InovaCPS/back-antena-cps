@@ -7,7 +7,7 @@ from models.table_agentes import Agentes
 from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
 from models.table_eixos import Eixos
-from flask import request, jsonify
+from flask import request, jsonify, redirect, url_for
 import random
 from views.central_parceiros.login import token_required
 
@@ -192,13 +192,7 @@ def post_evento(current_user):
     agente = Agentes.query.filter_by(id=id_agente).first()
     parceiro = Parceiros.query.filter_by(id_geral=agente.id_parceiros).first()
 
-    mensagem = Mensagens('Há uma nova atividade para avaliação: {}'.format(data['titulo']), False, current_user.id_geral, parceiro.id_geral)
-
-    db.session.add(mensagem)
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Evento cadastrado com sucesso!'})
-    
+    return redirect(url_for('.post_message', id_remetente = current_user.id_geral, id_destinatario = parceiro.id_geral, msg = 'Há uma nova atividade para avaliação: {}'.format(data['titulo'])), code=307)
     
 #================= PUT ==========================
 @cp.route('/evento/<evento_id>', methods=['PUT'])
@@ -290,25 +284,3 @@ def edit_evento(current_user, evento_id):
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
 @token_required
 def del_evento(current_user, evento_id):
-    atividade = Atividades.query.filter_by(id = evento_id).first()
-
-    if not atividade:
-        return jsonify({'Mensagem': 'Evento não encontrado!'})
-
-    _materiais  = Materiais.query.filter_by(id_atividades = atividade.id).all()
-    
-    _eventos = Eventos.query.filter_by(id_atividades = atividade.id).all()
-    
-
-    for m in _materiais:        
-        db.session.delete(m)
-        db.session.commit()
-    
-    for e in _eventos:        
-        db.session.delete(e)
-        db.session.commit()
-
-    db.session.delete(atividade)
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Evento deletado com sucesso!'})

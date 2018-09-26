@@ -1,5 +1,7 @@
 from webapp import db, cp
 from models.table_mensagens import Mensagens
+from models.table_parceiros import Parceiros
+from models.table_agentes import Agentes
 from flask import request, jsonify, redirect, url_for
 from views.central_parceiros.login import token_required
 
@@ -23,3 +25,13 @@ def get_message(current_user):
         mensagens.append(mensagem)
 
     return jsonify(mensagens)
+
+@cp.route('menssagem/<id_remetente>/<id_destinatario>/<msg>', methods=['POST'])
+def post_message(id_remetente, id_destinatario, msg):
+
+    mensagem = Mensagens(msg, False, id_remetente, id_destinatario)
+
+    db.session.add(mensagem)
+    db.session.commit()
+
+    return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
