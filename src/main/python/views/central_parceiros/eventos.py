@@ -284,3 +284,23 @@ def edit_evento(current_user, evento_id):
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
 @token_required
 def del_evento(current_user, evento_id):
+    atividade = Atividades.query.filter_by(id = evento_id).first()
+    
+    if not atividade:
+        return jsonify({'Message': 'Evento não encontrado!'})
+        
+    _materiais  = Materiais.query.filter_by(id_atividades = atividade.id).all()    
+    _eventos = Eventos.query.filter_by(id_atividades = atividade.id).all()
+    
+    for m in _materiais:        
+        db.session.delete(m)
+        db.session.commit()
+    
+    for e in _eventos:        
+        db.session.delete(e)
+        db.session.commit()
+
+    db.session.delete(atividade)
+    db.session.commit()
+
+    return jsonify({'Mensagem': 'Deletado com sucesso!'})

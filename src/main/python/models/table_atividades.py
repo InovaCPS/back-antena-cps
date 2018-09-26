@@ -1,6 +1,7 @@
 from webapp import db
 from models.table_agentes import Agentes
 from models.table_eixos import Eixos
+from models.table_parceiros import Parceiros
 
 class Atividades(db.Model):
     __tablename__:'atividades'
@@ -13,7 +14,7 @@ class Atividades(db.Model):
     banner = db.Column(db.String(500))
     id_agente = db.Column(db.Integer, db.ForeignKey(Agentes.id))
     id_eixo = db.Column(db.Integer, db.ForeignKey(Eixos.id))
-    id_parceiro = db.Column(db.Integer, db.ForeignKey(Parceiros.id))
+    id_parceiro = db.Column(db.Integer, db.ForeignKey(Parceiros.id_geral))
 
 
     def __init__(self,titulo,descricao,tipo,duracao,banner,id_agente,id_parceiro):
