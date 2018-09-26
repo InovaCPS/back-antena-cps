@@ -2,6 +2,7 @@ from webapp import db, cp
 from models.table_parceiros import Parceiros
 from models.table_agentes import Agentes
 from models.table_unidades import Unidades
+from models.table_atividades import Atividades
 from flask import request, jsonify, redirect, url_for
 from views.central_parceiros.login import token_required
 
@@ -56,8 +57,8 @@ def get_agente(id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
-    if not current_user.nivel == "Administrador":
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
+    # if not current_user.nivel == "Administrador":
+    #     return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
 
@@ -135,3 +136,45 @@ def put_agente(current_user, id):
     # O código 307 é para o redirect não ser tratado como GET 
     # e conseguir fazer as alterações
     return redirect(url_for('.edit_parceiro', parceiro_id=parceiro.id_geral), code=307)
+
+@cp.route('/agentes/atividades', methods=['GET'])
+@token_required
+def get_ativ(current_user):
+    agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
+    atividades = Atividades.query.filter_by(id_agente=agente.id).all()
+
+    eventos = []
+
+    for a in atividades:
+        ativ = {}
+        ativ['id'] = a.id
+        ativ['titulo'] = a.titulo
+        ativ['tipo'] = a.tipo
+
+        eventos.append(ativ)
+
+    return jsonify(eventos)
+
+@cp.route('/agentes/atividades/<int:id>', methods=['GET', 'PUT'])
+@token_required
+def get_one_ativ(current_user, id):
+    if request.method == 'GET':
+
+        atividade = Atividades.query.filter_by(id=id).first()
+        agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
+
+        if atividade.id_agente == agente.id:
+            return redirect(url_for('.get_one_evento', evento_id=id), code=307)
+        else:
+            return jsonify({'Mensagem': 'Este evento não foi atribuído a você!'})
+    
+    else:
+        data = request.get_json()
+
+        atividade = Atividades.query.filter_by(id = id).first()
+
+        atividade.id_eixo = data['eixo']
+
+        db.session.commit()
+
+        return jsonify({'Mensagem': 'Eixo do evento alterado!'})
