@@ -253,6 +253,46 @@ GET - Retorna as regiões e suas escolas
 ```
 
 
+```
+```bash
+GET - Retorna todos os Diretores
+/cp/diretores
+```
+```bash
+GET - Retorna um diretor
+/cp/diretores/<id>
+```
+```bash
+POST - Cadastra um diretor
+/cp/diretores
+
+{
+    "id_unidades": 1,
+    "id_parceiros": 1
+}
+```
+```bash
+PUT - Atualiza um agente
+/cp/agentes/<id>
+
+{    
+    "nome": "Diretor1", 
+    "email": "diretor@gmail.com", 
+    "cpf": "11111111", 
+    "senha": "1234", 
+    "rg": "46564", 
+    "dt_nascimento": "17/01/1982", 
+    "genero": "Masculino", 
+    "telefone": "12345678", 
+    "local_trabalho": "CPS", 
+    "cargo": "Professor",
+    "lattes": "", 
+    "facebook": "diretor1", 
+    "linkedin": "", 
+    "twitter": "diretor1"
+}
+```
+
 ### Instruções Login - Postman ###
 
 ```bash
