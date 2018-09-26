@@ -103,8 +103,10 @@ CREATE TABLE atividades(
     banner VARCHAR(500) NOT NULL,
     id_agente INTEGER,
     id_eixo INTEGER,
+    id_parceiro INTEGER,
     FOREIGN KEY (id_agente) REFERENCES Agentes(ID),
-    FOREIGN KEY (id_eixo) REFERENCES eixos(id)
+    FOREIGN KEY (id_eixo) REFERENCES eixos(id),
+    FOREIGN KEY (id_parceiro) REFERENCES parceiros(id_geral)
 ) WITH (
     OIDS=FALSE
 );
