@@ -106,7 +106,6 @@ def get_one_evento(evento_id):
             eve['id_unidades'] = e.id_unidades
             eve['_data'] = str(e._data)
             eve['hora'] = str(e.hora)
-            eve['id_diretor'] = e.id_diretor
             eve['situacao'] = e.situacao
 
             evento.append(eve)
@@ -145,7 +144,8 @@ def post_evento(current_user):
         tipo = data['tipo'], 
         duracao = data['duracao'], 
         banner = data['banner'],
-        id_agente = id_agente
+        id_agente = id_agente, 
+        id_parceiro = current_user.id_geral
     )
     db.session.add(atividade)
 
@@ -161,7 +161,6 @@ def post_evento(current_user):
             id_unidades = e[0], 
             _data = e[1], 
             hora = e[2],
-            id_diretor = d.id,
             situacao = False
         )
         obj_eventos.append(evento)

@@ -3,6 +3,10 @@ from models.table_parceiros import Parceiros
 from models.table_agentes import Agentes
 from models.table_unidades import Unidades
 from models.table_atividades import Atividades
+from models.table_evento import Eventos
+from models.table_unidades import Unidades
+from models.table_diretores import Diretores
+from models.table_mensagens import Mensagens
 from flask import request, jsonify, redirect, url_for
 from views.central_parceiros.login import token_required
 
@@ -139,7 +143,7 @@ def put_agente(current_user, id):
 
 @cp.route('/agentes/atividades', methods=['GET'])
 @token_required
-def get_ativ(current_user):
+def get_ativ_agente(current_user):
     agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
     atividades = Atividades.query.filter_by(id_agente=agente.id).all()
 
@@ -157,7 +161,7 @@ def get_ativ(current_user):
 
 @cp.route('/agentes/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
-def get_one_ativ(current_user, id):
+def get_one_ativ_agente(current_user, id):
     if request.method == 'GET':
 
         atividade = Atividades.query.filter_by(id=id).first()
@@ -176,5 +180,21 @@ def get_one_ativ(current_user, id):
         atividade.id_eixo = data['eixo']
 
         db.session.commit()
+
+        eventos = Eventos.query.filter_by(id_atividades=atividade.id).all()
+
+        for evento in eventos:
+            unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
+            diretor = Diretores.query.filter_by(id_unidades=unidade.id).first()
+
+            mensagem = Mensagens(
+                'Há um(a) novo(a) pedido de evento na sua unidade para avaliação', 
+                False, 
+                atividade.id_parceiro, 
+                diretor.id_parceiros
+            )
+
+            db.session.add(mensagem)
+            db.session.commit()
 
         return jsonify({'Mensagem': 'Eixo do evento alterado!'})

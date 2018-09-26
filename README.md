@@ -285,7 +285,7 @@ POST - Cadastra um diretor
 }
 ```
 ```bash
-PUT - Atualiza um agente
+PUT - Atualiza um diretor
 /cp/agentes/<id>
 
 {    

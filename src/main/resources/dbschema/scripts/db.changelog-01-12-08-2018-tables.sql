@@ -129,11 +129,9 @@ CREATE TABLE eventos(
     id_unidades INTEGER,
     _data DATE,
     hora TIME,
-    id_diretor INTEGER,
     situacao BOOLEAN,
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),
-    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
-    FOREIGN kEY (id_diretor) REFERENCES diretores(id)
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id)
 ) WITH (
     OIDS=FALSE
 );

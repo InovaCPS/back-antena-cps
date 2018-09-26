@@ -3,8 +3,10 @@ from models.table_parceiros import Parceiros
 from models.table_diretores import Diretores
 from models.table_unidades import Unidades
 from models.table_regioes import Regioes
+from models.table_evento import Eventos
+from models.table_atividades import Atividades
 from flask import request, jsonify, redirect, url_for
-
+from views.central_parceiros.login import token_required
 
 
 @cp.route('/diretores', methods=['GET'])
@@ -100,3 +102,60 @@ def edit_diretor(id_diretor):
         return jsonify({'Mensagem': 'Diretor não encontrado!'})
     else:
         return redirect(url_for('.edit_parceiro', parceiro_id=diretor.id_parceiros), code=307)
+
+
+@cp.route('/diretores/atividades', methods=['GET'])
+@token_required
+def get_evento_diretor(current_user):
+    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first() # retorna o diretor que está logado
+    unidade = Unidades.query.filter_by(id=diretor.id_unidades).first() # retorna a unidade da qual ele é diretor
+    eventos = Eventos.query.filter_by(id_unidades=unidade.id).all() # retorna os pedidos de evento daquela unidade
+
+    eventos_ = []
+
+    for evento in eventos:
+        atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
+
+        ev = {}
+        ev['titulo'] = atividade.titulo
+        ev['descricao'] = atividade.descricao
+        ev['tipo'] = atividade.tipo
+        ev['data'] = evento._data
+        ev['hora'] = str(evento.hora)
+        ev['id_evento'] = evento.id
+
+        eventos_.append(ev)
+
+    return jsonify(eventos_)
+
+@cp.route('/diretores/atividades/<int:id>', methods=['GET', 'PUT'])
+@token_required
+def get_one_evento_diretor(current_user, id):
+    evento = Eventos.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
+        parceiro = Parceiros.query.filter_by(id_geral=atividade.id_parceiro).first()
+
+        ev = {}
+        ev['titulo'] = atividade.titulo
+        ev['descricao'] = atividade.descricao
+        ev['tipo'] = atividade.tipo
+        ev['duracao'] = atividade.duracao
+        ev['banner'] = atividade.banner
+        ev['parceiro'] = parceiro.nome
+        ev['email'] = parceiro.email
+        ev['telefone'] = parceiro.telefone
+        ev['cargo_parceiro'] = parceiro.cargo
+        ev['local_trabalho_parceiro'] = parceiro.local_trabalho
+        ev['data'] = evento._data
+        ev['hora'] = str(evento.hora)
+
+        return jsonify(ev)
+    else:
+        data = request.get_json()
+
+        evento.situacao = data['resposta']
+
+        db.session.commit()
+
+        return jsonify({'Mensagem': 'Resposta cadastrada!'})
