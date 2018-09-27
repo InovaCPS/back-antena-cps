@@ -8,7 +8,6 @@ from views.central_parceiros.login import token_required
 @cp.route('/parceiro', methods=['GET'])
 @token_required
 def get_parceiro(current_user):
-    #pesquisar todos os parceiros no BD e gerar e exibir um json geral, com todos os parceiros
     dados = Parceiros.query.all()
 
     parceiros = []
@@ -38,7 +37,6 @@ def get_parceiro(current_user):
 @cp.route('/parceiro/<parceiro_id>', methods=['GET'])
 @token_required
 def get_one_parceiro(current_user, parceiro_id):
-    #pesquisar no BD um parceiro expecifico e gerar e exibir um json com todos os dados desse parceiro!
     info = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not info:
@@ -65,14 +63,6 @@ def get_one_parceiro(current_user, parceiro_id):
 
 @cp.route('/parceiro', methods=['POST'])
 def post_parceiro():
-    #Cadastro de parceiro via json, com retorno de mensagem tambem via json
-    #generate_password_hash serve para criptografar a senha
-    #As condições são utilizadas para verificar se o parceiro informou o RA, caso o tenha feito
-    #ele é cadastrado como aluno
-    #Ex:
-    #{"ra": "123456789", "nome": "aluno", "email": "email@email.com", "cpf": "11111111", "senha": "1234"}
-    #{"ra": "", "nome": "ñ aluno", "email": "gmail@gmail.com", "cpf": "123456789", "senha": "1234"}
-
     data = request.get_json()
     password = generate_password_hash(data['senha'])
 
@@ -94,9 +84,6 @@ def post_parceiro():
 @cp.route('/parceiro/<parceiro_id>', methods=['PUT'])
 @token_required
 def edit_parceiro(current_user, parceiro_id):
-    #alterar o usuario para aluno, caso ele tenha inserido o RA
-    #Ex: Seleciona o não aluno
-    #{"ra": "22222222222"}
     parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
     if not parceiro:

@@ -61,8 +61,8 @@ def get_agente(id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
-    # if not current_user.nivel == "Administrador":
-    #     return jsonify({'Mensagem': 'Você não tem Permissão'})
+    if not current_user.nivel == "Administrador":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
 
@@ -111,7 +111,7 @@ def del_agente(current_user, id):
 @cp.route('/agentes/<int:id>', methods=['PUT'])
 @token_required
 def put_agente(current_user, id):
-    if not current_user.nivel == "Agente":
+    if not current_user.nivel == "Administrador":
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     agente = Agentes.query.filter_by(id=id).first()
@@ -134,34 +134,36 @@ def put_agente(current_user, id):
 
     db.session.commit()
 
-    # Ao atualizar as informações pertencentes apenas a tabela de agentes
-    # o restante das informações é atualizado no método de atualizar parceiros
-    # para evitar código duplicado
-    # O código 307 é para o redirect não ser tratado como GET 
-    # e conseguir fazer as alterações
     return redirect(url_for('.edit_parceiro', parceiro_id=parceiro.id_geral), code=307)
 
 @cp.route('/agentes/atividades', methods=['GET'])
 @token_required
 def get_ativ_agente(current_user):
+    if not current_user.nivel == "Agente":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
     atividades = Atividades.query.filter_by(id_agente=agente.id).all()
 
     eventos = []
 
     for a in atividades:
-        ativ = {}
-        ativ['id'] = a.id
-        ativ['titulo'] = a.titulo
-        ativ['tipo'] = a.tipo
+        if not a.id_eixo:
+            ativ = {}
+            ativ['id'] = a.id
+            ativ['titulo'] = a.titulo
+            ativ['tipo'] = a.tipo
 
-        eventos.append(ativ)
+            eventos.append(ativ)
 
     return jsonify(eventos)
 
 @cp.route('/agentes/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
 def get_one_ativ_agente(current_user, id):
+    if not current_user.nivel == "Agente":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     if request.method == 'GET':
 
         atividade = Atividades.query.filter_by(id=id).first()
@@ -171,7 +173,7 @@ def get_one_ativ_agente(current_user, id):
             return redirect(url_for('.get_one_evento', evento_id=id), code=307)
         else:
             return jsonify({'Mensagem': 'Este evento não foi atribuído a você!'})
-    
+
     else:
         data = request.get_json()
 
