@@ -7,6 +7,7 @@ from models.table_agentes import Agentes
 from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
 from models.table_eixos import Eixos
+from models.table_unidades import Unidades
 from flask import request, jsonify, redirect, url_for
 import random
 from views.central_parceiros.login import token_required
@@ -14,120 +15,55 @@ from views.central_parceiros.login import token_required
 
 @cp.route('/evento', methods=['GET'])
 def get_eventos():
-    _atividades = Atividades.query.all()
+    eventos = Eventos.query.filter_by(situacao=True).all()
 
-    eventos = []
+    _eventos = []
+    for evento in eventos:
+        atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
+        parceiro = Parceiros.query.filter_by(id_geral=atividade.id_parceiro).first()
+        unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
 
-    for a in _atividades:
-        ativ = {}
-        ativ['titulo'] = a.titulo
-        ativ['descricao'] = a.descricao
-        ativ['tipo'] = a.tipo
-        ativ['duracao'] = a.duracao
-        ativ['banner'] = a.banner
-        ativ['id_agente'] = a.id_agente        
+        ev = {}
+        ev['nome'] = atividade.titulo
+        ev['autor'] = parceiro.nome
+        ev['data'] = evento._data.strftime('%d/%m/%Y')
+        ev['hora'] = str(evento.hora)
+        ev['local'] = unidade.nome
+        ev['banner'] = atividade.banner
+        ev['id'] = evento.id
 
-        if not a.id_eixo:
-            ativ['id_eixo'] = 'evento ainda não encaixado em um eixo!'
-        else:
-            eixo = Eixos.query.filter_by(id = a.id_eixo).first()
-            ativ['eixo'] = eixo.nome
+        _eventos.append(ev)
 
-        _eventos = Eventos.query.filter_by(id_atividades = a.id).all()
+    return jsonify(_eventos)
 
-        if not _eventos:
-            ativ['evento'] = 'Nenhum evento cadastrado!'
+@cp.route('/evento/<int:id>', methods=['GET'])
+def get_one_evento(id):
+    evento = Eventos.query.filter_by(id=id).first()
 
-        else:        
-            evento = []
+    if not evento or evento.situacao == False:
+        return jsonify({'mensagem': 'O evento requisitado não existe'})
 
-            for e in _eventos:
-                eve = {}
-                eve['id'] = e.id
-                eve['id_unidades'] = e.id_unidades
-                eve['_data'] = str(e._data)
-                eve['hora'] = str(e.hora)
-                eve['id_diretor'] = e.id_diretor
-                eve['situacao'] = e.situacao
+    atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
+    parceiro = Parceiros.query.filter_by(id_geral=atividade.id_parceiro).first()
+    unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
 
-                evento.append(eve)
+    _evento = {}
 
-            ativ['evento'] = evento
-        
+    _evento['titulo'] = atividade.titulo
+    _evento['descricao'] = atividade.descricao
+    _evento['tipo'] = atividade.tipo
+    _evento['duracao'] = atividade.duracao
+    _evento['banner'] = atividade.banner
+    _evento['data'] = evento._data.strftime('%d/%m/%Y')
+    _evento['hora'] = str(evento.hora)
+    _evento['local'] = unidade.nome
+    _evento['endereco'] = unidade.endereco
+    _evento['autor'] = parceiro.nome
+    _evento['cargo_autor'] = parceiro.cargo
+    _evento['trabalho_autor'] = parceiro.local_trabalho
+    _evento['email_autor'] = parceiro.email
 
-        _materiais  = Materiais.query.filter_by(id_atividades = a.id).all()
-
-        if not _materiais:
-            ativ['material'] = 'Nenhum material cadastrado!'
-        else:            
-            mat = []
-            for m in _materiais:
-                material = {}
-                material['id'] = m.id
-                material['material'] = m.materia
-                mat.append(material)
-            
-            ativ['material'] = mat
-
-        eventos.append(ativ)
-
-    return jsonify(eventos)
-
-@cp.route('/evento/<evento_id>', methods=['GET'])
-def get_one_evento(evento_id):
-    a = Atividades.query.filter_by(id = evento_id).first()
-    if not a:
-        return jsonify({'Mensagem': 'Evento não encontrado!'})
-
-    ativ = {}
-    ativ['titulo'] = a.titulo
-    ativ['descricao'] = a.descricao
-    ativ['tipo'] = a.tipo
-    ativ['duracao'] = a.duracao
-    ativ['banner'] = a.banner
-    ativ['id_agente'] = a.id_agente
-    
-    if not a.id_eixo:
-        ativ['eixo'] = 'evento ainda não encaixado em um eixo!'
-    else:
-        eixo = Eixos.query.filter_by(id = a.id_eixo).first()
-        ativ['eixo'] = eixo.nome
-    
-    _eventos = Eventos.query.filter_by(id_atividades = a.id).all()
-
-    if not _eventos:
-        ativ['evento'] = 'Nenhum evento cadastrado!'
-    else:   
-        evento = []
-
-        for e in _eventos:
-            eve = {}
-            eve['id'] = e.id
-            eve['id_unidades'] = e.id_unidades
-            eve['_data'] = str(e._data)
-            eve['hora'] = str(e.hora)
-            eve['situacao'] = e.situacao
-
-            evento.append(eve)
-
-        ativ['evento'] = evento
-        
-
-    _materiais  = Materiais.query.filter_by(id_atividades = a.id).all()
-
-    if not _materiais:
-        ativ['materias'] = 'Nenhum material cadastrado!'
-    else:
-        mat = []
-        for m in _materiais:
-            material = {}
-            material['id'] = m.id
-            material['material'] = m.materia
-            mat.append(material)
-            
-        ativ['material'] = mat
-
-    return jsonify(ativ)
+    return jsonify(_evento)
 
 @cp.route('/evento', methods=['POST'])
 @token_required

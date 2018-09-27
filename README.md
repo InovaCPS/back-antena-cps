@@ -286,7 +286,7 @@ POST - Cadastra um diretor
 ```
 ```bash
 PUT - Atualiza um diretor
-/cp/agentes/<id>
+/cp/diretores/<id>
 
 {    
     "nome": "Diretor1", 
@@ -303,6 +303,22 @@ PUT - Atualiza um diretor
     "facebook": "diretor1", 
     "linkedin": "", 
     "twitter": "diretor1"
+}
+```
+```bash
+GET - Retorna os eventos que o diretor precisa avaliar
+/cp/diretores/atividades
+```
+```bash
+GET - Retorna as informações do evento
+/cp/diretores/<id>
+```
+```bash
+PUT - Altera a situação do evento
+/cp/diretores/<id>
+
+{    
+    "resposta": true
 }
 ```
 

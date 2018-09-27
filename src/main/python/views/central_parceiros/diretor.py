@@ -108,6 +108,10 @@ def edit_diretor(id_diretor):
 @token_required
 def get_evento_diretor(current_user):
     diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first() # retorna o diretor que está logado
+
+    if diretor is None:
+        return jsonify({'Mensagem': 'Você não tem permissões de diretor!'})
+
     unidade = Unidades.query.filter_by(id=diretor.id_unidades).first() # retorna a unidade da qual ele é diretor
     eventos = Eventos.query.filter_by(id_unidades=unidade.id).all() # retorna os pedidos de evento daquela unidade
 
@@ -131,6 +135,11 @@ def get_evento_diretor(current_user):
 @cp.route('/diretores/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
 def get_one_evento_diretor(current_user, id):
+    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
+
+    if diretor is None:
+        return jsonify({'Mensagem': 'Você não tem permissões de diretor!'})
+
     evento = Eventos.query.filter_by(id=id).first()
     if request.method == 'GET':
         atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
