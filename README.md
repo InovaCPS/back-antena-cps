@@ -200,6 +200,24 @@ PUT - Atualiza um evento
 * Campos de "materiais": [id do material, caminho do material]
 * Se "material" e/ou "evento" não tiverem um id, significa que são registros novos e precisam ser cadastrados
 ```
+
+```bash
+GET - Retorna todos os inscritos do evento
+/cp/evento/inscritos/<id_evento>
+```
+```bash
+POST - Parceiro se cadastra no evento
+/cp/evento/inscrito
+
+{
+    "id_evento": 1
+}
+```
+```bash
+DELETE - Parceiro se cancela inscrição no evento
+/cp/evento/inscrito
+```
+
 ```bash
 GET - Retorna todos os agentes
 /cp/agentes

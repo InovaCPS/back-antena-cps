@@ -8,6 +8,7 @@ from models.table_agentes import Agentes
 from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
 from models.table_eixos import Eixos
+from models.table_inscricoes import Inscricoes
 from models.table_unidades import Unidades
 from flask import request, jsonify, redirect, url_for
 import random
@@ -246,3 +247,66 @@ def del_evento(current_user, evento_id):
     db.session.commit()
 
     return jsonify({'Mensagem': 'Deletado com sucesso!'})
+
+
+#****************** Inscrições no Evento *******************
+@cp.route('/evento/inscritos/<id_evento>', methods=['GET'])
+@token_required
+def get_inscritos(current_user, id_evento):
+
+    _inscritos = Inscricoes.query.filter_by(id_eventos = id_evento).all()
+
+    inscritos = []
+
+    for inscrito in _inscritos:
+        parceiro = Parceiros.query.filter_by(id_geral = inscrito.id_parceiros).first()
+
+        info = {}
+        info['nome'] = parceiro.nome
+        info['email'] = parceiro.email
+
+        inscritos.append(info)
+
+    return jsonify(inscritos)
+
+@cp.route('/evento/inscrito', methods = ['POST'])
+@token_required
+def post_inscrito(current_user):
+    data = request.get_json()
+
+    evento = Eventos.query.filter_by(id = data['id_evento']).first()
+
+    if evento.capacidade == evento.inscrito:
+        return jsonify({'Mensagem': 'Evento Lotado!'})
+
+    else:
+        _inscrito = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = evento.id).first()
+
+        if not _inscrito:
+            inscricao = Inscricoes(current_user.id_geral, evento.id)
+            db.session.add(inscricao)
+            db.session.commit()
+
+            novo = Eventos.query.filter_by(id = evento.id).first()
+            novo.inscrito += 1
+
+            db.session.commit()
+
+            return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
+        
+        return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
+
+@cp.route('/evento/inscrito', methods=['DELETE'])
+@token_required
+def del_inscrito(current_user):
+    parceiro = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral).first()
+    
+    db.session.delete(parceiro)
+    db.session.commit()
+    
+    evento = Eventos.query.filter_by(id = parceiro.id_eventos).first()
+
+    evento.inscrito -= 1
+    db.session.commit()
+
+    return jsonify({'Mensagem': 'Inscrição cancelado com sucesso!'})
