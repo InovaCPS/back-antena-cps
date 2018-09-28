@@ -250,7 +250,7 @@ def del_evento(current_user, evento_id):
 
 
 #****************** Inscrições no Evento *******************
-@cp.route('/evento/inscritos/<id_evento>', methods=['GET'])
+@cp.route('/evento/<id_evento>/inscritos', methods=['GET'])
 @token_required
 def get_inscritos(current_user, id_evento):
 
@@ -269,12 +269,11 @@ def get_inscritos(current_user, id_evento):
 
     return jsonify(inscritos)
 
-@cp.route('/evento/inscrito', methods = ['POST'])
+@cp.route('/evento/<id_evento>/inscrito', methods = ['POST'])
 @token_required
-def post_inscrito(current_user):
-    data = request.get_json()
+def post_inscrito(current_user, id_evento):
 
-    evento = Eventos.query.filter_by(id = data['id_evento']).first()
+    evento = Eventos.query.filter_by(id = id_evento).first()
 
     if evento.capacidade == evento.inscrito:
         return jsonify({'Mensagem': 'Evento Lotado!'})
@@ -296,10 +295,10 @@ def post_inscrito(current_user):
         
         return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
 
-@cp.route('/evento/inscrito', methods=['DELETE'])
+@cp.route('/evento/<id_evento>/inscrito', methods=['DELETE'])
 @token_required
-def del_inscrito(current_user):
-    parceiro = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral).first()
+def del_inscrito(current_user, id_evento):
+    parceiro = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = id_evento).first()
     
     db.session.delete(parceiro)
     db.session.commit()

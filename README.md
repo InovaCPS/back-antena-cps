@@ -203,19 +203,15 @@ PUT - Atualiza um evento
 
 ```bash
 GET - Retorna todos os inscritos do evento
-/cp/evento/inscritos/<id_evento>
+/cp/evento/<id>/inscritos
 ```
 ```bash
 POST - Parceiro se cadastra no evento
-/cp/evento/inscrito
-
-{
-    "id_evento": 1
-}
+/cp/evento/<id>/inscrito
 ```
 ```bash
 DELETE - Parceiro se cancela inscrição no evento
-/cp/evento/inscrito
+/cp/evento/<id>/inscrito
 ```
 
 ```bash
