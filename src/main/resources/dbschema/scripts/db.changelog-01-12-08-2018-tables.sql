@@ -129,9 +129,21 @@ CREATE TABLE eventos(
     id_unidades INTEGER,
     _data DATE,
     hora TIME,
-    situacao BOOLEAN,
+    situacao VARCHAR(15),
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),
     FOREIGN KEY (id_unidades) REFERENCES unidades(id)
+) WITH (
+    OIDS=FALSE
+);
+
+-- Tabela de Inscrições
+CREATE TABLE inscricoes(
+    id SERIAL PRIMARY KEY,
+    capacidade INTEGER,
+    id_parceiros INTEGER,
+    id_eventos INTEGER,
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral),
+    FOREIGN KEY (id_eventos) REFERENCES eventos(id)
 ) WITH (
     OIDS=FALSE
 );
