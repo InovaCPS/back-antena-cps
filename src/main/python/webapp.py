@@ -59,4 +59,6 @@ from views.central_parceiros.locais import cp
 from views.central_parceiros.mensagem import cp
 from views.central_parceiros.diretor import cp
 from views.central_parceiros.diretor import cp
+from views.central_parceiros.adm import cp
+
 app.register_blueprint(cp)

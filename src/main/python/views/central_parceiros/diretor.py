@@ -85,8 +85,8 @@ def get_one_diretor(current_user, id_diretor):
 @cp.route('/diretores', methods=['POST'])
 @token_required
 def post_diretor(current_user):
-    # if not current_user.nivel == "Administrador":
-    #     return jsonify({'Mensagem': 'Você não tem Permissão'})
+    if not current_user.nivel == "Administrador":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
 
