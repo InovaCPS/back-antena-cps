@@ -3,6 +3,7 @@ from models.table_parceiros import Parceiros
 from models.table_atividades import Atividades
 from models.table_evento import Eventos
 from models.table_material import Materiais
+from models.table_inscricoes import Inscricoes
 from models.table_agentes import Agentes
 from models.table_mensagens import Mensagens
 from models.table_diretores import Diretores
@@ -97,7 +98,7 @@ def post_evento(current_user):
             id_unidades = e[0], 
             _data = e[1], 
             hora = e[2],
-            situacao = False
+            situacao = 'Aguardando análise da atividade'
         )
         obj_eventos.append(evento)
 
@@ -231,7 +232,13 @@ def del_evento(current_user, evento_id):
         db.session.delete(m)
         db.session.commit()
     
-    for e in _eventos:        
+    for e in _eventos:
+        inscricoes = Inscricoes.query.filter_by(id_eventos=e.id).all()
+
+        for inscrito in inscricoes:
+            db.session.delete(inscrito)
+            db.session.commit()
+
         db.session.delete(e)
         db.session.commit()
 

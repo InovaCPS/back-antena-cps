@@ -129,7 +129,7 @@ CREATE TABLE eventos(
     id_unidades INTEGER,
     _data DATE,
     hora TIME,
-    situacao VARCHAR(15),
+    situacao VARCHAR(40),
     capacidade INTEGER,
     inscrito INTEGER,
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),

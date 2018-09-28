@@ -11,16 +11,14 @@ class Eventos(db.Model):
     id_unidades = db.Column(db.Integer,db.ForeignKey(Unidades.id))
     _data = db.Column(db.Date())
     hora = db.Column(db.Time())
-    situacao = db.Column(db.String(15))
+    situacao = db.Column(db.String(40))
     capacidade = db.Column(db.Integer)
     inscrito = db.Column(db.Integer)
 
 
-    def __init__(self,id_atividades,id_unidades,_data,hora, situacao, capacidade, inscrito):
+    def __init__(self,id_atividades,id_unidades,_data,hora, situacao):
         self.id_atividades = id_atividades
         self.id_unidades = id_unidades
         self._data = _data
         self.hora = hora
         self.situacao = situacao
-        self.capacidade = capacidade
-        self.inscrito = inscrito

@@ -61,8 +61,8 @@ def get_agente(id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
-    if not current_user.nivel == "Administrador":
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
+    # if not current_user.nivel == "Administrador":
+    #     return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
 
@@ -170,7 +170,7 @@ def get_one_ativ_agente(current_user, id):
         agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
 
         if atividade.id_agente == agente.id:
-            return redirect(url_for('.get_one_evento', evento_id=id), code=307)
+            return redirect(url_for('.get_one_evento', id=id), code=307)
         else:
             return jsonify({'Mensagem': 'Este evento não foi atribuído a você!'})
 
@@ -186,6 +186,8 @@ def get_one_ativ_agente(current_user, id):
         eventos = Eventos.query.filter_by(id_atividades=atividade.id).all()
 
         for evento in eventos:
+            evento.situacao = 'Aguardando resposta do diretor'
+            db.session.commit()
             unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
             diretor = Diretores.query.filter_by(id_unidades=unidade.id).first()
 

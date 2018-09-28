@@ -10,7 +10,8 @@ from views.central_parceiros.login import token_required
 
 
 @cp.route('/diretores', methods=['GET'])
-def get_diretores():
+@token_required
+def get_diretores(current_user):
     if not current_user.nivel == "Diretor":
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
@@ -34,7 +35,8 @@ def get_diretores():
     return jsonify(info)
 
 @cp.route('/diretores/<id_diretor>', methods=['GET'])
-def get_one_diretor(id_diretor):
+@token_required
+def get_one_diretor(current_user, id_diretor):
     if not current_user.nivel == "Diretor":
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
@@ -81,9 +83,10 @@ def get_one_diretor(id_diretor):
         return jsonify(dado_diretor)
 
 @cp.route('/diretores', methods=['POST'])
-def post_diretor():
-    if not current_user.nivel == "Administrador":
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
+@token_required
+def post_diretor(current_user):
+    # if not current_user.nivel == "Administrador":
+    #     return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
 
@@ -104,7 +107,8 @@ def post_diretor():
 
 
 @cp.route('/diretores/<id_diretor>', methods=['PUT'])
-def edit_diretor(id_diretor):
+@token_required
+def edit_diretor(current_user, id_diretor):
     if not current_user.nivel == "Administrador":
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
@@ -115,6 +119,20 @@ def edit_diretor(id_diretor):
     else:
         return redirect(url_for('.edit_parceiro', parceiro_id=diretor.id_parceiros), code=307)
 
+@cp.route('/diretores/<int:id>', methods=['DELETE'])
+@token_required
+def del_diretor(current_user, id):
+    if not current_user.nivel == "Administrador":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
+    diretor = Diretores.query.filter_by(id = id_diretor).first()
+
+    if not diretor:
+        return jsonify({'Mensagem': 'Diretor não encontrado!'})
+    else:
+        db.session.delete(diretor)
+
+        return jsonify({'Mensagem': 'Diretor apagado com sucesso!'})
 
 @cp.route('/diretores/atividades', methods=['GET'])
 @token_required
@@ -133,9 +151,8 @@ def get_evento_diretor(current_user):
 
         ev = {}
         ev['titulo'] = atividade.titulo
-        ev['descricao'] = atividade.descricao
         ev['tipo'] = atividade.tipo
-        ev['data'] = evento._data
+        ev['data'] = evento._data.strftime('%d/%m/%Y')
         ev['hora'] = str(evento.hora)
         ev['id_evento'] = evento.id
 
@@ -167,14 +184,19 @@ def get_one_evento_diretor(current_user, id):
         ev['telefone'] = parceiro.telefone
         ev['cargo_parceiro'] = parceiro.cargo
         ev['local_trabalho_parceiro'] = parceiro.local_trabalho
-        ev['data'] = evento._data
+        ev['data'] = evento._data.strftime('%d/%m/%Y')
         ev['hora'] = str(evento.hora)
 
         return jsonify(ev)
     else:
         data = request.get_json()
 
-        evento.situacao = data['resposta']
+        if data['resposta']:
+            evento.situacao = 'Aprovado'
+            evento.capacidade = data['capacidade']
+            evento.inscrito = 0
+        else:
+            evento.situacao = 'Recusado'
 
         db.session.commit()
 

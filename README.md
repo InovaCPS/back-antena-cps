@@ -306,6 +306,10 @@ PUT - Atualiza um diretor
 }
 ```
 ```bash
+DELETE - Deleta um diretor
+/cp/diretores/<id>
+```
+```bash
 GET - Retorna os eventos que o diretor precisa avaliar
 /cp/diretores/atividades
 ```
@@ -318,7 +322,8 @@ PUT - Altera a situação do evento
 /cp/diretores/<id>
 
 {    
-    "resposta": true
+    "resposta": true, 
+    "capacidade": 30
 }
 ```
 
