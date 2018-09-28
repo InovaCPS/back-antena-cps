@@ -130,6 +130,8 @@ CREATE TABLE eventos(
     _data DATE,
     hora TIME,
     situacao VARCHAR(15),
+    capacidade INTEGER,
+    inscrito INTEGER,
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),
     FOREIGN KEY (id_unidades) REFERENCES unidades(id)
 ) WITH (
@@ -139,7 +141,6 @@ CREATE TABLE eventos(
 -- Tabela de Inscrições
 CREATE TABLE inscricoes(
     id SERIAL PRIMARY KEY,
-    capacidade INTEGER,
     id_parceiros INTEGER,
     id_eventos INTEGER,
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral),
