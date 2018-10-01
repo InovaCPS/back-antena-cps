@@ -341,6 +341,30 @@ PUT - Altera a situação do evento
 }
 ```
 
+```bash
+GET - Retorna as informações do aluno
+/cp/aluno
+```
+```bash
+POST - Cadastra um Aluno
+/cp/diretores
+
+{
+    "ra": "5649454", 
+    "local_estudo": "fatec pg"
+}}
+```
+```bash
+PUT - Atualiza as Informações do aluno
+/cp/aluno
+(put padão do parceiro)
+
+```
+```bash
+DELETE - Deleta um aluno
+/cp/aluno/<ra>
+```
+
 ### Instruções Login - Postman ###
 
 ```bash
