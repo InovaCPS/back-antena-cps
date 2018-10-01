@@ -143,8 +143,43 @@ def edit_parceiro(current_user, parceiro_id):
 @cp.route('/parceiro/<parceiro_id>', methods=['DELETE'])
 @token_required
 def del_parceiro(current_user, parceiro_id):
-    parceiro = Parceiros.query.filter_by(id=parceiro_id).first()
+    parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
+    inscricao = Inscricoes.query.filter_by(id_parceiros = parceiro_id).first()
 
+    if parceiro.nivel == "Aluno":
+        aluno = Alunos.query.filter_by(id_parceiros = parceiro.id_geral).first()
+
+        db.session.delete(aluno)
+        db.session.commit()
+
+    elif parceiro.nivel == "Diretor":
+        diretor = Diretores.query.filter_by(id_parceiros = parceiro.id_geral).first()
+        mensagem = Mensagens.query.filter_by(id_destinatario = diretor.id).first()
+
+        db.session.delete(mensagem)
+        db.session.commit()
+        
+        db.session.delete(diretor)
+        db.session.commit()
+
+    elif parceiro.nivel == 'Agente':
+        agente = Agentes.query.filter_by(id_parceiros = parceiro.id_geral).first()
+
+        mensagem = Mensagens.query.filter_by(id_destinatarios = parceiro.id_geral).first()
+
+        atividades = Atividades.query.filter_by(id_agente = agente.id).first()
+
+        if not atividades and not mensagem:
+
+            db.session.delete(agente)
+            db.session.commit()
+
+        else:
+            return jsonify({'Mensagem': 'Você tem algumas atividades pendentes!'})
+
+    db.session.delete(inscricao)
+    db.session.commit()
+    
     db.session.delete(parceiro)
     db.session.commit()
 
