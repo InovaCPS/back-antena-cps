@@ -44,8 +44,9 @@ CREATE TABLE parceiros(
 CREATE TABLE alunos (
 	id SERIAL PRIMARY KEY,
 	ra INTEGER,
-    local_estudo VARCHAR(100) NULL,
+    id_unidades INTEGER,
     id_parceiros INTEGER,
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
 
 ) WITH (

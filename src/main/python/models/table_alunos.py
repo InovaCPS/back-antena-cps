@@ -6,13 +6,13 @@ class Alunos(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     ra = db.Column(db.Integer, unique = True)
-    local_estudo = db.Column(db.String(100))
+    id_unidades = db.Column(db.Integer, db.ForeignKey('unidades.id'))
     id_parceiros = db.Column(db.Integer, db.ForeignKey('parceiros.id_geral'))
 
     
     
-    def __init__(self, ra, local_estudo, id_parceiros):
+    def __init__(self, ra, id_unidades, id_parceiros):
         self.ra = ra
-        self.local_estudo = local_estudo
+        self.id_unidades = id_unidades
         self.id_parceiros = id_parceiros
         
