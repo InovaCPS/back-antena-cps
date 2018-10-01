@@ -12,7 +12,8 @@ from views.central_parceiros.login import token_required
 @cp.route('/diretores', methods=['GET'])
 @token_required
 def get_diretores(current_user):
-    if not current_user.nivel == "Diretor":
+    permissoes = ['Diretor', 'Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     diretores = Diretores.query.all()
@@ -37,7 +38,8 @@ def get_diretores(current_user):
 @cp.route('/diretores/<id_diretor>', methods=['GET'])
 @token_required
 def get_one_diretor(current_user, id_diretor):
-    if not current_user.nivel == "Diretor":
+    permissoes = ['Diretor', 'Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     diretor = Diretores.query.filter_by(id = id_diretor).first()
@@ -85,7 +87,8 @@ def get_one_diretor(current_user, id_diretor):
 @cp.route('/diretores', methods=['POST'])
 @token_required
 def post_diretor(current_user):
-    if not current_user.nivel == "Administrador":
+    permissoes = ['Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     data = request.get_json()
@@ -109,7 +112,8 @@ def post_diretor(current_user):
 @cp.route('/diretores/<id_diretor>', methods=['PUT'])
 @token_required
 def edit_diretor(current_user, id_diretor):
-    if not current_user.nivel == "Administrador":
+    permissoes = ['Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     diretor = Diretores.query.filter_by(id = id_diretor).first()
@@ -122,7 +126,8 @@ def edit_diretor(current_user, id_diretor):
 @cp.route('/diretores/<int:id>', methods=['DELETE'])
 @token_required
 def del_diretor(current_user, id):
-    if not current_user.nivel == "Administrador":
+    permissoes = ['Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     diretor = Diretores.query.filter_by(id = id_diretor).first()

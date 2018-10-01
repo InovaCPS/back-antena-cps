@@ -6,6 +6,10 @@ from views.central_parceiros.login import token_required
 @cp.route('/adm', methods=['POST', 'DELETE'])
 @token_required
 def admin(current_user):
+    permissoes = ['Mestre']
+    if not current_user.nivel in permissoes:
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     if request.method == 'POST':
         dados = request.get_json()
 
