@@ -40,19 +40,6 @@ CREATE TABLE parceiros(
     OIDS=FALSE
 );
 
--- Tabela de Alunos
-CREATE TABLE alunos (
-	id SERIAL PRIMARY KEY,
-	ra INTEGER,
-    id_unidades INTEGER,
-    id_parceiros INTEGER,
-    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
-    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
-
-) WITH (
-	OIDS=FALSE
-);
-
 
 -- Tabela de Regiões
 CREATE TABLE regioes(
@@ -71,6 +58,19 @@ CREATE TABLE unidades (
     FOREIGN KEY (id_regioes) REFERENCES regioes(id)
 ) WITH (
     OIDS=FALSE
+);
+
+-- Tabela de Alunos
+CREATE TABLE alunos (
+	id SERIAL PRIMARY KEY,
+	ra INTEGER,
+    id_unidades INTEGER,
+    id_parceiros INTEGER,
+    FOREIGN KEY (id_unidades) REFERENCES unidades(id),
+    FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral)
+
+) WITH (
+	OIDS=FALSE
 );
 
 --Tabela de Agentes de Inovação

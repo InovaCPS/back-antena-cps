@@ -1,5 +1,6 @@
 from webapp import cp, db
 from models.table_parceiros import Parceiros
+from models.table_alunos import Alunos
 from models.table_diretores import Diretores
 from models.table_unidades import Unidades
 from models.table_regioes import Regioes
@@ -152,16 +153,18 @@ def get_evento_diretor(current_user):
     eventos_ = []
 
     for evento in eventos:
-        atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
+        # melhor ideia no momento, pode ser melhorado
+        if evento.situacao == 'Aguardando resposta do diretor':
+            atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
 
-        ev = {}
-        ev['titulo'] = atividade.titulo
-        ev['tipo'] = atividade.tipo
-        ev['data'] = evento._data.strftime('%d/%m/%Y')
-        ev['hora'] = str(evento.hora)
-        ev['id_evento'] = evento.id
+            ev = {}
+            ev['titulo'] = atividade.titulo
+            ev['tipo'] = atividade.tipo
+            ev['data'] = evento._data.strftime('%d/%m/%Y')
+            ev['hora'] = str(evento.hora)
+            ev['id_evento'] = evento.id
 
-        eventos_.append(ev)
+            eventos_.append(ev)
 
     return jsonify(eventos_)
 
@@ -206,3 +209,38 @@ def get_one_evento_diretor(current_user, id):
         db.session.commit()
 
         return jsonify({'Mensagem': 'Resposta cadastrada!'})
+
+@cp.route('/diretores/alunos', methods=['GET'])
+@token_required
+def get_alunos_unidade(current_user):
+    if not current_user.nivel == "Diretor":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
+    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
+    alunos = Alunos.query.filter_by(id_unidades=diretor.id_unidades).all()
+
+    _alunos = []
+
+    for aluno in alunos:
+        parceiro = Parceiros.query.filter_by(id_geral=aluno.id_parceiros).first()
+
+        info = {}
+        info['nome'] = parceiro.nome
+        info['nivel'] = parceiro.nivel
+        info['ra'] = aluno.ra
+        info['email'] = parceiro.email
+        info['email'] = parceiro.email
+        info['cpf'] = parceiro.cpf
+        info['dt_nascimento'] = str(parceiro.dt_nascimento)
+        info['genero'] = parceiro.genero
+        info['telefone'] = parceiro.telefone 
+        info['local_trabalho'] = parceiro.local_trabalho
+        info['cargo'] = parceiro.cargo
+        info['lattes'] = parceiro.lattes
+        info['facebook']= parceiro.facebook
+        info['linkedin'] = parceiro.linkedin 
+        info['twitter'] = parceiro.twitter
+
+        _alunos.append(info)
+
+    return jsonify(_alunos)

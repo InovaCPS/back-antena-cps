@@ -39,12 +39,16 @@ def create_aluno(current_user):
     data = request.get_json()
     
     parceiro = Parceiros.query.filter_by(id_geral = current_user.id_geral).first()
+    aluno = Alunos.query.filter_by(id_parceiros=current_user.id_geral).first()
 
-    aluno = Alunos(data['ra'], data['local_estudo'], current_user.id_geral)    
+    if aluno:
+        return jsonify({'Mensagem': 'Você já está cadastrado como aluno!'})
+
+    aluno = Alunos(data['ra'], data['id_unidades'], current_user.id_geral)    
     db.session.add(aluno)
     db.session.commit()
     
-    parceiro.nivel = "aluno"
+    parceiro.nivel = "Aluno"
     db.session.commit()
 
     return jsonify({'Mensagem': 'Agora Você é um aluno!'})
@@ -52,6 +56,9 @@ def create_aluno(current_user):
 @cp.route('/aluno', methods=['PUT'])
 @token_required
 def edit_aluno(current_user):
+    if not current_user.nivel == "Aluno":
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     aluno = Alunos.query.filter_by(id_parceiros = current_user.id_geral).first()
 
     if not aluno:
@@ -64,7 +71,15 @@ def edit_aluno(current_user):
 @cp.route('/aluno/<ra>', methods=['DELETE'])
 @token_required
 def del_aluno(current_user, ra):
-    aluno = Alunos.query.filter_by(ra = ra).first()
+    permissoes = ['Administrador','Mestre', 'Aluno']
+    if not current_user.nivel in permissoes:
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
+    if current_user.nivel == 'Aluno':
+        aluno = Alunos.query.filter_by(id_parceiros=current_user.id_geral)
+    else:
+        aluno = Alunos.query.filter_by(ra = ra).first()
+        
     db.session.delete(aluno)
     db.session.commit()
 
