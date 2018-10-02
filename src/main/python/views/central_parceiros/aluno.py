@@ -44,7 +44,7 @@ def create_aluno(current_user):
     if aluno:
         return jsonify({'Mensagem': 'Você já está cadastrado como aluno!'})
 
-    aluno = Alunos(data['ra'], data['id_unidades'], current_user.id_geral)    
+    aluno = Alunos(data['ra'], data['id_unidade'], current_user.id_geral)    
     db.session.add(aluno)
     db.session.commit()
     

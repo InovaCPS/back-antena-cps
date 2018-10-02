@@ -17,8 +17,11 @@ from views.central_parceiros.login import token_required
 
 @cp.route('/evento', methods=['GET'])
 def get_eventos():
-    eventos = Eventos.query.filter_by(situacao=True).all()
+    eventos = Eventos.query.filter_by(situacao = "Aprovado").all()
 
+    if not eventos:
+        return jsonify({'Mensagem': 'Nenhum evento disponível!'})
+    
     _eventos = []
     for evento in eventos:
         atividade = Atividades.query.filter_by(id=evento.id_atividades).first()

@@ -22,6 +22,8 @@ def get_agentes():
         parceiro = Parceiros.query.filter_by(id_geral=a.id_parceiros).first()
 
         agente = {}
+
+        agente['id'] = a.id
         agente['nome'] = parceiro.nome
         agente['email'] = parceiro.email
         agente['telefone'] = parceiro.telefone
@@ -73,7 +75,7 @@ def post_agente(current_user):
 
         agente = Agentes(
             matricula = data['matricula'], 
-            hora = data['hora'], 
+            hora = data['hora'],
             id_unidades = data['id_unidade'], 
             id_parceiros = data['id_parceiro']
         )
@@ -113,7 +115,7 @@ def del_agente(current_user, id):
 @cp.route('/agentes/<int:id>', methods=['PUT'])
 @token_required
 def put_agente(current_user, id):
-    permissoes = ['Administrador', 'Mestre']
+    permissoes = ['Administrador', 'Mestre', 'Agente']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 

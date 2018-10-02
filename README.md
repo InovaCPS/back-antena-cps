@@ -347,12 +347,12 @@ GET - Retorna as informações do aluno
 ```
 ```bash
 POST - Cadastra um Aluno
-/cp/diretores
+/cp/aluno
 
 {
     "ra": "5649454", 
-    "local_estudo": "fatec pg"
-}}
+    "id_unidade": "id_unidade"
+}
 ```
 ```bash
 PUT - Atualiza as Informações do aluno

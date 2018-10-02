@@ -113,7 +113,7 @@ def post_diretor(current_user):
 @cp.route('/diretores/<id_diretor>', methods=['PUT'])
 @token_required
 def edit_diretor(current_user, id_diretor):
-    permissoes = ['Administrador', 'Mestre']
+    permissoes = ['Administrador', 'Mestre', 'Diretor']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
@@ -199,7 +199,7 @@ def get_one_evento_diretor(current_user, id):
     else:
         data = request.get_json()
 
-        if data['resposta']:
+        if data['resposta'] == True:
             evento.situacao = 'Aprovado'
             evento.capacidade = data['capacidade']
             evento.inscrito = 0
