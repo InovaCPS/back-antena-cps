@@ -15,6 +15,11 @@ A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheç
 
 (_em construção_)
 
+### Tutoriais
+* [Flask - Videoaula](https://bit.ly/2z8N69x)
+* [PostgreSQL com Linux - Videoaula](https://www.youtube.com/watch?v=-LwI4HMR_Eg)
+
+
 Instruções para montar o projeto:
 *  Criando um novo ambiente virtual (venv) para rodar junto ao Python 3
     ```bash
