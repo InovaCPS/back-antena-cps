@@ -14,11 +14,13 @@ class Eventos(db.Model):
     situacao = db.Column(db.String(40))
     capacidade = db.Column(db.Integer)
     inscrito = db.Column(db.Integer)
+    acesso = db.Column(db.Boolean)
 
 
-    def __init__(self,id_atividades,id_unidades,_data,hora, situacao):
+    def __init__(self,id_atividades,id_unidades,_data,hora, situacao, acesso):
         self.id_atividades = id_atividades
         self.id_unidades = id_unidades
         self._data = _data
         self.hora = hora
         self.situacao = situacao
+        self.acesso = acesso
