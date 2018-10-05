@@ -56,6 +56,7 @@ def get_one_evento(id):
 
     _evento['titulo'] = atividade.titulo
     _evento['descricao'] = atividade.descricao
+    _evento['situacao'] = evento.situacao
     _evento['tipo'] = atividade.tipo
     _evento['duracao'] = atividade.duracao
     _evento['banner'] = atividade.banner
@@ -278,25 +279,30 @@ def post_inscrito(current_user, id_evento):
 
     evento = Eventos.query.filter_by(id = id_evento).first()
 
-    if evento.capacidade == evento.inscrito:
-        return jsonify({'Mensagem': 'Evento Lotado!'})
+    if evento.acesso is True:
 
-    else:
-        _inscrito = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = evento.id).first()
+        if evento.capacidade == evento.inscrito:
+            return jsonify({'Mensagem': 'Evento Lotado!'})
 
-        if not _inscrito:
-            inscricao = Inscricoes(current_user.id_geral, evento.id)
-            db.session.add(inscricao)
-            db.session.commit()
+        else:
+            _inscrito = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = evento.id).first()
 
-            novo = Eventos.query.filter_by(id = evento.id).first()
-            novo.inscrito += 1
+            if not _inscrito:
+                inscricao = Inscricoes(current_user.id_geral, evento.id)
+                db.session.add(inscricao)
+                db.session.commit()
 
-            db.session.commit()
+                novo = Eventos.query.filter_by(id = evento.id).first()
+                novo.inscrito += 1
 
-            return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
+                db.session.commit()
+
+                return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
+            
+            return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
         
-        return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
+    else:
+        return jsonify({'Mensagem': 'As inscrições para esse evento foram encerradas!'})
 
 @cp.route('/evento/<id_evento>/inscrito', methods=['DELETE'])
 @token_required

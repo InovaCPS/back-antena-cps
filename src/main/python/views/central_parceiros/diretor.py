@@ -203,6 +203,7 @@ def get_one_evento_diretor(current_user, id):
             evento.situacao = 'Aprovado'
             evento.capacidade = data['capacidade']
             evento.inscrito = 0
+            evento.acesso = True
         else:
             evento.situacao = 'Recusado'
 
