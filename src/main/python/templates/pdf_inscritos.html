@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+                    
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+        </style>
+    </head>
+        <body>
+        <h1>Evento: {{ evento.titulo }}</h1>
+        <h3>Lista de Incritos</h3>  
+        
+        <table>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Assinatura</th>
+          </tr>
+          {% for usuario in inscritos %}
+          <tr>
+            <td>{{ usuario.nome }}</td>
+            <td>{{ usuario.email }}</td>
+            <td></td>
+          </tr>
+          {% endfor %}
+        </table>
+    </body>
+</html>
