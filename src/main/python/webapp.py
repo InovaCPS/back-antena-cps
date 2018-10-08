@@ -15,10 +15,6 @@ from flask import Flask, Response, request, Blueprint
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import time
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
 
 from helper.config_helper import ConfigHelper
 
@@ -67,35 +63,3 @@ from views.central_parceiros.adm import cp
 from views.central_parceiros.aluno import cp
 
 app.register_blueprint(cp)
-
-from models.table_evento import Eventos
-
-def check_eventos():
-    from datetime import time, datetime
-    eventos = Eventos.query.filter_by(_data=datetime.today())
-
-    for evento in eventos:
-        agora = datetime.now()
-        agendamento = datetime(
-            year = evento._data.year, 
-            month = evento._data.month, 
-            day = evento._data.day, 
-            hour = evento.hora.hour, 
-            minute = evento.hora.minute
-        )
-
-        agora = datetime.now()
-
-        if agora < agendamento and agendamento.hour - agora.hour == 1:
-            evento.acesso = False
-            db.session.commit()
-
-
-scheduler = BackgroundScheduler()
-scheduler.start()
-scheduler.add_job(
-    func=check_eventos,
-    trigger=IntervalTrigger(minutes=1),
-    replace_existing=True
-)
-atexit.register(lambda: scheduler.shutdown())

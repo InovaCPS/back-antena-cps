@@ -13,7 +13,26 @@ from models.table_unidades import Unidades
 from flask import request, jsonify, redirect, url_for
 import random
 from views.central_parceiros.login import token_required
+from datetime import time, datetime, timedelta
 
+def check_evento(id_evento):
+    evento = Eventos.query.filter_by(id=id_evento).first()
+
+    agora = datetime.now()
+    agendamento = datetime(
+        year = evento._data.year, 
+        month = evento._data.month, 
+        day = evento._data.day, 
+        hour = evento.hora.hour, 
+        minute = evento.hora.minute
+    )
+
+    agora = datetime.now()
+
+    if agora > agendamento - timedelta(hours=1):
+        return False
+    else:
+        return True
 
 @cp.route('/evento', methods=['GET'])
 def get_eventos():
@@ -36,6 +55,7 @@ def get_eventos():
         ev['local'] = unidade.nome
         ev['banner'] = atividade.banner
         ev['id'] = evento.id
+        ev['acesso'] = check_evento(evento.id)
 
         _eventos.append(ev)
 
@@ -60,6 +80,7 @@ def get_one_evento(id):
     _evento['tipo'] = atividade.tipo
     _evento['duracao'] = atividade.duracao
     _evento['banner'] = atividade.banner
+    _evento['acesso'] = check_evento(evento.id)
     _evento['data'] = evento._data.strftime('%d/%m/%Y')
     _evento['hora'] = str(evento.hora)
     _evento['local'] = unidade.nome
@@ -280,6 +301,9 @@ def post_inscrito(current_user, id_evento):
     evento = Eventos.query.filter_by(id = id_evento).first()
 
     if evento.acesso is True:
+
+        if check_evento(evento.id) == False:
+            return jsonify({'Mensagem': 'Não é mais possível se cadastrar nesse evento!'})
 
         if evento.capacidade == evento.inscrito:
             return jsonify({'Mensagem': 'Evento Lotado!'})
