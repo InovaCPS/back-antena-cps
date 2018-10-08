@@ -275,9 +275,12 @@ def del_evento(current_user, evento_id):
 
 
 #****************** Inscrições no Evento *******************
-@cp.route('/evento/<id_evento>/inscritos', methods=['GET'])
+@cp.route('/evento/<id_evento>/<acao>', methods=['GET'])
 @token_required
-def get_inscritos(current_user, id_evento):
+def get_inscritos(current_user, id_evento, acao):
+    permissoes = ['Diretor', 'Administrador', 'Mestre']
+    if not current_user.nivel in permissoes:
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     _inscritos = Inscricoes.query.filter_by(id_eventos = id_evento).all()
 
@@ -292,7 +295,25 @@ def get_inscritos(current_user, id_evento):
 
         inscritos.append(info)
 
-    return jsonify(inscritos)
+    if acao == 'inscritos':  
+        return jsonify(inscritos)
+
+    if acao == 'lista':
+
+        evento = Eventos.query.filter_by(id = id_evento).first()
+        atividade = Atividades.query.filter_by(id = evento.id_atividades).first()
+
+        #pasta temaplates com o arquivo 'pdf_inscritos.html', só para testes!
+        rendered = render_template('pdf_inscritos.html', inscritos = inscritos, evento = atividade)
+        pdf = pdfkit.from_string(rendered, False)
+
+        response = make_response(pdf)
+        response.headers['Content-ype'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; filename = lista.pdf'
+
+        return response
+    
+    return jsonify({'Mensagem': 'URL inválida'})
 
 @cp.route('/evento/<id_evento>/inscrito', methods = ['POST'])
 @token_required
