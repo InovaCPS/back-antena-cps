@@ -145,6 +145,7 @@ CREATE TABLE inscricoes(
     id SERIAL PRIMARY KEY,
     id_parceiros INTEGER,
     id_eventos INTEGER,
+    presenca BOOLEAN,
     FOREIGN KEY (id_parceiros) REFERENCES parceiros(id_geral),
     FOREIGN KEY (id_eventos) REFERENCES eventos(id)
 ) WITH (
@@ -215,14 +216,14 @@ CREATE TABLE parceiro_tema (
 -- Inserções de teste do banco de desenvolvimento
 -- EXCLUIR QUANDO ENVIAR PARA PRODUÇÃO
 
-INSERT INTO parceiros (nivel, nome, email, senha) 
-VALUES ('Parceiro', 'João', 'joao@gmail.com', '321');
+--INSERT INTO parceiros (nivel, nome, email, senha) 
+--VALUES ('Parceiro', 'João', 'joao@gmail.com', '321');
 
-INSERT INTO parceiros (nivel, nome, email, senha) 
-VALUES ('Agente', 'Maria', 'maria@gmail.com', '123');
+--INSERT INTO parceiros (nivel, nome, email, senha) 
+--VALUES ('Agente', 'Maria', 'maria@gmail.com', '123');
 
-INSERT INTO parceiros (nivel, nome, email, senha) 
-VALUES ('Diretor', 'José', 'jose@gmail.com', '213');
+--INSERT INTO parceiros (nivel, nome, email, senha) 
+--VALUES ('Diretor', 'José', 'jose@gmail.com', '213');
 
 INSERT INTO regioes (nome)
 VALUES ('Baixada Santista');
@@ -230,11 +231,11 @@ VALUES ('Baixada Santista');
 INSERT INTO unidades (nome, endereco, id_regioes)
 VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144 - Boqueirão, Praia Grande', 1);
 
-INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
-VALUES (12345679, 1, 2, '30:00');
+--INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
+--VALUES (12345679, 1, 2, '30:00');
 
-INSERT INTO diretores (id_unidades, id_parceiros)
-VALUES (1, 3);
+--INSERT INTO diretores (id_unidades, id_parceiros)
+--VALUES (1, 3);
 
 INSERT INTO eixos (nome)
 VALUES ('Tecnologia');

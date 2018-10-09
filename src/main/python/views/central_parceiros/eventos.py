@@ -290,8 +290,10 @@ def get_inscritos(current_user, id_evento, acao):
         parceiro = Parceiros.query.filter_by(id_geral = inscrito.id_parceiros).first()
 
         info = {}
+        info['id_parceiro'] = parceiro.id_geral
         info['nome'] = parceiro.nome
         info['email'] = parceiro.email
+        info['presenca'] = inscrito.presenca
 
         inscritos.append(info)
 
@@ -312,7 +314,7 @@ def get_inscritos(current_user, id_evento, acao):
         response.headers['Content-Disposition'] = 'attachment; filename = lista.pdf'
 
         return response
-    
+        
     return jsonify({'Mensagem': 'URL inválida'})
 
 @cp.route('/evento/<id_evento>/inscrito', methods = ['POST'])
@@ -363,3 +365,26 @@ def del_inscrito(current_user, id_evento):
     db.session.commit()
 
     return jsonify({'Mensagem': 'Inscrição cancelado com sucesso!'})
+
+
+
+
+@cp.route('/evento/<id_evento>/inscritos/presenca', methods=['PUT'])
+@token_required
+def post_presenca(current_user, id_evento):
+    data = request.get_json()
+    
+    inscritos = get_inscritos(id_evento, 'inscritos')
+
+    lista = data['lista']
+
+    for inscrito in inscritos.json:
+        for l in lista:
+            i = Inscricoes.query.filter_by(id_eventos = id_evento, id_parceiros = l['id_parceiro']).first()
+            i.presenca = l['presenca']
+            
+            db.session.commit() 
+    
+    insc = get_inscritos(id_evento, 'inscritos')
+    
+    return insc

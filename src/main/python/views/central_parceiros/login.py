@@ -45,7 +45,7 @@ def login():
         token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
         
         session['token'] = token.decode('UTF-8')
-        return redirect(url_for('cp.get_eventos'))
+        return jsonify({'Mensagem': 'Bem Vindo {}!'.format(parceiro.nome)})
         #return jsonify({'token': token.decode('UTF-8')})
     
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})

@@ -220,6 +220,24 @@ DELETE - Parceiro se cancela inscrição no evento
 ```
 
 ```bash
+PUT - Subir lista de presença do evento pro banco
+/cp/evento/<id_evento>/inscritos/presenca
+
+{
+	"lista":[
+		{    
+		    "id_parceiro": "id_parceiro", 
+		    "presenca": true or false
+		},
+		{    
+		    "id_parceiro": "id_parceiro", 
+		    "presenca": true or false
+		}
+	]
+}
+```
+
+```bash
 GET - Retorna todos os agentes
 /cp/agentes
 ```
