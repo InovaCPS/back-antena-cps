@@ -63,7 +63,7 @@ def get_agente(id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
-    permissoes = ['Administrador', 'Mestre']
+    permissoes = ['Administrador', 'Mestre', 'Parceiro']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 

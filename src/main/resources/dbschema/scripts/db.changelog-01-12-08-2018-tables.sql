@@ -152,6 +152,20 @@ CREATE TABLE inscricoes(
     OIDS=FALSE
 );
 
+-- Tabela de Avaliações
+CREATE TABLE avaliacoes(
+    id SERIAL PRIMARY KEY, 
+    id_evento INTEGER, 
+    id_parceiro INTEGER, 
+    nota FLOAT, 
+    comentario VARCHAR(250), 
+    identificar BOOLEAN, 
+    FOREIGN KEY (id_evento) REFERENCES eventos(id), 
+    FOREIGN KEY (id_parceiro) REFERENCES parceiros(id_geral)
+) WITH (
+    OIDS=FALSE
+);
+
 
 --Tabela de Administradores
 CREATE TABLE adm (

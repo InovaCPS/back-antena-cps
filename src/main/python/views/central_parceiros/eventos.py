@@ -10,7 +10,8 @@ from models.table_diretores import Diretores
 from models.table_eixos import Eixos
 from models.table_inscricoes import Inscricoes
 from models.table_unidades import Unidades
-from flask import request, jsonify, redirect, url_for
+from models.table_avaliacoes import Avaliacoes
+from flask import request, jsonify, redirect, url_for, session
 import random
 from views.central_parceiros.login import token_required
 from datetime import time, datetime, timedelta
@@ -35,8 +36,10 @@ def check_evento(id_evento):
         return True
 
 @cp.route('/evento', methods=['GET'])
-def get_eventos():
-    eventos = Eventos.query.filter_by(situacao = "Aprovado").all()
+@token_required
+def get_eventos(current_user):
+    eventos_geral = Eventos.query.all()
+    eventos = [evento for evento in eventos_geral if evento.situacao == "Realizado" or evento.situacao == "Aprovado"]
 
     if not eventos:
         return jsonify({'Mensagem': 'Nenhum evento disponível!'})
@@ -57,16 +60,39 @@ def get_eventos():
         ev['id'] = evento.id
         ev['acesso'] = check_evento(evento.id)
 
+        if 'token' in session:
+            permissoes = ['Mestre', 'Administrador', 'Diretor']
+            if evento.situacao == "Realizado" and current_user.nivel in permissoes:
+                if current_user.nivel == 'Diretor':
+                    unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
+                    diretor = Diretores.query.filter_by(id_unidades=unidade.id).first()
+                    if current_user.id_geral != diretor.id_parceiros:
+                        return jsonify({'Mensagem': 'Você não é o diretor da unidade deste evento'})
+
+                avaliacoes = Avaliacoes.query.filter_by(id_evento=evento.id).all()
+
+                if not avaliacoes:
+                    ev['nota'] = '0 (0 avaliações)'
+                else:
+                    soma, count = 0, 0
+                    for avaliacao in avaliacoes:
+                        soma += avaliacao.nota
+                        count += 1
+                    nota = soma / count
+                    ev['nota'] = '{} ({} avaliações)'.format(nota, len(avaliacoes))
+
         _eventos.append(ev)
 
     return jsonify(_eventos)
 
 @cp.route('/evento/<int:id>', methods=['GET'])
-def get_one_evento(id):
+@token_required
+def get_one_evento(current_user, id):
     evento = Eventos.query.filter_by(id=id).first()
 
     if not evento or evento.situacao == False:
-        return jsonify({'mensagem': 'O evento requisitado não existe'})
+        return jsonify({'Mensagem': 'O evento requisitado não existe'})
+        
 
     atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
     parceiro = Parceiros.query.filter_by(id_geral=atividade.id_parceiro).first()
@@ -89,6 +115,38 @@ def get_one_evento(id):
     _evento['cargo_autor'] = parceiro.cargo
     _evento['trabalho_autor'] = parceiro.local_trabalho
     _evento['email_autor'] = parceiro.email
+
+    permissoes = ['Mestre', 'Administrador', 'Diretor']
+    if evento.situacao == "Realizado" and current_user.nivel in permissoes:
+        if current_user.nivel == 'Diretor':
+            unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
+            diretor = Diretores.query.filter_by(id_unidades=unidade.id).first()
+            if current_user.id_geral != diretor.id_parceiros:
+                return jsonify({'Mensagem': 'Você não é o diretor da unidade deste evento'})
+
+        avaliacoes = Avaliacoes.query.filter_by(id_evento=evento.id).all()
+
+        _comentarios = []
+        for avaliacao in avaliacoes:
+            comentarios = {}
+            if avaliacao.identificar == True:
+                parceiro = Parceiros.query.filter_by(id_geral=avaliacao.id_parceiro).first()
+                comentarios['nome'] = parceiro.nome
+            else:
+                comentarios['nome'] = 'Anônimo'
+            comentarios['comentario'] = avaliacao.comentario
+            _comentarios.append(comentarios)
+        _evento['comentarios'] = _comentarios
+
+        if not avaliacoes:
+            _evento['nota'] = '0 (0 avaliações)'
+        else:
+            soma, count = 0, 0
+            for avaliacao in avaliacoes:
+                soma += avaliacao.nota
+                count += 1
+            nota = soma / count
+            _evento['nota'] = '{} ({} avaliações)'.format(nota, len(avaliacoes))
 
     return jsonify(_evento)
 
@@ -160,6 +218,9 @@ def post_evento(current_user):
 @cp.route('/evento/<evento_id>', methods=['PUT'])
 @token_required
 def edit_evento(current_user, evento_id):
+    if current_user.nivel == 'Visitante':
+        return jsonify({'Mensagem': 'Faça login para ter acesso!'})
+
     data = request.get_json()
 
     atividade = Atividades.query.filter_by(id = evento_id).first()
@@ -167,11 +228,8 @@ def edit_evento(current_user, evento_id):
     if not atividade:
         return jsonify({'Mensagem': 'Evento não encontrado!'})
 
-    #atividade.titulo = data['titulo'], 
-    #atividade.descricao = data['descricao'], 
-    #atividade.tipo = data['tipo'], 
-    #atividade.duracao = data['duracao'], 
-    #atividade.banner = data['banner']
+    if current_user.id_geral != atividade.id_parceiro:
+        return jsonify({'Mensagem': 'Você não é o criador deste evento'})
 
     eventos = data['eventos']
 
@@ -246,10 +304,16 @@ def edit_evento(current_user, evento_id):
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
 @token_required
 def del_evento(current_user, evento_id):
+    if current_user.nivel == 'Visitante':
+        return jsonify({'Mensagem': 'Faça login para ter acesso!'})
+
     atividade = Atividades.query.filter_by(id = evento_id).first()
     
     if not atividade:
         return jsonify({'Message': 'Evento não encontrado!'})
+
+    if current_user.id_geral != atividade.id_parceiro:
+        return jsonify({'Mensagem': 'Você não é o criador deste evento'})
         
     _materiais  = Materiais.query.filter_by(id_atividades = atividade.id).all()    
     _eventos = Eventos.query.filter_by(id_atividades = atividade.id).all()
@@ -372,6 +436,10 @@ def del_inscrito(current_user, id_evento):
 @cp.route('/evento/<id_evento>/inscritos/presenca', methods=['PUT'])
 @token_required
 def post_presenca(current_user, id_evento):
+    permissoes = ['Diretor']
+    if not current_user.nivel in permissoes:
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
     data = request.get_json()
     
     inscritos = get_inscritos(id_evento, 'inscritos')
@@ -382,9 +450,68 @@ def post_presenca(current_user, id_evento):
         for l in lista:
             i = Inscricoes.query.filter_by(id_eventos = id_evento, id_parceiros = l['id_parceiro']).first()
             i.presenca = l['presenca']
+            if l['presenca'] == True:
+
+                parceiro = Parceiros.query.filter_by(id_geral=i.id_parceiros).first()
+
+                mensagem = Mensagens(
+                    descricao = 'Você tem um novo evento para avaliar', 
+                    visualizacao = False, 
+                    id_remetentes = current_user.id_geral, 
+                    id_destinatarios = parceiro.id_geral
+                )
+
+                db.session.add(mensagem)
+                db.session.commit()
             
             db.session.commit() 
+
+    evento = Eventos.query.filter_by(id=id_evento).first()
+    evento.situacao = 'Realizado'
+    db.session.commit()
     
     insc = get_inscritos(id_evento, 'inscritos')
     
     return insc
+
+@cp.route('/evento/<int:id>/avaliar', methods=['GET', 'POST'])
+@token_required
+def avaliacao(current_user, id):
+    if request.method == 'POST':
+        data = request.get_json()
+
+        evento = Eventos.query.filter_by(id=id).first()
+
+        if evento.situacao == 'Realizado':
+            inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral).first()
+
+            if not inscricao:
+                return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
+
+            elif inscricao.presenca == False:
+                return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
+
+            else:
+                try:
+                    if float(data['nota']) < 1 or float(data['nota']) > 5:
+                        nota = data['nota']
+                    else:
+                        return jsonify({'Mensagem': 'A nota enviada precisa ser entre 1 e 5'})
+
+                    avaliacao = Avaliacoes(
+                        id_evento = evento.id, 
+                        id_parceiro = current_user.id_geral, 
+                        nota = float(data['nota']), 
+                        comentario = data['comentario'], 
+                        identificar = data['identificar']
+                    )
+
+                    db.session.add(avaliacao)
+                    db.session.commit()
+
+                    return jsonify({'Mensagem': 'Evento avaliado com sucesso!'})
+
+                except ValueError:
+                    return jsonify({'Mensagem': 'A nota precisa ser um valor numérico!'})
+    else:
+        inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral, situacao='Realizado').first()

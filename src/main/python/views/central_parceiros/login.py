@@ -14,16 +14,23 @@ def token_required(f):
         #if 'token' in request.headers:
             #token = request.headers['token']
 
-        if session['token']:
+        if 'token' in session:
             token = session['token']
         
         if not token:
-            return jsonify({'Mensagem': 'Você precisa de uma Token para ter acesso!'}), 401
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
-        except:
-            return jsonify({'Mensagem': 'Token invalida!'}), 401
+            current_user = Parceiros(
+                nivel = 'Visitante', 
+                nome = 'temp', 
+                email = '', 
+                senha = '', 
+                cpf = ''
+            )
+        else:
+            try:
+                data = jwt.decode(token, app.config['SECRET_KEY'])
+                current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
+            except:
+                return jsonify({'Mensagem': 'Token invalida!'}), 401
         
         return f(current_user, *args, **kwargs)
     
