@@ -236,6 +236,20 @@ PUT - Subir lista de presença do evento pro banco
 	]
 }
 ```
+```bash
+GET - Retornar todos os eventos com avaliação pendente
+cp/evento/<id_evento>/avaliar
+```
+```bash
+POST - Enviar avaliação do evento
+cp/evento/<id_evento>/avaliar
+
+{
+    "nota": 8.5, 
+    "comentario": "Excelente", 
+    "identificar": true
+}
+```
 
 ```bash
 GET - Retorna todos os agentes
