@@ -108,3 +108,11 @@ venv.bak/
 
 # visual studio code
 .vscode/
+
+.postgres-data/
+postgres-data/
+
+.target/
+target/
+
+.m2/
