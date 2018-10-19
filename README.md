@@ -1,4 +1,4 @@
-# Central de Parceiros CPS
+# Antena CPS
 
 Este projeto tem como premissa a criação de ambientes para integração dos parceiros do CPS
 
@@ -8,7 +8,7 @@ A equipe envolvida neste projeto faz parte do INOVA Paula Souza, do CPS. Conheç
 
 ## Project Charter
 
-![image](https://user-images.githubusercontent.com/43144590/45772840-2379e800-bc1f-11e8-8631-19d2ea9b8799.png)
+![image](https://user-images.githubusercontent.com/43144590/47235173-9c02ce80-d3ae-11e8-8521-2caf85c0d797.png)
 
 
 ## Começando
