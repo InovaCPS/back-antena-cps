@@ -18,6 +18,7 @@ CREATE TABLE parceiros(
     nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back-end qual é a tabela
     
     nome VARCHAR(100) NOT NULL,
+    sobrenome VARCHAR(100) NOT NULL, 
     email VARCHAR(100) NOT NULL,
     senha VARCHAR(500) NOT NULL,
 

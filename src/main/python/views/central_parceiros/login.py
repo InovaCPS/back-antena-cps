@@ -1,3 +1,4 @@
+
 from webapp import app
 from models.table_parceiros import Parceiros
 from flask import request, jsonify, make_response, session, redirect, url_for
@@ -14,23 +15,16 @@ def token_required(f):
         #if 'token' in request.headers:
             #token = request.headers['token']
 
-        if 'token' in session:
+        if session['token']:
             token = session['token']
         
         if not token:
-            current_user = Parceiros(
-                nivel = 'Visitante', 
-                nome = 'temp', 
-                email = '', 
-                senha = '', 
-                cpf = ''
-            )
-        else:
-            try:
-                data = jwt.decode(token, app.config['SECRET_KEY'])
-                current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
-            except:
-                return jsonify({'Mensagem': 'Token invalida!'}), 401
+            return jsonify({'Mensagem': 'Você precisa de uma Token para ter acesso!'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
+        except:
+            return jsonify({'Mensagem': 'Token invalida!'}), 401
         
         return f(current_user, *args, **kwargs)
     
@@ -56,32 +50,3 @@ def login():
         #return jsonify({'token': token.decode('UTF-8')})
     
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-'''
-
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    global APP_RESOURCE
-    config = ConfigHelper(APP_RESOURCE)
-    auth_username = config.get_property_by_section('server', 'auth.username')
-    auth_password = config.get_property_by_section('server', 'auth.password')
-    return username == auth_username and password == auth_password
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        'Could not verify your access level for that URL.\n'
-        'You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
-'''

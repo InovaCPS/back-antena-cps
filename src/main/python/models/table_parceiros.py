@@ -8,6 +8,7 @@ class Parceiros(db.Model):
     nivel = db.Column(db.String(100))
     
     nome = db.Column(db.String(100))
+    sobrenome = db.Column(db.String(100))
     email = db.Column(db.String(100))
     senha = db.Column(db.String(500))
 
@@ -26,10 +27,10 @@ class Parceiros(db.Model):
     linkedin = db.Column(db.String(500))
     twitter = db.Column(db.String(500))
 
-    def __init__(self,nivel,nome,email,senha,cpf):
+    def __init__(self,nivel,nome, sobrenome, email,senha):
         self.nivel = nivel
         self.nome = nome
+        self.sobrenome = sobrenome
         self.email = email
         self.senha = senha
-        self.cpf = cpf
        

@@ -17,6 +17,7 @@ def get_parceiro(current_user):
         parceiro['id_geral'] = info.id_geral
         parceiro['nivel'] = info.nivel
         parceiro['nome'] = info.nome
+        parceiro['sobrenome'] = info.sobrenome
         parceiro['email'] = info.email
         parceiro['cpf'] = info.cpf
         parceiro['dt_nascimento'] = str(info.dt_nascimento)
@@ -46,6 +47,7 @@ def get_one_parceiro(current_user, parceiro_id):
     parceiro['id_geral'] = info.id_geral
     parceiro['nivel'] = info.nivel
     parceiro['nome'] = info.nome
+    parceiro['sobrenome'] = info.sobrenome
     parceiro['email'] = info.email
     parceiro['cpf'] = info.cpf
     parceiro['dt_nascimento'] = str(info.dt_nascimento)
@@ -69,8 +71,8 @@ def post_parceiro():
     parceiro = Parceiros(
         nivel='Parceiro',
         nome=data['nome'],
+        sobrenome=data['sobrenome'],
         email=data['email'],
-        cpf=data['cpf'],
         senha=password
         )
     
@@ -94,6 +96,9 @@ def edit_parceiro(current_user, parceiro_id):
 
         if data['nome']:
             parceiro.nome = data['nome']
+
+        if data['sobrenome']:
+            parceiro.sobrenome = data['sobrenome']
 
         if data['email']:
             parceiro.email = data['email']

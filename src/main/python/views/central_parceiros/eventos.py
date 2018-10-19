@@ -218,8 +218,6 @@ def post_evento(current_user):
 @cp.route('/evento/<evento_id>', methods=['PUT'])
 @token_required
 def edit_evento(current_user, evento_id):
-    if current_user.nivel == 'Visitante':
-        return jsonify({'Mensagem': 'Faça login para ter acesso!'})
 
     data = request.get_json()
 
@@ -304,8 +302,6 @@ def edit_evento(current_user, evento_id):
 @cp.route('/evento/<evento_id>', methods=['DELETE'])
 @token_required
 def del_evento(current_user, evento_id):
-    if current_user.nivel == 'Visitante':
-        return jsonify({'Mensagem': 'Faça login para ter acesso!'})
 
     atividade = Atividades.query.filter_by(id = evento_id).first()
     
