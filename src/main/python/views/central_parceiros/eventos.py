@@ -11,7 +11,8 @@ from models.table_eixos import Eixos
 from models.table_inscricoes import Inscricoes
 from models.table_unidades import Unidades
 from models.table_avaliacoes import Avaliacoes
-from flask import request, jsonify, redirect, url_for, session
+from flask import request, jsonify, redirect, url_for, session, render_template, make_response
+import pdfkit
 import random
 from views.central_parceiros.login import token_required
 from datetime import time, datetime, timedelta
@@ -338,10 +339,6 @@ def del_evento(current_user, evento_id):
 @cp.route('/evento/<id_evento>/<acao>', methods=['GET'])
 @token_required
 def get_inscritos(current_user, id_evento, acao):
-    permissoes = ['Diretor', 'Administrador', 'Mestre']
-    if not current_user.nivel in permissoes:
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
-
     _inscritos = Inscricoes.query.filter_by(id_eventos = id_evento).all()
 
     inscritos = []
@@ -358,9 +355,15 @@ def get_inscritos(current_user, id_evento, acao):
         inscritos.append(info)
 
     if acao == 'inscritos':  
+        permissoes = ['Diretor', 'Administrador', 'Mestre']
+        if not current_user.nivel in permissoes:
+            return jsonify({'Mensagem': 'Você não tem Permissão'})
         return jsonify(inscritos)
 
     if acao == 'lista':
+        permissoes = ['Diretor', 'Administrador', 'Mestre']
+        if not current_user.nivel in permissoes:
+            return jsonify({'Mensagem': 'Você não tem Permissão'})
 
         evento = Eventos.query.filter_by(id = id_evento).first()
         atividade = Atividades.query.filter_by(id = evento.id_atividades).first()
@@ -372,6 +375,42 @@ def get_inscritos(current_user, id_evento, acao):
         response = make_response(pdf)
         response.headers['Content-ype'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename = lista.pdf'
+
+        return response
+
+    if acao == 'certificado':
+        permissoes = ['Diretor', 'Administrador', 'Mestre', 'Parceiro']
+        if not current_user.nivel in permissoes:
+            return jsonify({'Mensagem': 'Você não tem Permissão'})
+
+        avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_parceiro = current_user.id_geral).first()
+        
+        if avaliacao == None:
+            return jsonify({'Mensagem': 'Você não avaliou este evento!'})
+
+        evento = Eventos.query.filter_by(id = id_evento).first()
+        atividade = Atividades.query.filter_by(id = evento.id_atividades).first()
+        unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
+
+        # nome da pessoa, tipo do evento, nome do evento, local do evento, data do evento
+        
+        for inscrito in inscritos:
+            if current_user.id_geral == inscrito['id_parceiro']:
+                info_certificado = {}
+
+                info_certificado['nome_usuario'] = current_user.nome
+                info_certificado['rg_usuario'] = current_user.rg
+                info_certificado['tipo_evento'] = atividade.tipo
+                info_certificado['nome_evento'] = atividade.titulo
+                info_certificado['local_evento'] = unidade.nome
+                info_certificado['data_evento'] = evento._data
+
+                rendered = render_template('certificado.html', infos = info_certificado)
+                pdf = pdfkit.from_string(rendered, False)
+
+                response = make_response(pdf)
+                response.headers['Content-ype'] = 'application/pdf'
+                response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
 
         return response
         
