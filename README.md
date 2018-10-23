@@ -109,9 +109,9 @@ POST - Cadastra um parceiro
 /cp/parceiro
 
 {
-    "nome": "aluno", 
+    "nome": "João", 
+    "sobrenome": "Silva"
     "email": "email@email.com", 
-    "cpf": "11111111", 
     "senha": "1234"
 }
 ```
@@ -120,7 +120,8 @@ PUT - Atualiza um parceiro
 /cp/parceiro/<id>
 
 {
-    "nome": "aluno1", 
+    "nome": "João", 
+    "sobrenome": "Santos", 
     "email": "email@email.com", 
     "cpf": "11111111", 
     "senha": "1234", 

@@ -2,7 +2,7 @@ web:
   build: .
   command: bash -c "mvn clean resources:resources liquibase:update && ./runserver.sh"
   volumes:
-    - .:/root
+    - ./root
   ports:
     - 8080:8080
   links:
