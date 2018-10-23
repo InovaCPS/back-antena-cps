@@ -383,6 +383,19 @@ def get_inscritos(current_user, id_evento, acao):
         if not current_user.nivel in permissoes:
             return jsonify({'Mensagem': 'Você não tem Permissão'})
 
+        palestrante = Atividades.query.filter_by(id_parceiro = current_user.id_geral).first()
+
+        if palestrante:
+            info = get_one_evento(id_evento)
+            rendered = render_template('certificado_palestrante.html', info = info.json, cpf = current_user.cpf)
+            pdf = pdfkit.from_string(rendered, False)
+
+            response = make_response(pdf)
+            response.headers['Content-ype'] = 'application/pdf'
+            response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
+
+            return response
+
         avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_parceiro = current_user.id_geral).first()
         
         if avaliacao == None:
