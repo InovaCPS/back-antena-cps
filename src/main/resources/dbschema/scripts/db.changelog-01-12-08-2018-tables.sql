@@ -54,7 +54,9 @@ CREATE TABLE regioes(
 CREATE TABLE unidades (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    endereco VARCHAR(500) NOT NULL,
+    endereco VARCHAR(300) NOT NULL,
+    bairro VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
     id_regioes INTEGER,
     FOREIGN KEY (id_regioes) REFERENCES regioes(id)
 ) WITH (
@@ -244,7 +246,7 @@ INSERT INTO regioes (nome)
 VALUES ('Baixada Santista');
 
 INSERT INTO unidades (nome, endereco, id_regioes)
-VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144 - Boqueirão, Praia Grande', 1);
+VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144', 'Boqueirão', 'Praia Grande', 1);
 
 --INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
 --VALUES (12345679, 1, 2, '30:00');

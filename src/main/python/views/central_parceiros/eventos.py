@@ -112,6 +112,8 @@ def get_one_evento(current_user, id):
     _evento['hora'] = str(evento.hora)
     _evento['local'] = unidade.nome
     _evento['endereco'] = unidade.endereco
+    _evento['bairro'] = unidade.bairro
+    _evento['cidade'] = unidade.cidade
     _evento['autor'] = parceiro.nome
     _evento['cargo_autor'] = parceiro.cargo
     _evento['trabalho_autor'] = parceiro.local_trabalho
