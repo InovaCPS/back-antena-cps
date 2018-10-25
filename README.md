@@ -110,7 +110,7 @@ POST - Cadastra um parceiro
 
 {
     "nome": "João", 
-    "sobrenome": "Silva"
+    "sobrenome": "Silva", 
     "email": "email@email.com", 
     "senha": "1234"
 }

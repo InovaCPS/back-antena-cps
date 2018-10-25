@@ -17,6 +17,12 @@ import random
 from views.central_parceiros.login import token_required
 from datetime import time, datetime, timedelta
 
+meses = [
+        'janeiro', 'fevereiro', 'março', 'abril', 
+        'maio', 'junho', 'julho', 'agosto', 
+        'setembro', 'outubro', 'novembro', 'dezembro'
+    ]
+
 def check_evento(id_evento):
     evento = Eventos.query.filter_by(id=id_evento).first()
 
@@ -36,15 +42,8 @@ def check_evento(id_evento):
     else:
         return True
 
-@cp.route('/evento', methods=['GET'])
 @token_required
-def get_eventos(current_user):
-    eventos_geral = Eventos.query.all()
-    eventos = [evento for evento in eventos_geral if evento.situacao == "Realizado" or evento.situacao == "Aprovado"]
-
-    if not eventos:
-        return jsonify({'Mensagem': 'Nenhum evento disponível!'})
-    
+def list_eventos(current_user, eventos):
     _eventos = []
     for evento in eventos:
         atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
@@ -86,6 +85,34 @@ def get_eventos(current_user):
 
     return jsonify(_eventos)
 
+
+@cp.route('/eventos', methods=['GET'])
+@token_required
+def get_eventos(current_user):
+    eventos_geral = Eventos.query.all()
+    eventos = [evento for evento in eventos_geral if evento.situacao == "Realizado" or evento.situacao == "Aprovado"]
+
+    if not eventos:
+        return jsonify({'Mensagem': 'Nenhum evento disponível!'})
+    
+    return list_eventos(eventos)
+
+@cp.route('/meuseventos', methods=['GET'])
+@token_required
+def get_eventos_parceiro(current_user):
+    inscritos = Inscricoes.query.filter_by(id_parceiros=current_user.id_geral).all()
+
+    if not inscritos:
+        return jsonify({'Mensagem': 'Você não se cadastrou em nenhum evento!'})
+
+    eventos = []
+    for inscrito in inscritos:
+        info_evento = Eventos.query.filter_by(id=inscrito.id_eventos).first()
+
+        eventos.append(info_evento)
+
+    return list_eventos(eventos)
+
 @cp.route('/evento/<int:id>', methods=['GET'])
 @token_required
 def get_one_evento(current_user, id):
@@ -101,6 +128,7 @@ def get_one_evento(current_user, id):
 
     _evento = {}
 
+    _evento['id'] = evento.id
     _evento['titulo'] = atividade.titulo
     _evento['descricao'] = atividade.descricao
     _evento['situacao'] = evento.situacao
@@ -381,51 +409,55 @@ def get_inscritos(current_user, id_evento, acao):
         return response
 
     if acao == 'certificado':
-        permissoes = ['Diretor', 'Administrador', 'Mestre', 'Parceiro']
+        permissoes = ['Diretor', 'Administrador', 'Mestre', 'Parceiro', 'Agente']
         if not current_user.nivel in permissoes:
             return jsonify({'Mensagem': 'Você não tem Permissão'})
+        
+        # Informações do evento atual em JSON
+        info = get_one_evento(id_evento)
+        info = info.json
 
+        # Informações que serão enviadas ao renderizar o certificado
+        info_certificado = {}
+
+        info_certificado['nome_usuario'] = current_user.nome
+        info_certificado['rg_usuario'] = current_user.rg
+
+        # Informações do evento atual para pegar o mês
+        evento_ = Eventos.query.filter_by(id=id_evento).first()
+
+        # String informando a data para ser enviada ao certificado
+        data = evento_._data.month - 1
+        info_certificado['data_evento'] = "{}, {} de {} de {}".format(info['cidade'], evento_._data.day, meses[data], evento_._data.year)
+
+        # Se o usuário atual for o palestrante do evento...
         palestrante = Atividades.query.filter_by(id_parceiro = current_user.id_geral).first()
 
         if palestrante:
-            info = get_one_evento(id_evento)
-            rendered = render_template('certificado_palestrante.html', info = info.json, cpf = current_user.cpf)
-            pdf = pdfkit.from_string(rendered, False)
+            rendered = render_template('certificado_palestrante.html', info = info, cpf = current_user.cpf, data = info_certificado['data_evento'])
+        else:
+            # Percorre toda a lista de inscritos do atual evento para verificar se o usuário está inscrito
+            inscricao = []
+            for inscrito in inscritos:
+                if inscrito['id_parceiro'] == current_user.id_geral:
+                    inscricao.append(inscrito)
+            
+            if not inscricao:
+                return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
 
-            response = make_response(pdf)
-            response.headers['Content-ype'] = 'application/pdf'
-            response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
+            for inscrito in inscritos:
+                avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_parceiro = current_user.id_geral).first()
+                if avaliacao != None:
 
-            return response
+                    rendered = render_template('certificado.html', infos = info_certificado, evento = info)
+                else:
+                    return jsonify({'Mensagem': 'Você ainda não avaliou este evento!'})
 
-        avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_parceiro = current_user.id_geral).first()
-        
-        if avaliacao == None:
-            return jsonify({'Mensagem': 'Você não avaliou este evento!'})
+        pdf = pdfkit.from_string(rendered, False)
 
-        evento = Eventos.query.filter_by(id = id_evento).first()
-        atividade = Atividades.query.filter_by(id = evento.id_atividades).first()
-        unidade = Unidades.query.filter_by(id=evento.id_unidades).first()
-
-        # nome da pessoa, tipo do evento, nome do evento, local do evento, data do evento
-        
-        for inscrito in inscritos:
-            if current_user.id_geral == inscrito['id_parceiro']:
-                info_certificado = {}
-
-                info_certificado['nome_usuario'] = current_user.nome
-                info_certificado['rg_usuario'] = current_user.rg
-                info_certificado['tipo_evento'] = atividade.tipo
-                info_certificado['nome_evento'] = atividade.titulo
-                info_certificado['local_evento'] = unidade.nome
-                info_certificado['data_evento'] = evento._data
-
-                rendered = render_template('certificado.html', infos = info_certificado)
-                pdf = pdfkit.from_string(rendered, False)
-
-                response = make_response(pdf)
-                response.headers['Content-ype'] = 'application/pdf'
-                response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
+        response = make_response(pdf)
+        response.headers['Content-ype'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
 
         return response
         

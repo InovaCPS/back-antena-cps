@@ -5,91 +5,44 @@
     <meta name="pdfkit-orientation" content="Landscape"/>
     <title>Certificado</title>
     <style>
-        body::before {
+        body {
             content: "";
             background-image: url(/root/src/main/python/templates/imagens_certificado/image002.png);
             background-repeat: no-repeat;
-            background-size: contain;
-            background-position: center bottom;
-            opacity: 0.2;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        #logo_inova {
-            display: inline; 
-            margin-right: 50px;
-        }
-
-        #logo_cps {
-            display: inline; 
-            margin-left: 50px;
-        }
-
-        #titulo {
-            display: inline; 
-            font-size: 75px
+            background-size: 1400px, 620px;
+            width: 1400px;
+            height: 620px;
         }
 
         #texto {
             font-size: 40px; 
             display: flex; 
             text-align: justify;
-            margin-left: 40px;
-            margin-right: 40px;
+            margin-top: 350px;
+            margin-left: 55px;
+            margin-right: 55px;
         }
 
         #data {
-            font-size: 25px; 
-            display: flex; 
-            justify-content: center;
-        }
-
-        #assinatura {
-            font-size: 30px; 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: -25px;
-        }
-
-        #nome_diretor {
-            font-size: 30px; 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: -25px; 
-            font-weight: bold;
-        }
-
-        #cargo_diretor {
-            font-size: 30px; 
-            display: flex; 
-            justify-content: center; 
-            font-weight: bold;
+            font-size: 40px;
+            position: fixed;
+            left: 0;
+            bottom: 260px;
+            width: 100%;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="cabecalho">
-        <img src="/root/src/main/python/templates/imagens_certificado/image002.png" id="logo_inova">
-        <h1 id="titulo">CERTIFICADO</h1>
-        <img src="root/src/main/python/templates/imagens_certificado/image001.jpg" id="logo_cps">
-    </div><br><br><br><br><br><br>
     <div id="conteudo">
         <p id="texto">
             Certificamos que {{ infos.nome_usuario }}, RG:&nbsp;{{ infos.rg_usuario }},
-            participou do(a) {{ infos.tipo_evento }} sobre {{ infos.nome_evento }}
-            realizado em {{ infos.local_evento }} no dia {{ infos.data_evento.strftime('%d/%m/%Y') }}.
-        </p><br><br><br><br>
+            participou do(a) {{ evento.tipo }} sobre {{ evento.titulo }}
+            realizado em {{ evento.local }}
+        </p>
         <p id="data">
-            ___________________, ____ de ______________ de _________.
-        </p><br><br>
-        <p id="assinatura">___________________________</p>
-        <p id="nome_diretor">MAURO ZACKIEWICZ</p>
-        <p id="cargo_diretor">Diretor da agência de inovação INOVA Paula Souza</p>
+            {{ infos.data_evento }}
+        </p>
     </div>
 </body>
 </html>
