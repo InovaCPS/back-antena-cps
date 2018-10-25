@@ -15,7 +15,7 @@ from flask import Flask, Response, request, Blueprint
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
+from flask_mail import Mail
 from helper.config_helper import ConfigHelper
 
 
@@ -46,6 +46,14 @@ app = Flask(__name__)
 api = Api(app)
 CORS(app)
 db = get_db_instance(app, DB_URL)
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'gmail@gmail.com'
+app.config['MAIL_PASSWORD'] = 'senha gmail'
+app.config['MAIL_USE_SSL'] = True
+
+mail = Mail(app)
 
 cp = Blueprint('cp', __name__, url_prefix='/cp')
 

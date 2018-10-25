@@ -18,8 +18,8 @@ CREATE TABLE parceiros(
     nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back-end qual é a tabela
     
     nome VARCHAR(100) NOT NULL,
-    sobrenome VARCHAR(100) NOT NULL, 
-    email VARCHAR(100) NOT NULL,
+    sobrenome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(500) NOT NULL,
 
     cpf VARCHAR(50) NULL,
@@ -36,6 +36,7 @@ CREATE TABLE parceiros(
     facebook VARCHAR(500) NULL,
     linkedin VARCHAR(500) NULL,
     twitter VARCHAR(500) NULL
+    validado BOOLEAN
 
 ) WITH (
     OIDS=FALSE

@@ -1,9 +1,12 @@
-from webapp import db, cp
+from webapp import db, cp, mail
 from models.table_parceiros import Parceiros
-from flask import request, jsonify
+from flask import request, jsonify, url_for
 from werkzeug.security import generate_password_hash
 from views.central_parceiros.login import token_required
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
+s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
 
 @cp.route('/parceiro', methods=['GET'])
 @token_required
@@ -73,15 +76,17 @@ def post_parceiro():
         nome=data['nome'],
         sobrenome=data['sobrenome'],
         email=data['email'],
-        senha=password
+        senha=password,
+        validado=False
         )
     
 
     db.session.add(parceiro)
     db.session.commit()
+    
+    return send_email_confirm(parceiro.email)
 
-    return jsonify({'Mensagem': 'Adicionado com sucesso!'})
-
+    #return jsonify({'Mensagem': 'Adicionado com sucesso!'})
 
 @cp.route('/parceiro/<parceiro_id>', methods=['PUT'])
 @token_required
@@ -194,3 +199,36 @@ def del_parceiro(current_user, parceiro_id):
     db.session.commit()
 
     return jsonify({'Mensagem': 'Deletado com sucesso!'})
+
+
+#********************************* Enviar Email  ***********************
+def send_email_confirm(email):
+    token = s.dumps(email, salt='email-confirm')
+
+    msg = Message('Confirm Email', sender='dudsgrabbel@gmail.com', recipients=[email])
+
+    link = url_for('.email_confirm', token = token, external = True)
+
+    msg.body = 'Copie e Cole o link no seu navegador para confirmar seu email: \n\n {}'.format(link)    
+    mail.send(msg)
+
+    return jsonify({'Mensagem': 'Cadastrado com sucesso! Entre no seu E-mail para confirmar!'})
+
+
+@cp.route('/emailconfirm/<token>')
+def email_confirm(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age = 90)
+
+        parceiro = Parceiros.query.filter_by(email = email).first()
+
+        if not parceiro:
+            return jsonify({'Mensagem': 'Parceiro não encontrado'})
+        
+        parceiro.validado = True
+        db.session.commit()
+
+    except SignatureExpired:        
+        return "link expirado!"
+
+    return jsonify({'Mensagem': "E-mail verificado com sucesso!"})

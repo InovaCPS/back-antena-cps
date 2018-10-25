@@ -8,8 +8,9 @@ class Parceiros(db.Model):
     nivel = db.Column(db.String(100))
     
     nome = db.Column(db.String(100))
-    sobrenome = db.Column(db.String(100))
-    email = db.Column(db.String(100))
+    sobrenome = db.Column(db.String(50))
+
+    email = db.Column(db.String(100), unique = True)
     senha = db.Column(db.String(500))
 
     cpf = db.Column(db.String(50))
@@ -26,11 +27,13 @@ class Parceiros(db.Model):
     facebook = db.Column(db.String(500))
     linkedin = db.Column(db.String(500))
     twitter = db.Column(db.String(500))
+    validado = db.Column(db.Boolean)
 
-    def __init__(self,nivel,nome, sobrenome, email,senha):
+    def __init__(self,nivel,nome, sobrenome, email,senha, validado):
         self.nivel = nivel
         self.nome = nome
         self.sobrenome = sobrenome
         self.email = email
         self.senha = senha
+        self.validado = validado
        
