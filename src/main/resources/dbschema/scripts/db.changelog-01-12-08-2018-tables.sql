@@ -35,7 +35,7 @@ CREATE TABLE parceiros(
     lattes VARCHAR(500) NULL,
     facebook VARCHAR(500) NULL,
     linkedin VARCHAR(500) NULL,
-    twitter VARCHAR(500) NULL
+    twitter VARCHAR(500) NULL, 
     validado BOOLEAN
 
 ) WITH (
