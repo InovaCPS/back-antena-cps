@@ -246,7 +246,7 @@ CREATE TABLE parceiro_tema (
 INSERT INTO regioes (nome)
 VALUES ('Baixada Santista');
 
-INSERT INTO unidades (nome, endereco, id_regioes)
+INSERT INTO unidades (nome, endereco, bairro, cidade, id_regioes)
 VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144', 'Boqueirão', 'Praia Grande', 1);
 
 --INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
