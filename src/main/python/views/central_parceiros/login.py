@@ -1,4 +1,3 @@
-
 from webapp import app
 from models.table_parceiros import Parceiros
 from flask import request, jsonify, make_response, session, redirect, url_for
@@ -31,7 +30,7 @@ def token_required(f):
     return decoreted
 
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 def login():
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
