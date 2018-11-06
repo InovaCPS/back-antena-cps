@@ -18,7 +18,7 @@ s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
 @cp.route('/parceiro', methods=['GET'])
 @token_required
 def get_parceiro(current_user):
-    dados = Parceiros.query.alll()
+    dados = Parceiros.query.all()
 
     parceiros = []
 
