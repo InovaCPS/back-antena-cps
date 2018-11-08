@@ -15,6 +15,7 @@ from flask import request, jsonify, redirect, url_for, session, render_template,
 import pdfkit
 import random
 from views.central_parceiros.login import token_required
+from views.central_parceiros.avaliacao import avaliar
 from datetime import time, datetime, timedelta
 
 meses = [
@@ -574,26 +575,12 @@ def avaliacao(current_user, id):
                 return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
 
             else:
-                try:
-                    if float(data['nota']) < 1 or float(data['nota']) > 5:
-                        nota = data['nota']
-                    else:
-                        return jsonify({'Mensagem': 'A nota enviada precisa ser entre 1 e 5'})
-
-                    avaliacao = Avaliacoes(
-                        id_evento = evento.id, 
-                        id_parceiro = current_user.id_geral, 
-                        nota = float(data['nota']), 
-                        comentario = data['comentario'], 
-                        identificar = data['identificar']
-                    )
-
-                    db.session.add(avaliacao)
-                    db.session.commit()
-
-                    return jsonify({'Mensagem': 'Evento avaliado com sucesso!'})
-
-                except ValueError:
-                    return jsonify({'Mensagem': 'A nota precisa ser um valor numérico!'})
+                return "OK"
+        else:    
+            resposta = avaliar(data, "Evento", id, current_user.id_geral)         
+            return resposta
     else:
-        inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral, situacao='Realizado').first()
+        inscricao = Inscricoes.query.filter_by(id_eventos=id, id_parceiros=current_user.id_geral, situacao='Realizado').first()
+        #evento_avaliacao = Eventos.query.filter_by(id = inscricao.id_eventos, situacao = "Realizado").all()
+
+        return jsonify(inscricao)

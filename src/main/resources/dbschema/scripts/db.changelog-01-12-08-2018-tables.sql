@@ -159,13 +159,16 @@ CREATE TABLE inscricoes(
 -- Tabela de Avaliações
 CREATE TABLE avaliacoes(
     id SERIAL PRIMARY KEY, 
+    tipo_avaliado VARCHAR(15),
     id_evento INTEGER, 
-    id_parceiro INTEGER, 
+    id_avaliado INTEGER, 
+    id_avaliador INTEGER,
     nota FLOAT, 
     comentario VARCHAR(250), 
     identificar BOOLEAN, 
     FOREIGN KEY (id_evento) REFERENCES eventos(id), 
-    FOREIGN KEY (id_parceiro) REFERENCES parceiros(id_geral)
+    FOREIGN KEY (id_avaliado) REFERENCES parceiros(id_geral),
+    FOREIGN KEY (id_avaliador) REFERENCES parceiros(id_geral)
 ) WITH (
     OIDS=FALSE
 );
