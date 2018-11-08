@@ -557,30 +557,25 @@ def post_presenca(current_user, id_evento):
     
     return insc
 
-@cp.route('/evento/<int:id>/avaliar', methods=['GET', 'POST'])
+@cp.route('/evento/<int:id>/avaliar', methods=['POST'])
 @token_required
 def avaliacao(current_user, id):
-    if request.method == 'POST':
-        data = request.get_json()
+    data = request.get_json()
 
-        evento = Eventos.query.filter_by(id=id).first()
+    evento = Eventos.query.filter_by(id=id).first()
 
-        if evento.situacao == 'Realizado':
-            inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral).first()
+    if evento.situacao == 'Realizado':
+        inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral).first()
 
-            if not inscricao:
-                return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
+        if not inscricao:
+            return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
 
-            elif inscricao.presenca == False:
-                return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
+        elif inscricao.presenca == False:
+            return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
 
-            else:
-                return "OK"
-        else:    
+        else:
             resposta = avaliar(data, "Evento", id, current_user.id_geral)         
             return resposta
-    else:
-        inscricao = Inscricoes.query.filter_by(id_eventos=id, id_parceiros=current_user.id_geral, situacao='Realizado').first()
-        #evento_avaliacao = Eventos.query.filter_by(id = inscricao.id_eventos, situacao = "Realizado").all()
-
-        return jsonify(inscricao)
+    else:    
+        return jsonify({'Mensagem': 'Evento ainda em processo!'})
+    
