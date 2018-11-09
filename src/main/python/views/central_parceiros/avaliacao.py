@@ -2,9 +2,9 @@ from webapp import db, cp
 from models.table_avaliacoes import Avaliacoes
 from flask import jsonify
 
-def avaliar(data, tipo, avaliado, avaliador):
+def avaliar(data, tipo, evento_id, avaliado, avaliador):
     try:
-        if float(data['nota']) < 1 or float(data['nota']) > 5:
+        if float(data['nota']) > 0 and float(data['nota']) < 6:
             nota = data['nota']
         else:
             return jsonify({'Mensagem': 'A nota enviada precisa ser entre 1 e 5'})

@@ -252,11 +252,36 @@ GET - Retornar todos os eventos com avaliação pendente
 cp/evento/<id_evento>/avaliar
 ```
 ```bash
-POST - Enviar avaliação do evento
+POST - Enviar avaliação do parceiro sobre o evento
 cp/evento/<id_evento>/avaliar
 
 {
-    "nota": 8.5, 
+    "nota": 4.5, 
+    "comentario": "Excelente", 
+    "identificar": true
+}
+```
+
+```bash
+GEt - Retorna todos os Eventos que o parceiro deve avaliar
+cp/evento/avaliacao
+```
+```bash
+POST - Enviar avaliação do diretor sobre o palestrante e o seu evento na unidade
+cp/evento/<id_evento>/palestrante/<id_palestrante>/avaliar
+
+{
+    "nota": 4.5, 
+    "comentario": "Excelente", 
+    "identificar": true
+}
+```
+```bash
+POST - Enviar avaliação do palestrante sobre a unidade
+cp/evento/<id_evento>/unidade/<id_unidade>/avaliar
+
+{
+    "nota": 4.5, 
     "comentario": "Excelente", 
     "identificar": true
 }

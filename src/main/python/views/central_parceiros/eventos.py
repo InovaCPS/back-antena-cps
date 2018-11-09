@@ -140,10 +140,12 @@ def get_one_evento(current_user, id):
     _evento['data'] = evento._data.strftime('%d/%m/%Y')
     _evento['hora'] = str(evento.hora)
     _evento['local'] = unidade.nome
+    _evento['id_local'] = evento.id_unidades
     _evento['endereco'] = unidade.endereco
     _evento['bairro'] = unidade.bairro
     _evento['cidade'] = unidade.cidade
     _evento['autor'] = parceiro.nome
+    _evento['id_autor'] = parceiro.id_geral
     _evento['cargo_autor'] = parceiro.cargo
     _evento['trabalho_autor'] = parceiro.local_trabalho
     _evento['email_autor'] = parceiro.email
@@ -559,14 +561,17 @@ def post_presenca(current_user, id_evento):
 
 @cp.route('/evento/<int:id>/avaliar', methods=['POST'])
 @token_required
-def avaliacao(current_user, id):
+def avaliacao_evento(current_user, id):
     data = request.get_json()
 
     evento = Eventos.query.filter_by(id=id).first()
+    
+    if not evento:
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
 
     if evento.situacao == 'Realizado':
         inscricao = Inscricoes.query.filter_by(id_eventos=evento.id, id_parceiros=current_user.id_geral).first()
-
+        palestrante = Atividades.query.filter_by(id = evento.id_atividades).first()
         if not inscricao:
             return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
 
@@ -574,8 +579,81 @@ def avaliacao(current_user, id):
             return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
 
         else:
-            resposta = avaliar(data, "Evento", id, current_user.id_geral)         
+            resposta = avaliar(data, "Evento",id, palestrante.id_parceiros, current_user.id_geral)         
             return resposta
     else:    
         return jsonify({'Mensagem': 'Evento ainda em processo!'})
     
+@cp.route('/evento/avaliacao', methods=['GET'])
+@token_required
+def parceiro_avaliações(current_user):
+        inscricoes = Inscricoes.query.filter_by(id_parceiros=current_user.id_geral).all()
+        eventos_avaliar = []
+        for inscricao in inscricoes:
+            evento_ = Eventos.query.filter_by(id = inscricao.id_eventos).first()
+            if evento_.situacao == "Realizado":
+                info = get_one_evento (id = evento_.id)
+                
+                eventos_avaliar.append(info.json)
+            
+        if not eventos_avaliar:
+            return jsonify({'Mensagem': 'Nenhum evento disponivel para avaliação'})
+            
+        return jsonify(eventos_avaliar)
+
+
+@cp.route('/evento/<int:id>/palestrante/<int:id_palestrante>/avaliar', methods=['POST'])
+@token_required
+def avaliacao_palestrante(current_user, id, id_palestrante):
+    permissoes = ['Diretor']
+    if not current_user.nivel in permissoes:
+        return jsonify({'Mensagem': 'Você não tem Permissão'})
+
+    data = request.get_json()
+
+    evento = Eventos.query.filter_by(id=id).first()
+
+    if not evento:
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
+
+    if evento.situacao == 'Realizado':
+        palestrante = Parceiros.query.filter_by(id_geral=id_palestrante).first()
+        diretor = Diretores.query.filter_by(id_parceiros = current_user.id_geral).first()
+      
+        if not palestrante:
+            return jsonify({'Mensagem': 'Palestrante não encontrado!'})
+        
+        elif diretor.id_unidades != evento.id_unidades:
+            return jsonify({'Mensagem': 'Você não tem permissão para avaliar esse Palestrante!'})
+
+        else:
+            resposta = avaliar(data, "Palestrante", id, id_palestrante, current_user.id_geral)         
+            return resposta
+    else:    
+        return jsonify({'Mensagem': 'Evento ainda em processo!'})
+
+@cp.route('/evento/<int:id>/unidade/<int:id_unidade>/avaliar', methods=['POST'])
+@token_required
+def avaliacao_unidade(current_user, id, id_unidade):
+    data = request.get_json()
+
+    evento = Eventos.query.filter_by(id=id).first()
+    
+    if not evento:
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
+
+    if evento.situacao == 'Realizado':
+        parceiro = Atividades.query.filter_by(id = evento.id_atividades).first()
+        unidade = Unidades.query.filter_by(id = id_unidade).first()
+
+        if not unidade:
+            return jsonify({'Mensagem': 'Unidade não encontrada!'})
+
+        elif parceiro.id_parceiro != current_user.id_geral:
+            return jsonify({'Mensagem': 'Você não tem permisssão para avaliar a undade!'})
+
+        else:
+            resposta = avaliar(data, "Unidade",id, id_unidade, current_user.id_geral)         
+            return resposta
+    else:    
+        return jsonify({'Mensagem': 'Evento ainda em processo!'})

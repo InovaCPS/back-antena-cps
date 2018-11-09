@@ -6,7 +6,7 @@ class Avaliacoes(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     tipo_avaliado = db.Column(db.String) #**
     id_evento = db.Column(db.Integer, db.ForeignKey('eventos.id'))
-    id_avaliado = db.Column(db.Integer, db.ForeignKey('parceiros.id_geral'))
+    id_avaliado = db.Column(db.Integer)
     id_avaliador = db.Column(db.Integer, db.ForeignKey('parceiros.id_geral'))
     nota = db.Column(db.Float)
     comentario = db.Column(db.String)
