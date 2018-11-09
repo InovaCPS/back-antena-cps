@@ -7,6 +7,7 @@ web:
     - 8080:8080
   links:
     - db
+    - db_qa
 db:
   build: ./src/main/resources/dbschema
   environment:
@@ -16,3 +17,12 @@ db:
     - "5432"
   volumes:
   - ./postgres-data:/var/lib/postgresql/data
+# db_qa:
+#   build: ./src/main/resources/dbschema_qa
+#   environment:
+#     - POSTGRES_USER=postgres
+#     - POSTGRES_DB=InovaDB_QA
+#   expose:
+#     - "5433"
+#   volumes:
+#   - ./postgres-data:/var/lib/postgresql/data

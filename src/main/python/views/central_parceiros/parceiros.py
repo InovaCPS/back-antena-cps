@@ -167,53 +167,57 @@ def edit_parceiro(current_user, parceiro_id):
 def del_parceiro(current_user, parceiro_id):
     parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
 
-    if parceiro.nivel == "Aluno":
-        aluno = Alunos.query.filter_by(id_parceiros = parceiro_id).first()
+    if not parceiro:
+        return jsonify({'Mensagem': 'Não encontrado!'})
 
-        db.session.delete(aluno)
-        db.session.commit()
+    else:
+        if parceiro.nivel == "Aluno":
+            aluno = Alunos.query.filter_by(id_parceiros = parceiro_id).first()
 
-    elif parceiro.nivel == "Diretor":
-        diretor = Diretores.query.filter_by(id_parceiros = parceiro_id).first()
+            db.session.delete(aluno)
+            db.session.commit()
+
+        elif parceiro.nivel == "Diretor":
+            diretor = Diretores.query.filter_by(id_parceiros = parceiro_id).first()
+            
+            db.session.delete(diretor)
+            db.session.commit()
+
+        elif parceiro.nivel == 'Agente':
+            agente = Agentes.query.filter_by(id_parceiros = parceiro_id).first()
+
+            db.session.delete(agente)
+            db.session.commit()
+
+
+        atividades = Atividades.query.filter_by(id_parceiro = parceiro_id).all()
+        if atividades:
+            for atividade in atividades:
+                db.session.delete(atividade)
+                db.session.commit()
+
+        mensagens = Mensagens.query.filter_by(id_destinatarios = parceiro_id).all()
+        if mensagens:
+            for mensagem in mensagens:
+                db.session.delete(mensagem)
+                db.session.commit()
+
+        inscricoes = Inscricoes.query.filter_by(id_parceiros = parceiro_id).all()
+        if inscricoes:
+            for inscricao in inscricoes:
+                db.session.delete(inscricao)
+                db.session.commit()
+
+        avaliacoes = Avaliacoes.query.filter_by(id_avaliador = parceiro_id).all()
+        if avaliacoes:
+            for avaliacao in avaliacoes:
+                db.session.delete(avaliacao)
+                db.session.commit()
         
-        db.session.delete(diretor)
+        db.session.delete(parceiro)
         db.session.commit()
 
-    elif parceiro.nivel == 'Agente':
-        agente = Agentes.query.filter_by(id_parceiros = parceiro_id).first()
-
-        db.session.delete(agente)
-        db.session.commit()
-
-
-    atividades = Atividades.query.filter_by(id_parceiro = parceiro_id).all()
-    if atividades:
-        for atividade in atividades:
-            db.session.delete(atividade)
-            db.session.commit()
-
-    mensagens = Mensagens.query.filter_by(id_destinatarios = parceiro_id).all()
-    if mensagens:
-        for mensagem in mensagens:
-            db.session.delete(mensagem)
-            db.session.commit()
-
-    inscricoes = Inscricoes.query.filter_by(id_parceiros = parceiro_id).all()
-    if inscricoes:
-        for inscricao in inscricoes:
-            db.session.delete(inscricao)
-            db.session.commit()
-
-    avaliacoes = Avaliacoes.query.filter_by(id_parceiro = parceiro_id).all()
-    if avaliacoes:
-        for avaliacao in avaliacoes:
-            db.session.delete(avaliacao)
-            db.session.commit()
-    
-    db.session.delete(parceiro)
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Deletado com sucesso!'})
+        return jsonify({'Mensagem': 'Deletado com sucesso!'})
 
 
 #********************************* Enviar Email  ***********************

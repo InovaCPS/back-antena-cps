@@ -18,6 +18,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 from helper.config_helper import ConfigHelper
 
+import sys
 
 def config_db_url(resource):
     config = ConfigHelper(resource)
@@ -37,10 +38,13 @@ def get_db_instance(app, db_url):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     return SQLAlchemy(app)
 
-
-
-
+# Se '-t' estiver na lista de parâmetros so sistema o arquivo de configuração do banco é alterado
+# indicando que os testes estão sendo rodados, caso contrário as configurações do banco
+# permanecem as mesmas
 APP_RESOURCE = './src/main/resources/application.properties'
+if '-t' in sys.argv:
+    APP_RESOURCE = './src/main/resources/application_qa.properties'
+
 DB_URL = config_db_url(APP_RESOURCE)
 app = Flask(__name__)
 api = Api(app)

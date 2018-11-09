@@ -167,7 +167,6 @@ CREATE TABLE avaliacoes(
     comentario VARCHAR(250), 
     identificar BOOLEAN, 
     FOREIGN KEY (id_evento) REFERENCES eventos(id), 
-    FOREIGN KEY (id_avaliado) REFERENCES parceiros(id_geral),
     FOREIGN KEY (id_avaliador) REFERENCES parceiros(id_geral)
 ) WITH (
     OIDS=FALSE

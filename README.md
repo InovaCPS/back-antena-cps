@@ -82,14 +82,24 @@ ou
         * JDK 1.8+
         * PostgreSQL Server - [Docker Postgres](https://hub.docker.com/_/postgres/)
     * Execute o seguinte comando
-        * Criar base de dados
-         ```bash
-          mvn clean resources:resources liquibase:update
-         ```
-         * Limpar todas as bases
-         ```bash
-          mvn clean resources:resources liquibase:dropAll
-         ```   
+        * Desenvolvimento
+            * Criar base de dados
+            ```bash
+            mvn clean resources:resources liquibase:update
+            ```
+            * Limpar todas as bases
+            ```bash
+            mvn clean resources:resources liquibase:dropAll
+            ```   
+        * Testes
+            * Criar base de dados
+            ```bash
+            mvn clean resources:resources liquibase:update Dprop='_qa'
+            ```
+            * Limpar todas as bases
+            ```bash
+            mvn clean resources:resources liquibase:dropAll Dprop='_qa'
+            ```   
 * Rode o projeto
     * Executar:
     ```bash
