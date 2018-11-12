@@ -263,7 +263,7 @@ cp/evento/<id_evento>/avaliar
 ```
 
 ```bash
-GEt - Retorna todos os Eventos que o parceiro deve avaliar
+GET - Retorna todos os Eventos que o parceiro deve avaliar
 cp/evento/avaliacao
 ```
 ```bash
@@ -367,8 +367,8 @@ POST - Cadastra um diretor
 /cp/diretores
 
 {
-    "id_unidades": 1,
-    "id_parceiros": 1
+    "id_unidade": 1,
+    "id_parceiro": 1
 }
 ```
 ```bash

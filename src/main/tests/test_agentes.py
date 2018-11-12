@@ -28,14 +28,14 @@ class TesteAgentes(unittest.TestCase):
 
     def test_retorna_informacoes_de_um_agente(self):
         response = self.app.get(
-            '/cp/agentes/3'
+            '/cp/agentes/1'
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, 'application/json')
 
     # def test_atualiza_informacoes_de_um_agente(self):
     #     response = self.app.put(
-    #         'cp/agentes/3', 
+    #         'cp/agentes/1', 
     #         data = json.dumps({
     #             "matricula": "", 
     #             "hora": "25:00", 

@@ -94,11 +94,14 @@ def post_diretor(current_user):
 
     data = request.get_json()
 
-    parceiro = Parceiros.query.filter_by(id_geral = data['id_parceiros']).first()
+    parceiro = Parceiros.query.filter_by(id_geral = data['id_parceiro']).first()
 
     if parceiro is not None and parceiro.nivel == 'Parceiro':
+        unidade = Unidades.query.filter_by(id=data['id_unidade']).first()
+        if not unidade:
+            return jsonify({'Mensagem': 'Unidade não encontrada!'})
 
-        diretor = Diretores(id_unidades = data['id_unidades'], id_parceiros = data['id_parceiros'])
+        diretor = Diretores(id_unidades = data['id_unidade'], id_parceiros = data['id_parceiro'])
 
         parceiro.nivel = "Diretor"
         
@@ -131,7 +134,7 @@ def del_diretor(current_user, id):
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
-    diretor = Diretores.query.filter_by(id = id_diretor).first()
+    diretor = Diretores.query.filter_by(id = id).first()
 
     if not diretor:
         return jsonify({'Mensagem': 'Diretor não encontrado!'})
@@ -177,6 +180,9 @@ def get_one_evento_diretor(current_user, id):
     diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
 
     evento = Eventos.query.filter_by(id=id).first()
+    if not evento:
+        return jsonify({'Mensagem': 'Evento não encontrado'})
+
     if request.method == 'GET':
         atividade = Atividades.query.filter_by(id=evento.id_atividades).first()
         parceiro = Parceiros.query.filter_by(id_geral=atividade.id_parceiro).first()

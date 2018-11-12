@@ -63,10 +63,8 @@ def edit_aluno(current_user):
 
     if not aluno:
         return jsonify({'Mensagem': 'Aluno não encontrado!'})
-
     else:
         return redirect(url_for('.edit_parceiro', parceiro_id = aluno.id_parceiros), code=307)
-    return ''
 
 @cp.route('/aluno/<ra>', methods=['DELETE'])
 @token_required

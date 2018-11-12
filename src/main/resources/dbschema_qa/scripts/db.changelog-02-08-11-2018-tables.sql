@@ -307,7 +307,7 @@ INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacida
 VALUES (1, 1, '2020-06-15', '17:30', 'Aguardando análise da atividade', 40, 0, True);
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
-VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando análise da atividade', 40, 0, True);
+VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando resposta do diretor', 40, 0, True);
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
 VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando análise da atividade', 40, 0, True);
