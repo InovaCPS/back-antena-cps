@@ -236,12 +236,15 @@ CREATE TABLE parceiro_tema (
 -- Inserções de teste do banco de testes
 -- EXCLUIR QUANDO ENVIAR PARA PRODUÇÃO
 
+-- São inseridas uma região e uma unidade para servir de referência nos registros do teste
 INSERT INTO regioes (nome)
 VALUES ('Baixada Santista');
 
 INSERT INTO unidades (nome, endereco, bairro, cidade, id_regioes)
 VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144', 'Boqueirão', 'Praia Grande', 1);
 
+-- São cadastrados um parceiro de cada nível para serem usados nos testes
+-- (Mestre, Parceiro, Agente, Diretor, Administrador e Aluno)
 -- ID 1
 INSERT INTO parceiros (nivel, nome, sobrenome, email, senha)
 VALUES ('Mestre', 'Mestre', 'Mestre', 'mestre@email.com', '1234');
@@ -278,12 +281,16 @@ VALUES ('Aluno', 'Francisco', 'Santos', 'francisco@email.com', '1234');
 INSERT INTO alunos (ra, id_unidades, id_parceiros)
 VALUES (1234567, 1, 6);
 
+-- São cadastrados dois eixos de exemplo para servirem de referência nos registros do teste
 INSERT INTO eixos (nome)
 VALUES ('Tecnologia');
 
 INSERT INTO eixos (nome)
 VALUES ('Outros');
 
+-- São cadastradas duas atividades pois existem configurações diferentes que precisam
+-- de condições diferentes para serem testadas como por exemplo as datas de eventos
+-- 1ª atividade
 INSERT INTO atividades (titulo, descricao, tipo, duracao, banner, id_agente, id_eixo, id_parceiro)
 VALUES (
     'Como programar em python', 
@@ -293,17 +300,53 @@ VALUES (
     'caminho do banner', 
     1, 
     1, 
-    2
+    1
 );
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
+VALUES (1, 1, '2020-06-15', '17:30', 'Aguardando análise da atividade', 40, 0, True);
+
+INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
+VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando análise da atividade', 40, 0, True);
+
+INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
+VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando análise da atividade', 40, 0, True);
+
+INSERT INTO materiais (id_atividades, materia)
+VALUES (1, 'caminho do material 1');
+
+INSERT INTO materiais (id_atividades, materia)
+VALUES (1, 'caminho do material 2');
+
+-- 2ª atividade
+INSERT INTO atividades (titulo, descricao, tipo, duracao, banner, id_agente, id_eixo, id_parceiro)
 VALUES (
+    'Como programar em PHP', 
+    'Será explicado como programar em PHP', 
+    'Palestra', 
+    90, 
+    'caminho do banner', 
     1, 
     1, 
-    '2020-06-15', 
-    '17:30', 
-    'Aguardando análise da atividade', 
-    40, 
-    0, 
-    True
+    1
 );
+
+INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
+VALUES (2, 1, '2018-11-08', '15:30', 'Aguardando análise da atividade', 40, 0, False);
+
+INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
+VALUES (2, 1, '2025-11-08', '15:30', 'Aguardando análise da atividade', 40, 0, True);
+
+INSERT INTO materiais (id_atividades, materia)
+VALUES (1, 'caminho do material 1');
+
+
+-- É realizada a inscrição da contra mestre num evento
+INSERT INTO inscricoes (id_parceiros, id_eventos)
+VALUES (1, 4);
+
+INSERT INTO inscricoes (id_parceiros, id_eventos)
+VALUES (6, 4);
+
+INSERT INTO avaliacoes (tipo_avaliado, id_evento, id_avaliado, id_avaliador, nota, comentario, identificar)
+VALUES ('Evento', 4, 1, 1, 5.0, 'Bom', True);

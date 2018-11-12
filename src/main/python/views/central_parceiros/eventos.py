@@ -270,14 +270,12 @@ def edit_evento(current_user, evento_id):
     
 
     for e in post_evento:
-        d = Diretores.query.filter_by(id_unidades = e[1]).first()
         
         evento = Eventos(
             id_atividades = evento_id, 
             id_unidades = e[1], 
             _data = e[2], 
             hora = e[3],
-            id_diretor = d.id,
             situacao = False
         )
 
@@ -406,7 +404,7 @@ def get_inscritos(current_user, id_evento, acao):
         pdf = pdfkit.from_string(rendered, False)
 
         response = make_response(pdf)
-        response.headers['Content-ype'] = 'application/pdf'
+        response.headers['Content-type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename = lista.pdf'
 
         return response
@@ -459,7 +457,7 @@ def get_inscritos(current_user, id_evento, acao):
         pdf = pdfkit.from_string(rendered, False)
 
         response = make_response(pdf)
-        response.headers['Content-ype'] = 'application/pdf'
+        response.headers['Content-type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename = certificado.pdf'
 
         return response
@@ -471,9 +469,10 @@ def get_inscritos(current_user, id_evento, acao):
 def post_inscrito(current_user, id_evento):
 
     evento = Eventos.query.filter_by(id = id_evento).first()
+    if not evento:
+        return jsonify({'Mensagem': 'Evento não encontrado!'})
 
     if evento.acesso is True:
-
         if check_evento(evento.id) == False:
             return jsonify({'Mensagem': 'Não é mais possível se cadastrar nesse evento!'})
 
@@ -503,17 +502,19 @@ def post_inscrito(current_user, id_evento):
 @cp.route('/evento/<id_evento>/inscrito', methods=['DELETE'])
 @token_required
 def del_inscrito(current_user, id_evento):
-    parceiro = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = id_evento).first()
-    
-    db.session.delete(parceiro)
+    inscricao = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = id_evento).first()
+    if not inscricao:
+        return jsonify({'Mensagem': 'Inscrição não encontrada!'})
+
+    db.session.delete(inscricao)
     db.session.commit()
     
-    evento = Eventos.query.filter_by(id = parceiro.id_eventos).first()
+    evento = Eventos.query.filter_by(id = inscricao.id_eventos).first()
 
     evento.inscrito -= 1
     db.session.commit()
 
-    return jsonify({'Mensagem': 'Inscrição cancelado com sucesso!'})
+    return jsonify({'Mensagem': 'Inscrição cancelada com sucesso!'})
 
 
 
@@ -535,6 +536,7 @@ def post_presenca(current_user, id_evento):
         for l in lista:
             i = Inscricoes.query.filter_by(id_eventos = id_evento, id_parceiros = l['id_parceiro']).first()
             i.presenca = l['presenca']
+            db.session.commit() 
             if l['presenca'] == True:
 
                 parceiro = Parceiros.query.filter_by(id_geral=i.id_parceiros).first()
@@ -548,8 +550,6 @@ def post_presenca(current_user, id_evento):
 
                 db.session.add(mensagem)
                 db.session.commit()
-            
-            db.session.commit() 
 
     evento = Eventos.query.filter_by(id=id_evento).first()
     evento.situacao = 'Realizado'

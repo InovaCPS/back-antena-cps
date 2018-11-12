@@ -12,7 +12,8 @@ from views.central_parceiros.login import token_required
 
 
 @cp.route('/agentes', methods=['GET'])
-def get_agentes():
+@token_required
+def get_agentes(current_user):
     dados = Agentes.query.all()
 
     agentes = []
@@ -39,7 +40,8 @@ def get_agentes():
 
 
 @cp.route('/agentes/<int:id>', methods=['GET'])
-def get_agente(id):
+@token_required
+def get_agente(current_user, id):
     a = Agentes.query.filter_by(id=id).first()
     if not a:
         return jsonify({'Mensagem': 'Agente não encontrado!'})
@@ -144,7 +146,8 @@ def put_agente(current_user, id):
 @cp.route('/agentes/atividades', methods=['GET'])
 @token_required
 def get_ativ_agente(current_user):
-    if not current_user.nivel == "Agente":
+    permissoes = ['Agente']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
@@ -166,7 +169,8 @@ def get_ativ_agente(current_user):
 @cp.route('/agentes/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
 def get_one_ativ_agente(current_user, id):
-    if not current_user.nivel == "Agente":
+    permissoes = ['Agente']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     if request.method == 'GET':

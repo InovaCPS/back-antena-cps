@@ -2,9 +2,11 @@ from flask import jsonify
 from webapp import db, cp
 from models.table_regioes import Regioes
 from models.table_unidades import Unidades
+from views.central_parceiros.login import token_required
 
 @cp.route('/locais', methods=['GET'])
-def get_locais():
+@token_required
+def get_locais(current_user):
     regioes = Regioes.query.all()
     unidades = Unidades.query.all()
 
