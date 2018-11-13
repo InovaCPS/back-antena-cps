@@ -304,7 +304,7 @@ VALUES (
 );
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
-VALUES (1, 1, '2020-06-15', '17:30', 'Aguardando análise da atividade', 40, 0, True);
+VALUES (1, 1, '2018-06-15', '17:30', 'Aguardando resposta do diretor', 40, 0, False);
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
 VALUES (1, 1, '2020-06-16', '17:30', 'Aguardando resposta do diretor', 40, 0, True);
@@ -332,7 +332,7 @@ VALUES (
 );
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
-VALUES (2, 1, '2018-11-08', '15:30', 'Aguardando análise da atividade', 40, 0, False);
+VALUES (2, 1, '2018-11-08', '15:30', 'Realizado', 40, 0, False);
 
 INSERT INTO eventos (id_atividades, id_unidades, _data, hora, situacao, capacidade, inscrito, acesso)
 VALUES (2, 1, '2025-11-08', '15:30', 'Aguardando análise da atividade', 40, 0, True);
@@ -343,10 +343,10 @@ VALUES (1, 'caminho do material 1');
 
 -- É realizada a inscrição da contra mestre num evento
 INSERT INTO inscricoes (id_parceiros, id_eventos)
+VALUES (1, 1);
+
+INSERT INTO inscricoes (id_parceiros, id_eventos)
 VALUES (1, 4);
 
 INSERT INTO inscricoes (id_parceiros, id_eventos)
 VALUES (6, 4);
-
-INSERT INTO avaliacoes (tipo_avaliado, id_evento, id_avaliado, id_avaliador, nota, comentario, identificar)
-VALUES ('Evento', 4, 1, 1, 5.0, 'Bom', True);

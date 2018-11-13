@@ -278,7 +278,7 @@ cp/evento/<id_evento>/palestrante/<id_palestrante>/avaliar
 ```
 ```bash
 POST - Enviar avaliação do palestrante sobre a unidade
-cp/evento/<id_evento>/unidade/<id_unidade>/avaliar
+cp/evento/<id_evento>/unidade/avaliar
 
 {
     "nota": 4.5, 

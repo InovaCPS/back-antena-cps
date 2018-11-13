@@ -164,7 +164,7 @@ def get_one_evento(current_user, id):
         for avaliacao in avaliacoes:
             comentarios = {}
             if avaliacao.identificar == True:
-                parceiro = Parceiros.query.filter_by(id_geral=avaliacao.id_parceiro).first()
+                parceiro = Parceiros.query.filter_by(id_geral=avaliacao.id_avaliador).first()
                 comentarios['nome'] = parceiro.nome
             else:
                 comentarios['nome'] = 'Anônimo'
@@ -579,7 +579,7 @@ def avaliacao_evento(current_user, id):
             return jsonify({'Mensagem': 'Você não compareceu a este evento!'})
 
         else:
-            resposta = avaliar(data, "Evento",id, palestrante.id_parceiros, current_user.id_geral)         
+            resposta = avaliar(data, "Evento",id, palestrante.id_parceiro, current_user.id_geral)         
             return resposta
     else:    
         return jsonify({'Mensagem': 'Evento ainda em processo!'})
@@ -632,9 +632,9 @@ def avaliacao_palestrante(current_user, id, id_palestrante):
     else:    
         return jsonify({'Mensagem': 'Evento ainda em processo!'})
 
-@cp.route('/evento/<int:id>/unidade/<int:id_unidade>/avaliar', methods=['POST'])
+@cp.route('/evento/<int:id>/unidade/avaliar', methods=['POST'])
 @token_required
-def avaliacao_unidade(current_user, id, id_unidade):
+def avaliacao_unidade(current_user, id):
     data = request.get_json()
 
     evento = Eventos.query.filter_by(id=id).first()
@@ -644,7 +644,7 @@ def avaliacao_unidade(current_user, id, id_unidade):
 
     if evento.situacao == 'Realizado':
         parceiro = Atividades.query.filter_by(id = evento.id_atividades).first()
-        unidade = Unidades.query.filter_by(id = id_unidade).first()
+        unidade = Unidades.query.filter_by(id = evento.id_unidades).first()
 
         if not unidade:
             return jsonify({'Mensagem': 'Unidade não encontrada!'})
@@ -653,7 +653,7 @@ def avaliacao_unidade(current_user, id, id_unidade):
             return jsonify({'Mensagem': 'Você não tem permisssão para avaliar a undade!'})
 
         else:
-            resposta = avaliar(data, "Unidade",id, id_unidade, current_user.id_geral)         
+            resposta = avaliar(data, "Unidade",id, evento.id_unidades, current_user.id_geral)         
             return resposta
     else:    
         return jsonify({'Mensagem': 'Evento ainda em processo!'})

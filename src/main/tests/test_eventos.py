@@ -8,6 +8,7 @@ sys.argv.append('-t')
 from webapp import app
 import json, jwt, datetime
 
+# COMPLETO
 class TesteEventos(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
@@ -158,6 +159,57 @@ class TesteEventos(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, 'application/json')
+
+    def test_avalia_evento(self):
+        response = self.app.post(
+            '/cp/evento/4/avaliar', 
+            data = json.dumps({
+                "nota": 4.5, 
+                "comentario": "Excelente", 
+                "identificar": True
+            }), 
+            follow_redirects=True, 
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('sucesso', str(response.data))
+
+    def test_retorna_eventos_pendentes_para_avaliacao(self):
+        response = self.app.get(
+            '/cp/evento/avaliacao'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('"Mensagem":', str(response.data))
+
+    def test_diretor_avalia_palestrante(self):
+        with self.app.session_transaction() as session:
+            session['token'] = jwt.encode({'id_geral': 4, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        response = self.app.post(
+            '/cp/evento/4/palestrante/1/avaliar', 
+            data = json.dumps({
+                "nota": 5, 
+                "comentario": "Excelente", 
+                "identificar": True
+            }), 
+            follow_redirects=True, 
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('sucesso', str(response.data))
+
+    def test_palestrante_avalia_unidade(self):
+        response = self.app.post(
+            '/cp/evento/4/unidade/avaliar', 
+            data = json.dumps({
+                "nota": 4, 
+                "comentario": "Excelente", 
+                "identificar": True
+            }), 
+            follow_redirects=True, 
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('sucesso', str(response.data))
 
 if __name__ == '__main__':
     unittest.main()
