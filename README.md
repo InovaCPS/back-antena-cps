@@ -416,8 +416,12 @@ PUT - Altera a situação do evento
 ```
 
 ```bash
-GET - Retorna as informações do aluno
+GET - Retorna nome e RA de todos os alunos
 /cp/aluno
+```
+```bash
+GET - Retorna as informações de um aluno
+/cp/aluno/<ra>
 ```
 ```bash
 POST - Cadastra um Aluno
@@ -425,14 +429,17 @@ POST - Cadastra um Aluno
 
 {
     "ra": "5649454", 
-    "id_unidade": "id_unidade"
+    "id_parceiro": "1"
 }
 ```
 ```bash
-PUT - Atualiza as Informações do aluno
-/cp/aluno
-(put padão do parceiro)
+PUT - Atualiza o RA do aluno
+/cp/aluno/RA
 
+
+{
+    "ra": "5649455"
+}
 ```
 ```bash
 DELETE - Deleta um aluno
