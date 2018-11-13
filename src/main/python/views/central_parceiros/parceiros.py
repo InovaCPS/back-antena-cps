@@ -109,10 +109,10 @@ def edit_parceiro(current_user, parceiro_id):
         if data['cpf']:
             parceiros = Parceiros.query.all()
             for p in parceiros:
-                if p.cpf == data['cpf']:
+                if p.cpf == data['cpf'] and p.id_geral != parceiro.id_geral:
                     return jsonify({'mensagem': 'O CPF informado já está cadastrado'})
-
-            parceiro.cpf = data['cpf']
+                else:
+                    parceiro.cpf = data['cpf']
 
         if data['nome']:
             parceiro.nome = data['nome']

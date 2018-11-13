@@ -85,11 +85,38 @@ class TesteAgentes(unittest.TestCase):
         self.assertIn('sucesso', str(response.data))
 
     def test_retorna_as_atividades_pendentes_de_um_agente(self):
+        with self.app.session_transaction() as session:
+            session['token'] = jwt.encode({'id_geral': 3, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
         response = self.app.get(
             '/cp/agentes/atividades'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn("não tem permissão", str(response.data))
+        self.assertEqual('application/json', response.content_type)
+
+    def test_retorno_de_uma_atividades_do_agente(self):
+        with self.app.session_transaction() as session:
+            session['token'] = jwt.encode({'id_geral': 3, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        response = self.app.get(
+            '/cp/agentes/atividades/1',
+            follow_redirects=True, 
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('application/json', response.content_type)
+
+    def test_atualizar_atividade(self):
+        with self.app.session_transaction() as session:
+            session['token'] = jwt.encode({'id_geral': 3, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        response = self.app.put(
+            '/cp/agentes/atividades/1',
+            data = json.dumps({
+                "eixo": 1
+            }),
+            follow_redirects=True, 
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('application/json', response.content_type)
 
 if __name__ == '__main__':
     unittest.main()

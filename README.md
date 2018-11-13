@@ -94,11 +94,11 @@ ou
         * Testes
             * Criar base de dados
             ```bash
-            mvn clean resources:resources liquibase:update Dprop='_qa'
+              mvn clean resources:resources liquibase:update -Dprop='_qa'
             ```
             * Limpar todas as bases
             ```bash
-            mvn clean resources:resources liquibase:dropAll Dprop='_qa'
+              mvn clean resources:resources liquibase:dropAll -Dprop='_qa'
             ```   
 * Rode o projeto
     * Executar:
@@ -315,6 +315,7 @@ PUT - Atualiza um agente
     "hora": "30:00", 
     "id_unidade": 1, 
     "nome": "aluno1", 
+    "sobrenome": "fatec", 
     "email": "email@email.com", 
     "cpf": "11111111", 
     "senha": "1234", 

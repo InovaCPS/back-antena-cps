@@ -54,10 +54,21 @@ def get_agente(current_user, id):
     agente['email'] = parceiro.email
     agente['telefone'] = parceiro.telefone
     agente['cpf'] = parceiro.cpf
+    agente['rg'] = parceiro.rg
     agente['matricula'] = a.matricula
     agente['hora'] = a.hora
     agente['unidade'] = unidade.nome
     agente['endereço'] = unidade.endereco
+    agente['nivel'] = parceiro.nivel
+    agente['sobrenome'] = parceiro.sobrenome
+    agente['dt_nascimento'] = str(parceiro.dt_nascimento)
+    agente['genero'] = parceiro.genero
+    agente['local_trabalho'] = parceiro.local_trabalho
+    agente['cargo'] = parceiro.cargo
+    agente['lattes'] = parceiro.lattes
+    agente['facebook']= parceiro.facebook
+    agente['linkedin'] = parceiro.linkedin 
+    agente['twitter'] = parceiro.twitter
 
     return jsonify(agente)
 
@@ -65,7 +76,7 @@ def get_agente(current_user, id):
 @cp.route('/agentes', methods=['POST'])
 @token_required
 def post_agente(current_user):
-    permissoes = ['Administrador', 'Mestre', 'Parceiro']
+    permissoes = ['Administrador', 'Mestre']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
@@ -152,6 +163,9 @@ def get_ativ_agente(current_user):
 
     agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
     atividades = Atividades.query.filter_by(id_agente=agente.id).all()
+
+    if not atividades:
+        return jsonify({'Mensagem': 'Nenhum evento disponivel para aprovação!'})
 
     eventos = []
 
