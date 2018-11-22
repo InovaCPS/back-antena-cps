@@ -25,6 +25,8 @@ CREATE TABLE parceiros(
     cpf VARCHAR(50) NULL,
     rg VARCHAR(15) NULL,
 
+    matricula INTEGER, 
+
     dt_nascimento date NULL,
     genero VARCHAR(15) NULL,
     

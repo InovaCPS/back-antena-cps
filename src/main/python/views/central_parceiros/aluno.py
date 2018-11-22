@@ -60,53 +60,6 @@ def get_one_aluno(current_user, ra):
 
     return jsonify(info)
 
-@cp.route('/aluno', methods=['POST'])
-@token_required
-def create_aluno(current_user):
-    permissoes = ['Diretor']
-    if not current_user.nivel in permissoes:
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
-
-    data = request.get_json()
-
-    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
-    unidade = Unidades.query.filter_by(id=diretor.id_unidades).first()
-    
-    parceiro = Parceiros.query.filter_by(id_geral = current_user.id_geral).first()
-    aluno = Alunos.query.filter_by(id_parceiros=current_user.id_geral).first()
-
-    if aluno:
-        return jsonify({'Mensagem': 'O usuário já está cadastrado como aluno!'})
-
-    aluno = Alunos(data['ra'], unidade.id, data['id_parceiro'])    
-    db.session.add(aluno)
-    db.session.commit()
-    
-    parceiro_aluno = Parceiros.query.filter_by(id_geral=aluno.id_parceiros).first()
-    parceiro_aluno.nivel = "Aluno"
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
-
-@cp.route('/aluno/<int:ra>', methods=['PUT'])
-@token_required
-def edit_aluno(current_user, ra):
-    if not current_user.nivel == "Diretor":
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
-
-    data = request.get_json()
-
-    aluno = Alunos.query.filter_by(ra=ra).first()
-
-    if not aluno:
-        return jsonify({'Mensagem': 'Aluno não encontrado!'})
-    else:
-
-        aluno.ra = data['ra']
-        db.session.commit()
-        
-        return jsonify({'Mensagem': 'RA alterado com sucesso!'})
-
 @cp.route('/aluno/<int:ra>', methods=['DELETE'])
 @token_required
 def del_aluno(current_user, ra):

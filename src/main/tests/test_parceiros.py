@@ -49,8 +49,11 @@ class TesteParceiros(unittest.TestCase):
         self.assertIn('sucesso', str(response.data))
 
     def test_atualiza_informacoes_de_um_parceiro(self):
+        with self.app.session_transaction() as session:
+            session['token'] = jwt.encode({'id_geral': 2, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+
         response = self.app.put(
-            '/cp/parceiro/2', 
+            '/cp/parceiro', 
             data = json.dumps({
                 "nome": "João", 
                 "sobrenome": "da Silva", 
@@ -60,6 +63,9 @@ class TesteParceiros(unittest.TestCase):
                 "rg": "", 
                 "dt_nascimento": "", 
                 "genero": "", 
+                "RA": "", 
+                "unidade": "",
+                "matricula": "", 
                 "telefone": "12345678", 
                 "local_trabalho": "", 
                 "cargo": "",

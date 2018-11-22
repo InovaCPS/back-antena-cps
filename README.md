@@ -126,8 +126,8 @@ POST - Cadastra um parceiro
 }
 ```
 ```bash
-PUT - Atualiza um parceiro
-/cp/parceiro/<id>
+PUT - Atualiza informações do parceiro logado
+/cp/parceiro/
 
 {
     "nome": "João", 
@@ -138,6 +138,9 @@ PUT - Atualiza um parceiro
     "rg": "", 
     "dt_nascimento": "", 
     "genero": "", 
+    "RA": "", 
+    "unidade": "",
+    "matricula": "", 
     "telefone": "12345678", 
     "local_trabalho": "", 
     "cargo": "",

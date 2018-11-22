@@ -146,12 +146,16 @@ def del_diretor(current_user, id):
 @cp.route('/diretores/atividades', methods=['GET'])
 @token_required
 def get_evento_diretor(current_user):
-    if not current_user.nivel == "Diretor":
+    permissoes = ['Diretor', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
-    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first() # retorna o diretor que está logado
-    unidade = Unidades.query.filter_by(id=diretor.id_unidades).first() # retorna a unidade da qual ele é diretor
-    eventos = Eventos.query.filter_by(id_unidades=unidade.id).all() # retorna os pedidos de evento daquela unidade
+    if current_user.nivel == 'Diretor':
+        diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first() # retorna o diretor que está logado
+        unidade = Unidades.query.filter_by(id=diretor.id_unidades).first() # retorna a unidade da qual ele é diretor
+        eventos = Eventos.query.filter_by(id_unidades=unidade.id).all() # retorna os pedidos de evento daquela unidade
+    else:
+        eventos = Eventos.query.all()
 
     eventos_ = []
 
@@ -174,10 +178,9 @@ def get_evento_diretor(current_user):
 @cp.route('/diretores/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
 def get_one_evento_diretor(current_user, id):
-    if not current_user.nivel == "Diretor":
+    permissoes = ['Diretor', 'Mestre']
+    if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
-
-    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
 
     evento = Eventos.query.filter_by(id=id).first()
     if not evento:

@@ -16,6 +16,8 @@ class Parceiros(db.Model):
     cpf = db.Column(db.String(50))
     rg = db.Column(db.String(15))
 
+    matricula = db.Column(db.Integer())
+
     dt_nascimento = db.Column(db.Date())
     genero = db.Column(db.String(15))
     
@@ -29,7 +31,7 @@ class Parceiros(db.Model):
     twitter = db.Column(db.String(500))
     validado = db.Column(db.Boolean)
 
-    def __init__(self,nivel,nome, sobrenome, email,senha, validado):
+    def __init__(self, nivel, nome, sobrenome, email, senha, validado):
         self.nivel = nivel
         self.nome = nome
         self.sobrenome = sobrenome

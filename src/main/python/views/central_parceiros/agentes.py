@@ -157,12 +157,15 @@ def put_agente(current_user, id):
 @cp.route('/agentes/atividades', methods=['GET'])
 @token_required
 def get_ativ_agente(current_user):
-    permissoes = ['Agente']
+    permissoes = ['Agente', 'Mestre']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
-    agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
-    atividades = Atividades.query.filter_by(id_agente=agente.id).all()
+    if current_user.nivel == 'Agente':
+        agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
+        atividades = Atividades.query.filter_by(id_agente=agente.id).all()
+    else:
+        atividades = Atividades.query.all()
 
     if not atividades:
         return jsonify({'Mensagem': 'Nenhum evento disponivel para aprovação!'})
@@ -183,19 +186,22 @@ def get_ativ_agente(current_user):
 @cp.route('/agentes/atividades/<int:id>', methods=['GET', 'PUT'])
 @token_required
 def get_one_ativ_agente(current_user, id):
-    permissoes = ['Agente']
+    permissoes = ['Agente', 'Mestre']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     if request.method == 'GET':
 
-        atividade = Atividades.query.filter_by(id=id).first()
-        agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
+        if current_user.nivel == 'Agente':
+            atividade = Atividades.query.filter_by(id=id).first()
+            agente = Agentes.query.filter_by(id_parceiros=current_user.id_geral).first()
 
-        if atividade.id_agente == agente.id:
-            return redirect(url_for('.get_one_evento', id=id), code=307)
+            if atividade.id_agente == agente.id:
+                return redirect(url_for('.get_one_evento', id=id), code=307)
+            else:
+                return jsonify({'Mensagem': 'Este evento não foi atribuído a você!'})
         else:
-            return jsonify({'Mensagem': 'Este evento não foi atribuído a você!'})
+            return redirect(url_for('.get_one_evento', id=id), code=307)
 
     else:
         data = request.get_json()

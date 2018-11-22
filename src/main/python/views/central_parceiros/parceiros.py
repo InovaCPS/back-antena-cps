@@ -29,16 +29,6 @@ def get_parceiro(current_user):
         parceiro['nome'] = info.nome
         parceiro['sobrenome'] = info.sobrenome
         parceiro['email'] = info.email
-        parceiro['cpf'] = info.cpf
-        parceiro['dt_nascimento'] = str(info.dt_nascimento)
-        parceiro['genero'] = info.genero
-        parceiro['telefone'] = info.telefone 
-        parceiro['local_trabalho'] = info.local_trabalho
-        parceiro['cargo'] = info.cargo
-        parceiro['lattes'] = info.lattes
-        parceiro['facebook']= info.facebook
-        parceiro['linkedin'] = info.linkedin 
-        parceiro['twitter'] = info.twitter
 
         parceiros.append(parceiro)
 
@@ -95,10 +85,10 @@ def post_parceiro():
 
     return jsonify({'Mensagem': 'Adicionado com sucesso!'})
 
-@cp.route('/parceiro/<parceiro_id>', methods=['PUT'])
+@cp.route('/parceiro', methods=['PUT'])
 @token_required
-def edit_parceiro(current_user, parceiro_id):
-    parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()
+def edit_parceiro(current_user):
+    parceiro = Parceiros.query.filter_by(id_geral=current_user.id_geral).first()
 
     if not parceiro:
         return jsonify({'Mensagem': 'Não encontrado!'})
@@ -113,6 +103,33 @@ def edit_parceiro(current_user, parceiro_id):
                     return jsonify({'mensagem': 'O CPF informado já está cadastrado'})
                 else:
                     parceiro.cpf = data['cpf']
+
+        if data['RA'] and data['matricula']:
+            return jsonify({'Mensagem': 'Não é possível o mesmo usuário ter RA e matricula!'})
+
+        if data['RA']:
+            if not data['unidade']:
+                return jsonify({'Mensagem': 'Não é possível cadastrar um aluno sem uma unidade de estudo!'})
+            alunos = Alunos.query.filter_by().all()
+            eAluno = False
+            for aluno in alunos:
+                if aluno.id_parceiros == current_user.id_geral:
+                    eAluno = True
+
+            if not eAluno:
+                aluno_novo = Alunos(data['RA'], data['unidade'], current_user.id_geral)
+                db.session.add(aluno_novo)
+                db.session.commit()
+            else:
+                aluno = Alunos.query.filter_by(id_parceiros=current_user.id_geral).first()
+                aluno.ra = data['ra']
+                aluno.id_unidades = data['unidade']
+                db.session.commit()
+
+                parceiro.nivel = 'Aluno'
+
+        if data['matricula']:
+            parceiro.matricula = data['matricula']
 
         if data['nome']:
             parceiro.nome = data['nome']
