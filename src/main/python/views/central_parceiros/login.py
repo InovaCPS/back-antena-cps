@@ -11,11 +11,11 @@ def token_required(f):
     def decoreted(*args, **kwargs):
         token = None
 
-        #if 'token' in request.headers:
-            #token = request.headers['token']
+        if 'token' in request.headers:
+            token = request.headers['token']
 
-        if session['token']:
-            token = session['token']
+        # if session['token']:
+        #     token = session['token']
         
         if not token:
             return jsonify({'Mensagem': 'Você precisa de uma Token para ter acesso!'}), 401
@@ -44,8 +44,8 @@ def login():
     if check_password_hash(parceiro.senha, auth['password']):
         token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
         
-        session['token'] = token.decode('UTF-8')
-        return jsonify({'Mensagem': 'Bem Vindo {}!'.format(parceiro.nome)})
-        #return jsonify({'token': token.decode('UTF-8')})
+        # session['token'] = token.decode('UTF-8')
+        # return jsonify({'Mensagem': 'Bem Vindo {}!'.format(parceiro.nome)})
+        return jsonify({'token': token.decode('UTF-8')})
     
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})

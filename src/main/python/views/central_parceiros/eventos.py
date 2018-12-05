@@ -410,7 +410,7 @@ def get_inscritos(current_user, id_evento, acao):
         return response
 
     if acao == 'certificado':
-        permissoes = ['Diretor', 'Administrador', 'Mestre', 'Parceiro', 'Agente']
+        permissoes = ['Diretor', 'Administrador', 'Mestre', 'Parceiro', 'Agente', 'Aluno']
         if not current_user.nivel in permissoes:
             return jsonify({'Mensagem': 'Você não tem Permissão'})
         
@@ -447,7 +447,7 @@ def get_inscritos(current_user, id_evento, acao):
                 return jsonify({'Mensagem': 'Você não se inscreveu neste evento!'})
 
             for inscrito in inscritos:
-                avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_parceiro = current_user.id_geral).first()
+                avaliacao = Avaliacoes.query.filter_by(id_evento = id_evento, id_avaliador = current_user.id_geral).first()
                 if avaliacao != None:
 
                     rendered = render_template('certificado.html', infos = info_certificado, evento = info)
