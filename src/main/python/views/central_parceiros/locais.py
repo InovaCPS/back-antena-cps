@@ -34,3 +34,24 @@ def get_locais(current_user):
         locais.append(local)
 
     return jsonify(locais)
+
+@cp.route('/unidades', methods=['GET'])
+@token_required
+def get_unidades(current_user):
+    unidades = Unidades.query.all()
+
+    lista_unidades = []
+
+    for unidade in unidades:
+        u = {}
+        
+        u['id'] = unidade.id
+        u['nome'] = unidade.nome
+        u['endereco'] = unidade.endereco
+        u['bairro'] = unidade.bairro
+        u['cidade'] = unidade.cidade
+        u['id_regiao'] = unidade.id_regioes
+
+        lista_unidades.append(u)
+    
+    return jsonify(lista_unidades)

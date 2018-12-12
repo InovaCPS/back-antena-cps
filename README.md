@@ -173,18 +173,15 @@ POST - Cadastra um evento
 	"duracao": "60", 
 	"banner": "o caminho do banner", 
 	"eventos":[
-		["1", "2018-10-15", "14:00"], 
-		["1", "2018-10-16", "14:00"], 
-		["1", "2018-10-17", "14:00"]
+		{"unidade": "1", "data": "2018-10-15", "hora": "14:00"}, 
+		{"unidade": "1", "data": "2018-10-16", "hora": "14:00"}, 
+		{"unidade": "1", "data": "2018-10-17", "hora": "14:00"}
 	], 
 	"materiais":[
-		["caminho do material 1"], 
-		["caminho do material 2"]
+		{"material": "caminho do material 1"}, 
+		{"material": "caminho do material 2"}
 	]
 }
-
-* Campos de "eventos": [id da unidade, data, hora]
-* Campos de "materiais": [caminho do material]
 ```
 ```bash
 PUT - Atualiza um evento
@@ -197,15 +194,15 @@ PUT - Atualiza um evento
 	"duracao": "40", 
 	"banner": "o caminho do banner", 
 	"eventos":[
-		["1", "1", "2019-10-15", "12:30"], 
-		["2", "1", "2019-10-16", "15:30"], 
-		["3", "1", "2019-10-16", "20:30"],
-		["", "1", "2020-10-17", "19:30"]
+		{"id": "1", "unidade": "1", "data": "2019-10-15", "hora": "12:30"}, 
+		{"id": "2", "unidade": "1", "data": "2019-10-16", "hora": "15:30"}, 
+		{"id": "3", "unidade": "1", "data": "2019-10-16", "hora: ""20:30"},
+		{"id": "", "unidade": "1", "data": "2020-10-17", "hora": "19:30"}
 	], 
 	"materiais":[
-		["1", "caminho do material 10"],
-		["2", "caminho do material 15"],
-		["", "caminho do material 40"]
+		{"id": "1", "material": "caminho do material 10"},
+		{"id": "2", "material": "caminho do material 15"},
+		{"id": "", "material": "caminho do material 40"}
 	], 
 	"exclui_eventos": [
 		["ID do evento"]
@@ -215,8 +212,6 @@ PUT - Atualiza um evento
 	]
 }
 
-* Campos de "eventos": [id do evento, id da atividade, data, hora]
-* Campos de "materiais": [id do material, caminho do material]
 * Se "material" e/ou "evento" não tiverem um id, significa que são registros novos e precisam ser cadastrados
 ```
 

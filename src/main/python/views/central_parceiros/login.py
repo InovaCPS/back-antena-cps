@@ -1,6 +1,6 @@
 from webapp import app
 from models.table_parceiros import Parceiros
-from flask import request, jsonify, make_response, session, redirect, url_for
+from flask import request, jsonify, make_response, redirect, url_for
 from werkzeug.security import check_password_hash
 import jwt
 import datetime

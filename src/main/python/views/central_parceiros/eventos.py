@@ -210,12 +210,12 @@ def post_evento(current_user):
     
     obj_eventos = []
     for e in eventos:
-        d = Diretores.query.filter_by(id_unidades = e[0]).first()
+        d = Diretores.query.filter_by(id_unidades = e['unidade']).first()
         evento = Eventos(
             id_atividades = atividade.id, 
-            id_unidades = e[0], 
-            _data = e[1], 
-            hora = e[2],
+            id_unidades = e['unidade'], 
+            _data = e['data'], 
+            hora = e['hora'],
             situacao = 'Aguardando análise da atividade'
         )
         obj_eventos.append(evento)
@@ -227,7 +227,7 @@ def post_evento(current_user):
     for m in materiais:
         material = Materiais(
             id_atividades = atividade.id,
-            materia = m[0]
+            materia = m['material']
         )
         obj_materiais.append(material)
 
@@ -265,17 +265,17 @@ def edit_evento(current_user, evento_id):
 
     eventos = data['eventos']
 
-    post_evento = [e for e in eventos if not e[0]]
-    put_evento = [e for e in eventos if e[0]]
+    post_evento = [e for e in eventos if not e['id']]
+    put_evento = [e for e in eventos if e['id']]
     
 
     for e in post_evento:
         
         evento = Eventos(
             id_atividades = evento_id, 
-            id_unidades = e[1], 
-            _data = e[2], 
-            hora = e[3],
+            id_unidades = e['unidade'], 
+            _data = e['data'], 
+            hora = e['hora'],
             situacao = False
         )
 
@@ -283,7 +283,7 @@ def edit_evento(current_user, evento_id):
         db.session.commit()
 
     for e in put_evento:
-        _evento = Eventos.query.filter_by(id = e[0]).first()
+        _evento = Eventos.query.filter_by(id = e['id']).first()
         
         _evento.unidade = e[1]
         _evento._data = e[2]
@@ -293,30 +293,30 @@ def edit_evento(current_user, evento_id):
 
     materiais = data['materiais']
 
-    post_material = [m for m in materiais if not m[0]]
-    put_material = [m for m in materiais if m[0]]
+    post_material = [m for m in materiais if not m['id']]
+    put_material = [m for m in materiais if m['id']]
     
 
     for m in post_material:
         material = Materiais(
             id_atividades = evento_id, 
-            materia = m[1]
+            materia = m['material']
         )
 
         db.session.add(material)  
         db.session.commit()
 
     for m in put_material:
-        _material = Materiais.query.filter_by(id = m[0]).first()
+        _material = Materiais.query.filter_by(id = m['id']).first()
         
-        _material.materia = m[1]
+        _material.materia = m['material']
 
         db.session.commit()
 
     exclui_eventos = data['exclui_eventos']
     if exclui_eventos:
         for e in exclui_eventos:
-            evento = Eventos.query.filter_by(id = e[0]).first()
+            evento = Eventos.query.filter_by(id = e['id']).first()
             db.session.delete(evento)
             db.session.commit()
 
@@ -324,7 +324,7 @@ def edit_evento(current_user, evento_id):
     exclui_materiais = data['exclui_materiais']
     if exclui_materiais:
         for m in exclui_materiais:
-            material = Materiais.query.filter_by(id = m[0]).first()
+            material = Materiais.query.filter_by(id = m['id']).first()
             db.session.delete(material)
             db.session.commit()
 

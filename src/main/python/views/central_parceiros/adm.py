@@ -1,6 +1,6 @@
 from webapp import db, cp
 from models.table_parceiros import Parceiros
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify, url_for
 from views.central_parceiros.login import token_required
 
 @cp.route('/adm', methods=['POST', 'DELETE'])
