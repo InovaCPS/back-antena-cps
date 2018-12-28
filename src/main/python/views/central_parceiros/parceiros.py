@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash
 from views.central_parceiros.login import token_required
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from sqlalchemy import exc
 
 s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
 
@@ -70,16 +71,22 @@ def post_parceiro():
 
     parceiro = Parceiros(
         nivel='Parceiro',
-        nome=data['nome'],
-        sobrenome=data['sobrenome'],
         email=data['email'],
         senha=password,
         validado=False
-        )
+    )
+    
+    parceiro.nome = data['nome']
+    parceiro.sobrenome = data['sobrenome']
     
 
-    db.session.add(parceiro)
-    db.session.commit()
+    try:
+        db.session.add(parceiro)
+        db.session.commit()
+    except exc.IntegrityError as e:
+        db.session().rollback()
+        return jsonify({'Mensagem': 'O email informado já está cadastrado!'})
+
     
     # return send_email_confirm(parceiro.email)
 
@@ -141,8 +148,9 @@ def edit_parceiro(current_user):
             parceiro.email = data['email']
 
         if data['senha']:
-            senha = generate_password_hash(data['senha'])
-            parceiro.senha = senha
+            if not parceiro.senha == 'Google account':
+                senha = generate_password_hash(data['senha'])
+                parceiro.senha = senha
 
         if data['rg']:
             parceiro.rg = data['rg']

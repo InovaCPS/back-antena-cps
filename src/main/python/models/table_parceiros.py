@@ -1,6 +1,7 @@
 from webapp import db
+from flask_login import UserMixin
 
-class Parceiros(db.Model):
+class Parceiros(UserMixin, db.Model):
     __tablename__:'parceiros'
 
     id_geral = db.Column(db.Integer,primary_key=True)
@@ -31,10 +32,8 @@ class Parceiros(db.Model):
     twitter = db.Column(db.String(500))
     validado = db.Column(db.Boolean)
 
-    def __init__(self, nivel, nome, sobrenome, email, senha, validado):
+    def __init__(self, nivel, email, senha, validado):
         self.nivel = nivel
-        self.nome = nome
-        self.sobrenome = sobrenome
         self.email = email
         self.senha = senha
         self.validado = validado

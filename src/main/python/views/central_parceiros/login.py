@@ -1,10 +1,29 @@
-from webapp import app
+from webapp import app, db
 from models.table_parceiros import Parceiros
-from flask import request, jsonify, make_response, redirect, url_for
+from flask import request, jsonify, make_response, redirect, url_for, session
 from werkzeug.security import check_password_hash
 import jwt
 import datetime
 from functools import wraps
+
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
+from flask_dance.consumer import oauth_authorized
+from models.table_oauth import OAuth
+import os 
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+google_blueprint = make_google_blueprint(
+    client_id="1092697945658-mm49tuj821b1a3jni5epplc0l54ofj0s.apps.googleusercontent.com",
+    client_secret="XSK0EQfS9PEG3KN9bUySkjsz",
+    scope=[
+        "https://www.googleapis.com/auth/plus.me",
+        "https://www.googleapis.com/auth/userinfo.email",
+    ]
+)
+
+app.register_blueprint(google_blueprint, url_prefix='/google_login')
+google_blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user_required=False)
 
 def token_required(f):
     @wraps(f)
@@ -49,3 +68,44 @@ def login():
         return jsonify({'token': token.decode('UTF-8')})
     
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+@app.route('/login/google', methods=['GET', 'POST'])
+def google_login():
+    resp = make_response(redirect(url_for('google.login')))
+    resp.headers.set('Access-Control-Allow-Origin', '*')
+
+    return resp
+
+    # if not google.authorized:
+    #     return redirect(url_for('google.login'))
+
+    # account_info = google.get('/oauth2/v2/userinfo')
+    # account_info_json = account_info.json()
+
+    # return '<h1>Your Google email is @{}'.format(account_info_json['email'])
+
+@oauth_authorized.connect_via(google_blueprint)
+def google_logged_in(blueprint, token):
+    account_info = blueprint.session.get('/oauth2/v2/userinfo')
+
+    if account_info.ok:
+        account_info_json = account_info.json()
+
+        parceiro = Parceiros.query.filter_by(email=account_info_json['email']).first()
+
+        if not parceiro:
+            parceiro = Parceiros(
+                nivel='Parceiro', 
+                email=account_info_json['email'], 
+                senha='Google account', 
+                validado=False
+            )
+            db.session.add(parceiro)
+            db.session.commit()
+
+        
+        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        response = make_response(jsonify({'token': token.decode('UTF-8')}))
+        response.headers.set('Access-Control-Allow-Origin', '*')
+
+        return response
