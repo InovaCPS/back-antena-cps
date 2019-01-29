@@ -28,15 +28,6 @@ Perfil do Git: http://github.com/italo998carvalho
 
 
 
-### Lucas Gomes (Praia Grande)
-
-![lucas v2](https://user-images.githubusercontent.com/43144590/45499826-8537df00-b753-11e8-848b-146aacb5a837.png)
-
-![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
-Perfil do Git: https://github.com/Gomes1610
-![emoji](https://user-images.githubusercontent.com/43144590/45427147-87773c00-b674-11e8-8d7b-5b8ed22e11ff.png)
-
-
 
 ### Renan (Praia Grande)
 
