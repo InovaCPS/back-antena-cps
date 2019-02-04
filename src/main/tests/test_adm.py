@@ -12,17 +12,17 @@ import json, jwt, datetime
 class TesteAdm(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
-        with self.app.session_transaction() as session:
-            session['token'] = jwt.encode({'id_geral': 1, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        token = jwt.encode({'id_geral': 1, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        self.headers = {'token': token}
 
     def tearDown(self):
-        with self.app.session_transaction() as session:
-            session.pop('token', None)
+        self.headers = {'token': ''}
 
 
     def test_cadastra_um_adm(self):
         response = self.app.post(
             '/cp/adm', 
+            headers = self.headers, 
             data = json.dumps({
                 "id": "2"
             }),
@@ -35,6 +35,7 @@ class TesteAdm(unittest.TestCase):
     def test_exclui_um_adm(self):
         response = self.app.delete(
             '/cp/adm', 
+            headers = self.headers, 
             data = json.dumps({
                 "id": "2"
             }),

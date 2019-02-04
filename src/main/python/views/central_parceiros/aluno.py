@@ -28,23 +28,25 @@ def get_alunos(current_user):
 
     return jsonify(_alunos)
 
-@cp.route('/aluno/<int:ra>', methods=['GET'])
+@cp.route('/aluno/<int:id>', methods=['GET'])
 @token_required
-def get_one_aluno(current_user, ra):
+def get_one_aluno(current_user, id):
     permissoes = ['Diretor']
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
     diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
-    aluno = Alunos.query.filter_by(id_unidades=diretor.id_unidades, ra=ra).first()
+    aluno = Alunos.query.filter_by(id_unidades=diretor.id_unidades, id_parceiros=id).first()
 
     if not aluno:
-        return jsonify({'Mensagem': 'O RA informado é inválido!'})
+        return jsonify({'Mensagem': 'O ID informado é inválido!'})
 
-    parceiro = Parceiros.query.filter_by(id_geral = aluno.id_parceiros).first()
+    parceiro = Parceiros.query.filter_by(id_geral = id).first()
+    unidade = Unidades.query.filter_by(id=aluno.id_unidades).first()
 
     info = {}
     info['nome'] = parceiro.nome
+    info['sobrenome'] = parceiro.sobrenome
     info['ra'] = aluno.ra
     info['email'] = parceiro.email
     info['cpf'] = parceiro.cpf
@@ -57,6 +59,8 @@ def get_one_aluno(current_user, ra):
     info['facebook']= parceiro.facebook
     info['linkedin'] = parceiro.linkedin 
     info['twitter'] = parceiro.twitter
+    info['escola'] = unidade.nome
+    info['escola_cidade'] = unidade.cidade
 
     return jsonify(info)
 

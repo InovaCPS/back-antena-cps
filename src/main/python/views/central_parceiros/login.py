@@ -1,7 +1,10 @@
 from webapp import app, db
 from models.table_parceiros import Parceiros
 from flask import request, jsonify, make_response, redirect, url_for, session
+from flask_cors import cross_origin
 from werkzeug.security import check_password_hash
+from werkzeug.wrappers import Response
+from werkzeug.datastructures import Headers
 import jwt
 import datetime
 from functools import wraps
@@ -70,19 +73,21 @@ def login():
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 @app.route('/login/google', methods=['GET', 'POST'])
+@cross_origin()
 def google_login():
-    resp = make_response(redirect(url_for('google.login')))
-    resp.headers.set('Access-Control-Allow-Origin', '*')
+    resp = redirect(url_for('google.login'))
+
+    # resp.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
+    # resp.headers = Headers({'Access-Control-Allow-Origin': 'http://localhost:4200'})
+    # resp.headers = Headers.add_header('Access-Control-Allow-Origin', 'http://localhost:4200')
+    resp.headers = {
+        'Access-Control-Allow-Origin': '*', 
+        'Location': 'http://localhost:8080/google_login/google'
+    }
+    # resp.headers.set('Access-Control-Allow-Origin', 'http://localhost:4200')
+    # resp.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
 
     return resp
-
-    # if not google.authorized:
-    #     return redirect(url_for('google.login'))
-
-    # account_info = google.get('/oauth2/v2/userinfo')
-    # account_info_json = account_info.json()
-
-    # return '<h1>Your Google email is @{}'.format(account_info_json['email'])
 
 @oauth_authorized.connect_via(google_blueprint)
 def google_logged_in(blueprint, token):
@@ -105,7 +110,7 @@ def google_logged_in(blueprint, token):
 
         
         token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
-        response = make_response(jsonify({'token': token.decode('UTF-8')}))
-        response.headers.set('Access-Control-Allow-Origin', '*')
+        # response = make_response()
+        # response.headers.set('Access-Control-Allow-Origin', '*')
 
-        return response
+        return jsonify({'token': token.decode('UTF-8')})
