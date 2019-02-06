@@ -35,8 +35,8 @@ def get_one_aluno(current_user, id):
     if not current_user.nivel in permissoes:
         return jsonify({'Mensagem': 'Você não tem Permissão'})
 
-    diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
-    aluno = Alunos.query.filter_by(id_unidades=diretor.id_unidades, id_parceiros=id).first()
+    diretor = Diretores.query.filter_by(id_parceiros=2).first()
+    aluno = Alunos.query.filter_by(id_unidades=1, id_parceiros=id).first()
 
     if not aluno:
         return jsonify({'Mensagem': 'O ID informado é inválido!'})
@@ -50,6 +50,8 @@ def get_one_aluno(current_user, id):
     info['ra'] = aluno.ra
     info['email'] = parceiro.email
     info['cpf'] = parceiro.cpf
+    info['rg'] = parceiro.rg
+    info['foto_perfil'] = parceiro.foto_perfil
     info['dt_nascimento'] = str(parceiro.dt_nascimento)
     info['genero'] = parceiro.genero
     info['telefone'] = parceiro.telefone 

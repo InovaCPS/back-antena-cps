@@ -16,6 +16,15 @@ from sqlalchemy import exc
 
 s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
 
+@cp.route('/getId', methods=['GET'])
+@token_required
+def getId(current_user):
+    infos = {}
+    infos['id'] = current_user.id_geral
+    infos['nivel'] = current_user.nivel
+
+    return jsonify(infos)
+
 @cp.route('/parceiro', methods=['GET'])
 @token_required
 def get_parceiro(current_user):
@@ -51,6 +60,8 @@ def get_one_parceiro(current_user, parceiro_id):
     parceiro['sobrenome'] = info.sobrenome
     parceiro['email'] = info.email
     parceiro['cpf'] = info.cpf
+    parceiro['rg'] = info.rg
+    parceiro['foto_perfil'] = info.foto_perfil
     parceiro['dt_nascimento'] = str(info.dt_nascimento)
     parceiro['genero'] = info.genero
     parceiro['telefone'] = info.telefone
@@ -129,7 +140,7 @@ def edit_parceiro(current_user):
                 db.session.commit()
             else:
                 aluno = Alunos.query.filter_by(id_parceiros=current_user.id_geral).first()
-                aluno.ra = data['ra']
+                aluno.ra = data['RA']
                 aluno.id_unidades = data['unidade']
                 db.session.commit()
 
@@ -154,6 +165,9 @@ def edit_parceiro(current_user):
 
         if data['rg']:
             parceiro.rg = data['rg']
+
+        if data['foto_perfil']:
+            parceiro.foto_perfil = data['foto_perfil']
 
         if data['dt_nascimento']:
             parceiro.dt_nascimento = data['dt_nascimento']

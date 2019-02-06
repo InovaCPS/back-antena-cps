@@ -27,6 +27,8 @@ CREATE TABLE parceiros(
 
     matricula INTEGER, 
 
+    foto_perfil VARCHAR(500), 
+
     dt_nascimento date NULL,
     genero VARCHAR(15) NULL,
     

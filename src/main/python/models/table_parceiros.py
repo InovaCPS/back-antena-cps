@@ -19,6 +19,8 @@ class Parceiros(UserMixin, db.Model):
 
     matricula = db.Column(db.Integer())
 
+    foto_perfil = db.Column(db.String(500))
+
     dt_nascimento = db.Column(db.Date())
     genero = db.Column(db.String(15))
     
