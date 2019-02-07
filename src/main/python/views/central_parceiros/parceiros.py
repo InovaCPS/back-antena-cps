@@ -1,3 +1,4 @@
+from datetime import date
 from webapp import db, cp, mail
 from models.table_parceiros import Parceiros
 from models.table_inscricoes import Inscricoes
@@ -15,6 +16,10 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from sqlalchemy import exc
 
 s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
+
+def calculate_age(born):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 @cp.route('/getId', methods=['GET'])
 @token_required
@@ -71,6 +76,11 @@ def get_one_parceiro(current_user, parceiro_id):
     parceiro['facebook']= info.facebook
     parceiro['linkedin'] = info.linkedin 
     parceiro['twitter'] = info.twitter
+    parceiro['idade'] = ""
+
+    if info.dt_nascimento:
+        parceiro['idade'] = calculate_age(info.dt_nascimento)
+        
 
     return jsonify(parceiro)
 
@@ -144,7 +154,7 @@ def edit_parceiro(current_user):
                 aluno.id_unidades = data['unidade']
                 db.session.commit()
 
-                parceiro.nivel = 'Aluno'
+            parceiro.nivel = 'Aluno'
 
         if data['matricula']:
             parceiro.matricula = data['matricula']

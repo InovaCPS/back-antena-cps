@@ -3,16 +3,13 @@ from models.table_alunos import Alunos
 from models.table_parceiros import Parceiros
 from models.table_diretores import Diretores
 from models.table_unidades import Unidades
+from views.central_parceiros.parceiros import calculate_age
 from views.central_parceiros.login import token_required
 from flask import jsonify, request, redirect, url_for
 
 @cp.route('/aluno', methods=['GET'])
 @token_required
 def get_alunos(current_user):
-    permissoes = ['Diretor']
-    if not current_user.nivel in permissoes:
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
-
     diretor = Diretores.query.filter_by(id_parceiros=current_user.id_geral).first()
     alunos = Alunos.query.filter_by(id_unidades=diretor.id_unidades).all()
 
@@ -31,12 +28,7 @@ def get_alunos(current_user):
 @cp.route('/aluno/<int:id>', methods=['GET'])
 @token_required
 def get_one_aluno(current_user, id):
-    permissoes = ['Diretor']
-    if not current_user.nivel in permissoes:
-        return jsonify({'Mensagem': 'Você não tem Permissão'})
-
-    diretor = Diretores.query.filter_by(id_parceiros=2).first()
-    aluno = Alunos.query.filter_by(id_unidades=1, id_parceiros=id).first()
+    aluno = Alunos.query.filter_by(id_parceiros=id).first()
 
     if not aluno:
         return jsonify({'Mensagem': 'O ID informado é inválido!'})
@@ -63,6 +55,10 @@ def get_one_aluno(current_user, id):
     info['twitter'] = parceiro.twitter
     info['escola'] = unidade.nome
     info['escola_cidade'] = unidade.cidade
+    info['idade'] = ''
+
+    if parceiro.dt_nascimento:
+        info['idade'] = calculate_age(parceiro.dt_nascimento)
 
     return jsonify(info)
 
