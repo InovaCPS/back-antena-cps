@@ -15,10 +15,11 @@
 CREATE TABLE parceiros(
     id_geral SERIAL PRIMARY KEY,
 
-    nivel VARCHAR(100) NOT NULL,    -- identificação atravez do back-end qual é a tabela
+    nivel VARCHAR(100) NOT NULL,
     
     nome VARCHAR(100) NULL,
     sobrenome VARCHAR(100) NULL,
+    
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(500) NOT NULL,
 
@@ -141,7 +142,6 @@ CREATE TABLE eventos(
     situacao VARCHAR(40),
     capacidade INTEGER,
     inscrito INTEGER,
-    acesso BOOLEAN, -- Disponibilidade para se inscrever no evento
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),
     FOREIGN KEY (id_unidades) REFERENCES unidades(id)
 ) WITH (
@@ -233,33 +233,101 @@ CREATE TABLE parceiro_tema (
 	OIDS=FALSE
 );
 
---rollback DROP TABLE LOG_LOG;
+CREATE TABLE cursos (
+    id SERIAL PRIMARY KEY, 
+    nome VARCHAR(150)
+) WITH (
+	OIDS=FALSE
+);
+
+CREATE TABLE arquivos (
+    id SERIAL PRIMARY KEY, 
+    midia VARCHAR(500), 
+    titulo VARCHAR(50), 
+    descricao VARCHAR(250), 
+    codigo VARCHAR(50), 
+    id_parceiro INTEGER, 
+    FOREIGN KEY (id_parceiro) REFERENCES parceiros(id_geral)
+) WITH (
+	OIDS=FALSE
+);
+
+CREATE TABLE projetos (
+    id SERIAL PRIMARY KEY, 
+    titulo VARCHAR(100), 
+    descricao VARCHAR(500), 
+    id_parceiro INTEGER, 
+    premiado BOOLEAN, 
+    FOREIGN KEY (id_parceiro) REFERENCES parceiros(id_geral)
+) WITH (
+	OIDS=FALSE
+);
+
+CREATE TABLE palavras_chave (
+    id SERIAL PRIMARY KEY, 
+    palavra VARCHAR(30), 
+    id_projeto INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE rel_projeto_arquivo (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    id_arquivo INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id), 
+    FOREIGN KEY (id_arquivo) REFERENCES arquivos(id)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE rel_projeto_curso (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    id_curso INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id), 
+    FOREIGN KEY (id_curso) REFERENCES cursos(id)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE rel_projeto_colaborador (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    id_colaborador INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id), 
+    FOREIGN KEY (id_colaborador) REFERENCES parceiros(id_geral)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE rel_projeto_unidade (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    id_unidade INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id), 
+    FOREIGN KEY (id_unidade) REFERENCES unidades(id)
+) WITH (
+    OIDS=FALSE
+);
+
+CREATE TABLE links (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    url VARCHAR(300), 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id)
+) WITH (
+    OIDS=FALSE
+);
 
 ---------------------------------------
-
--- Inserções de teste do banco de desenvolvimento
--- EXCLUIR QUANDO ENVIAR PARA PRODUÇÃO
-
---INSERT INTO parceiros (nivel, nome, email, senha) 
---VALUES ('Parceiro', 'João', 'joao@gmail.com', '321');
-
---INSERT INTO parceiros (nivel, nome, email, senha) 
---VALUES ('Agente', 'Maria', 'maria@gmail.com', '123');
-
---INSERT INTO parceiros (nivel, nome, email, senha) 
---VALUES ('Diretor', 'José', 'jose@gmail.com', '213');
 
 INSERT INTO regioes (nome)
 VALUES ('Baixada Santista');
 
 INSERT INTO unidades (nome, endereco, bairro, cidade, id_regioes)
 VALUES ('FATEC PG', 'Praça 19 de Janeiro, 144', 'Boqueirão', 'Praia Grande', 1);
-
---INSERT INTO agentes (matricula, id_unidades, id_parceiros, hora)
---VALUES (12345679, 1, 2, '30:00');
-
---INSERT INTO diretores (id_unidades, id_parceiros)
---VALUES (1, 3);
 
 INSERT INTO eixos (nome)
 VALUES ('Tecnologia');

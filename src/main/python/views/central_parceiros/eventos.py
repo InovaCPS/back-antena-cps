@@ -472,32 +472,28 @@ def post_inscrito(current_user, id_evento):
     if not evento:
         return jsonify({'Mensagem': 'Evento não encontrado!'})
 
-    if evento.acesso is True:
-        if check_evento(evento.id) == False:
-            return jsonify({'Mensagem': 'Não é mais possível se cadastrar nesse evento!'})
+    if check_evento(evento.id) == False:
+        return jsonify({'Mensagem': 'Não é mais possível se cadastrar nesse evento!'})
 
-        if evento.capacidade == evento.inscrito:
-            return jsonify({'Mensagem': 'Evento Lotado!'})
+    if evento.capacidade == evento.inscrito:
+        return jsonify({'Mensagem': 'Evento Lotado!'})
 
-        else:
-            _inscrito = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = evento.id).first()
-
-            if not _inscrito:
-                inscricao = Inscricoes(current_user.id_geral, evento.id)
-                db.session.add(inscricao)
-                db.session.commit()
-
-                novo = Eventos.query.filter_by(id = evento.id).first()
-                novo.inscrito += 1
-
-                db.session.commit()
-
-                return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
-            
-            return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
-        
     else:
-        return jsonify({'Mensagem': 'As inscrições para esse evento foram encerradas!'})
+        _inscrito = Inscricoes.query.filter_by(id_parceiros = current_user.id_geral, id_eventos = evento.id).first()
+
+        if not _inscrito:
+            inscricao = Inscricoes(current_user.id_geral, evento.id)
+            db.session.add(inscricao)
+            db.session.commit()
+
+            novo = Eventos.query.filter_by(id = evento.id).first()
+            novo.inscrito += 1
+
+            db.session.commit()
+
+            return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
+            
+        return jsonify({'Mensagem': "Você já está cadastrado nesse evento!"})
 
 @cp.route('/evento/<id_evento>/inscrito', methods=['DELETE'])
 @token_required

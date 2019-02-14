@@ -51,6 +51,8 @@ api = Api(app)
 CORS(app)
 db = get_db_instance(app, DB_URL)
 
+app.config['UPLOAD_FOLDER'] = '../../../../arquivos/'
+
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'gmail@gmail.com'
@@ -73,5 +75,6 @@ from views.central_parceiros.diretor import cp
 from views.central_parceiros.diretor import cp
 from views.central_parceiros.adm import cp
 from views.central_parceiros.aluno import cp
+from views.central_parceiros.projetos import cp
 
 app.register_blueprint(cp)

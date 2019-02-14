@@ -141,7 +141,6 @@ CREATE TABLE eventos(
     situacao VARCHAR(40),
     capacidade INTEGER,
     inscrito INTEGER,
-    acesso BOOLEAN, -- Disponibilidade para se inscrever no evento
     FOREIGN KEY (id_atividades) REFERENCES atividades(id),
     FOREIGN KEY (id_unidades) REFERENCES unidades(id)
 ) WITH (
