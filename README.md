@@ -1,6 +1,16 @@
 # Antena CPS
 
-Este projeto tem como premissa a criação de ambientes para integração dos parceiros do CPS
+Este projeto tem como premissa a criação da maior e melhor plataforma de conexão entre alunos e o ecossistema.
+
+A fim de virar uma comunidade, decidimos deixar algumas features disponíveis para que alunos e/ou interessados em colaborar possam ajudar no desenvolvimento, adquirindo experiencia, podendo usar sua contribuição como portfólio!
+
+
+## Como Você pode Colaborar
+
+Se você está a fim de ajudar no desenvolvimento, sempre disponibilizaremos "*bugs*" na aba de **Issues do repositorio**, bem como *features* no kanban disponivel em **Projects**, no projeto *Open Source*.
+
+O Front-End do projeto está sendo construido em Angular CLi e o Back-End em Python e Flask!
+Saiba mais sobre o Front-end clicando [aqui](https://github.com/InovaCPS/front-antena-cps/blob/master/README.md)
 
 ## Equipe
 
@@ -41,40 +51,14 @@ ou
     ```bash
     deactivate
     ```
-* Instalando o PyBuilder - Projeto versionado
-    ```bash
-    git clone https://github.com/cpsinova/inova-log.git
-    cd inova-log
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install --upgrade pip
-    pip install pybuilder
-    pyb install_dependencies
-    pyb
-    Depois: Verifique se target/dist/inova-log* foi criado
-    ```
 
 ### Instruções opcionais - Use se necessário: ###
 
-* Criando uma nova estrutura de projeto usando o PyBuilder
-    ```bash
-    pip intall pybuilder
-    pyb --start-project
-    pyb install_dependencies publish
-    Depois: verifique se target/dist/inova-log* foi criado
-    
-    ```
 * Atualizando todos os pacotes instalados na "venv"
  	1. Access **venv**
  	2. Execute: 
     ```bash 
     pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U 
-    ```
-* Fazendo upload do projeto para o repositório do PyPi
-    ```bash
-    pip install twine
-    pyb
-    twine upload -r pypi <caminho e nome do pacote tar.gz criato na pasta TARGET>
     ```
 * Criando a base de dados do projeto
     * Pre-requerimentos (software)
