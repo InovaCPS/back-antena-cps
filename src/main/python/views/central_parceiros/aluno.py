@@ -3,6 +3,7 @@ from models.table_alunos import Alunos
 from models.table_parceiros import Parceiros
 from models.table_diretores import Diretores
 from models.table_unidades import Unidades
+from models.table_cursos import Cursos
 from views.central_parceiros.parceiros import calculate_age
 from views.central_parceiros.login import token_required
 from flask import jsonify, request, redirect, url_for
@@ -84,3 +85,19 @@ def del_aluno(current_user, ra):
     db.session.commit()
 
     return jsonify({'Mensagem': 'Deletado com sucesso!'})
+
+@cp.route('/cursos', methods=['GET'])
+@token_required
+def get_cursos(current_user):
+    cursos = Cursos.query.all()
+
+    listaCursos = []
+
+    for curso in cursos:
+        infoCurso = {}
+        infoCurso['id'] = curso.id
+        infoCurso['nome'] = curso.nome
+
+        listaCursos.append(infoCurso)
+    
+    return jsonify(listaCursos)

@@ -1,9 +1,9 @@
 from webapp import db, cp, app
-from models.table_projetos import Projeto
-from models.table_arquivos import Arquivo
-from models.table_cursos import Curso
-from models.table_links import Link
-from models.table_palavras_chave import Palavra_chave
+from models.table_projetos import Projetos
+from models.table_arquivos import Arquivos
+from models.table_cursos import Cursos
+from models.table_links import Links
+from models.table_palavras_chave import Palavras_chave
 from models.table_relacao_projeto_arquivo import Rel_projeto_arquivo
 from models.table_relacao_projeto_curso import Rel_projeto_curso
 from models.table_relacao_projeto_parceiro import Rel_projeto_colaborador
@@ -11,17 +11,15 @@ from models.table_relacao_projeto_unidade import Rel_projeto_unidade
 from models.table_parceiros import Parceiros
 from models.table_unidades import Unidades
 from views.central_parceiros.login import token_required
-from flask import request
-import os, datetime
+from flask import request, jsonify
+import os, datetime, json
 
 @cp.route('/projetos', methods=['POST'])
 @token_required
 def post_projeto(current_user):
-    arquivos = dict(request.files)
-    arquivos = arquivos['arquivo']
-    data = request.get_json()
+    data = json.loads(request.form['projeto'])
 
-    projeto = Projeto(
+    projeto = Projetos(
         titulo = data['titulo'], 
         descricao = data['descricao'], 
         id_parceiro = current_user.id_geral, 
@@ -43,11 +41,11 @@ def post_projeto(current_user):
             )
         
             db.session.add(projetoUnidade)
-            dn.session.commit()
+            db.session.commit()
 
     cursos = data['cursos']
     for curso in cursos:
-        curso = Curso.query.filter_by(id=curso)
+        curso = Cursos.query.filter_by(id=curso).first()
         if not curso:
             pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
         else:
@@ -60,9 +58,10 @@ def post_projeto(current_user):
             db.session.commit()
 
 
-    palavrasChave = data['palavras-chave']
+    palavrasChave = data['palavrasChave']
     for palavra in palavrasChave:
-        novaPalavra = Palavra_chave(
+        palavra = palavra.strip(" ")
+        novaPalavra = Palavras_chave(
             id_projeto = projeto.id, 
             palavra = palavra
         )
@@ -73,7 +72,8 @@ def post_projeto(current_user):
 
     colaboradores = data['colaboradores']
     for colaborador in colaboradores:
-        colaborador = Parceiros.query.filter_by(id_geral = colaborador).first()
+        colaborador = colaborador.strip(" ")        
+        colaborador = Parceiros.query.filter_by(email = colaborador).first()
         if not colaborador:
             pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
         else:
@@ -81,11 +81,15 @@ def post_projeto(current_user):
                 id_projeto = projeto.id, 
                 id_colaborador = colaborador.id_geral
             )
+
+            db.session.add(projetoColaborador)
+            db.session.commit()
     
     if projeto.premiado == True:
-        links = data['links_premiacao']
+        links = data['links']
         for link in links:
-            link = Link(
+            link = link.strip(" ")
+            link = Links(
                 id_projeto = projeto.id, 
                 url = link
             )
@@ -94,37 +98,47 @@ def post_projeto(current_user):
             db.session.commit()
 
     dadosArquivos = data['arquivos']
-    for arquivo in arquivos:
-        for dado in dadosArquivos:
-            if dado['midia'] == arquivo.filename:
-                novoNome = hash('{}{}{}'.format(projeto.id, current_user.id_geral, str(datetime.datetime.now())))
-                arquivo.filename = novoNome
-                dado['midia'] = novoNome
+    for dado in dadosArquivos:
+        nomeArquivo = dado['nomeMidia']
+        extensao = nomeArquivo.split(".")[1]
+        novoNome = str(hash('{}{}{}'.format(current_user.id_geral, str(datetime.datetime.now()), nomeArquivo))) + "." + extensao
+        arquivo = request.files[dado['nomeMidia']]
+        arquivo.filename = novoNome
+        dado['nomeMidia'] = novoNome 
 
-                arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], arquivo.filename))
+        arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], arquivo.filename))
 
-                infoArquivo = Arquivo(
-                    midia = data['midia'], 
-                    titulo = data['titulo'], 
-                    descricao = data['descricao'], 
-                    codigo = data['codigo'], 
-                    id_parceiro = current_user.id_geral
-                )
+        infoArquivo = Arquivos(
+            midia = dado['nomeMidia'], 
+            titulo = dado['titulo'], 
+            descricao = dado['descricao'], 
+            codigo = dado['codigo'], 
+            id_parceiro = current_user.id_geral
+        )
 
-                db.session.add(infoArquivo)
-                db.session.commit()
+        db.session.add(infoArquivo)
+        db.session.commit()
+
+        projetoArquivo = Rel_projeto_arquivo(
+            id_projeto = projeto.id, 
+            id_arquivo = infoArquivo.id
+        )
+
+        db.session.add(projetoArquivo)
+        db.session.commit()
 
     return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
 
 @cp.route('/projetos', methods=['GET'])
 @token_required
 def get_projetos(current_user):
-    dados = Projeto.query.all()
+    dados = Projetos.query.all()
 
     projetos = []
 
     for dado in dados:
         projeto = {}
+        projeto['id'] = dado.id
         projeto['titulo'] = dado.titulo
         projeto['descricao'] = dado.descricao
 
@@ -135,7 +149,7 @@ def get_projetos(current_user):
 @cp.route('/projetos/<int:id>', methods=['GET'])
 @token_required
 def get_projeto(current_user, id):
-    dados = Projeto.query.filter_by(id = id).first()
+    dados = Projetos.query.filter_by(id = id).first()
 
     if not dados:
         return jsonify({'Mensagem': 'Projeto não encontrado!'})
@@ -145,17 +159,18 @@ def get_projeto(current_user, id):
     projeto['descricao'] = dados.descricao
 
     # PARCEIRO
-    parceiro = Parceiros.query.filter_by(id_geral = dados.id_parceiro)
-    projeto['id_parceiro'] = parceiro.id_geral
-    projeto['nome_parceiro'] = "{} {}".format(parceiro.nome, parceiro.sobrenome)
+    parceiro = Parceiros.query.filter_by(id_geral = dados.id_parceiro).first()
+    if parceiro is not None:
+        projeto['id_parceiro'] = parceiro.id_geral
+        projeto['nome_parceiro'] = "{} {}".format(parceiro.nome, parceiro.sobrenome)
 
     # UNIDADES
     idUnidadesRelacionadas = Rel_projeto_unidade.query.filter_by(id_projeto = dados.id).all()
     unidades = []
-    for id in idUnidadesRelacionadas:
-        unidade = Unidades.query.filter_by(id = id).first()
+    for relacao in idUnidadesRelacionadas:
+        unidade = Unidades.query.filter_by(id = relacao.id_unidade).first()
         infosUnidade = {}
-        infosUnidade['id'] = id
+        infosUnidade['id'] = unidade.id
         infosUnidade['nome'] = unidade.nome
         infosUnidade['cidade'] = unidade.cidade
 
@@ -166,8 +181,8 @@ def get_projeto(current_user, id):
     # CURSOS
     idCursosRelacionados = Rel_projeto_curso.query.filter_by(id_projeto = dados.id).all()
     cursos = []
-    for id in idCursosRelacionados:
-        curso = Curso.query.filter_by(id = id).first()
+    for relacao in idCursosRelacionados:
+        curso = Cursos.query.filter_by(id = relacao.id_curso).first()
         infosCurso = {}
         infosCurso['id'] = curso.id
         infosCurso['nome'] = curso.nome
@@ -177,20 +192,21 @@ def get_projeto(current_user, id):
     projeto['cursos'] = cursos
 
     # PALAVRAS-CHAVE
-    palavras = Palavra_chave.query.filter_by(id_projeto = dados.id).all()
+    listaPalavras = Palavras_chave.query.filter_by(id_projeto = dados.id).all()
     palavrasChave = []
-    for palavra in palavras:
-        infosPalavra['palavra'] = palavra
+    for item in listaPalavras:
+        infosPalavra = {}
+        infosPalavra['palavra'] = item.palavra
 
         palavrasChave.append(infosPalavra)
     
     projeto['palavras-chave'] = palavrasChave
 
     # COLABORADORES
-    idColaboradoresRelacionados = Rel_projeto_colaborador(id_projeto = dados.id).all()
+    idColaboradoresRelacionados = Rel_projeto_colaborador.query.filter_by(id_projeto = dados.id).all()
     colaboradores = []
-    for id in idColaboradoresRelacionados:
-        colaborador = Parceiros.query.filter_by(id_geral = id).first()
+    for relacao in idColaboradoresRelacionados:
+        colaborador = Parceiros.query.filter_by(id_geral = relacao.id_colaborador).first()
         infosColaborador = {}
         infosColaborador['id'] = id
         infosColaborador['nome'] = "{} {}".format(colaborador.nome, colaborador.sobrenome)
@@ -201,15 +217,15 @@ def get_projeto(current_user, id):
     projeto['colaboradores'] = colaboradores
 
     # ARQUIVOS
-    idArquivosRelacionados = Rel_projeto_arquivo(id_projeto = dados.id).all()
+    idArquivosRelacionados = Rel_projeto_arquivo.query.filter_by(id_projeto = dados.id).all()
     arquivos = []
-    for id in idArquivosRelacionados:
-        arquivo = Arquivo.query.filter_by(id = id)
+    for relacao in idArquivosRelacionados:
+        arquivo = Arquivos.query.filter_by(id = relacao.id_arquivo).first()
         infosArquivo = {}
-        infosColaborador['midia'] = arquivo.midia
-        infosColaborador['titulo'] = arquivo.titulo
-        infosColaborador['descricao'] = arquivo.descricao
-        infosColaborador['codigo'] = arquivo.codigo
+        infosArquivo['midia'] = arquivo.midia
+        infosArquivo['titulo'] = arquivo.titulo
+        infosArquivo['descricao'] = arquivo.descricao
+        infosArquivo['codigo'] = arquivo.codigo
 
         arquivos.append(infosArquivo)
 
@@ -219,7 +235,7 @@ def get_projeto(current_user, id):
     projeto['premiado'] = dados.premiado
     links = []
     if dados.premiado == True:
-        linksRelacionados = Link.query.filter_by(id_projeto = dados.id).all()
+        linksRelacionados = Links.query.filter_by(id_projeto = dados.id).all()
         for link in linksRelacionados:
             infosLink = {}
             infosLink['URL'] = link.url

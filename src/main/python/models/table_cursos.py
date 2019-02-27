@@ -1,6 +1,6 @@
 from webapp import db
 
-class Curso(db.Model):
+class Cursos(db.Model):
     __tablename__: 'cursos'
 
     id = db.Column(db.Integer, primary_key = True)

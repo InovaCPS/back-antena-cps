@@ -1,6 +1,6 @@
 from webapp import db
 
-class Palavra_chave(db.Model):
+class Palavras_chave(db.Model):
     __tablename__: 'palavras_chave'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -8,5 +8,5 @@ class Palavra_chave(db.Model):
     palavra = db.Column(db.String(30))
 
     def __init__(self, id_projeto, palavra):
-        self.if_projeto = id_projeto
+        self.id_projeto = id_projeto
         self.palavra = palavra

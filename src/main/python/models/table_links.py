@@ -1,6 +1,6 @@
 from webapp import db
 
-class Link(db.Model):
+class Links(db.Model):
     __tablename__: 'links'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -8,5 +8,5 @@ class Link(db.Model):
     url = db.Column(db.String(300))
 
     def __init__(self, id_projeto, url):
-        self.if_projeto = id_projeto
+        self.id_projeto = id_projeto
         self.url = url

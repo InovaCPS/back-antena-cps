@@ -1,6 +1,6 @@
 from webapp import db
 
-class Arquivo(db.Model):
+class Arquivos(db.Model):
     __tablename__: 'arquivos'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -8,7 +8,7 @@ class Arquivo(db.Model):
     titulo = db.Column(db.String(50))
     descricao = db.Column(db.String(250))
     codigo = db.Column(db.String(50))
-    id_parceiro = db.Column(db.Integer, db.ForeignKey('parceiros.ig_geral'))
+    id_parceiro = db.Column(db.Integer, db.ForeignKey('parceiros.id_geral'))
 
     def __init__(self, midia, titulo, descricao, codigo, id_parceiro):
         self.midia = midia

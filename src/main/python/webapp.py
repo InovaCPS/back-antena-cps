@@ -51,7 +51,7 @@ api = Api(app)
 CORS(app)
 db = get_db_instance(app, DB_URL)
 
-app.config['UPLOAD_FOLDER'] = '../../../../arquivos/'
+app.config['UPLOAD_FOLDER'] = 'CAMINHO DO BUCKET'
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
