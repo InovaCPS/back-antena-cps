@@ -334,3 +334,46 @@ VALUES ('Tecnologia');
 
 INSERT INTO eixos (nome)
 VALUES ('Outros');
+
+-- =========================== 27/02/2019 ===================================
+
+CREATE TABLE categorias_projetos (
+    id SERIAL PRIMARY KEY, 
+    categoria VARCHAR(100)
+) WITH (
+    OIDS=FALSE
+);
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Design');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Ambiente');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Gestão');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Robótica');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Educação');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Tecnologia');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Infraestrutura');
+
+INSERT INTO categorias_projetos (categoria)
+VALUES ('Saúde');
+
+CREATE TABLE rel_projeto_categoria (
+    id SERIAL PRIMARY KEY, 
+    id_projeto INTEGER, 
+    id_categoria INTEGER, 
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id), 
+    FOREIGN KEY (id_categoria) REFERENCES categorias_projetos(id)
+) WITH (
+    OIDS=FALSE
+);

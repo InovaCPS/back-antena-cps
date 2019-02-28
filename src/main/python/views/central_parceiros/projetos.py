@@ -8,8 +8,10 @@ from models.table_relacao_projeto_arquivo import Rel_projeto_arquivo
 from models.table_relacao_projeto_curso import Rel_projeto_curso
 from models.table_relacao_projeto_parceiro import Rel_projeto_colaborador
 from models.table_relacao_projeto_unidade import Rel_projeto_unidade
+from models.table_relacao_projeto_categoria import Rel_projeto_categoria
 from models.table_parceiros import Parceiros
 from models.table_unidades import Unidades
+from models.table_categorias_projeto import Categorias_projetos
 from views.central_parceiros.login import token_required
 from flask import request, jsonify
 import os, datetime, json
@@ -96,6 +98,16 @@ def post_projeto(current_user):
 
             db.session.add(link)
             db.session.commit()
+
+    categorias = data['categorias']
+    for categoria in categorias:
+        projetoCategoria = Rel_projeto_categoria(
+            id_projeto = projeto.id, 
+            id_categoria = categoria['id']
+        )
+
+        db.session.add(projetoCategoria)
+        db.session.commit()
 
     dadosArquivos = data['arquivos']
     for dado in dadosArquivos:
@@ -244,5 +256,29 @@ def get_projeto(current_user, id):
 
     projeto['links'] = links
 
+    # CATEGORIAS
+    idCategoriasRelacionadas = Rel_projeto_categoria.query.filter_by(id_projeto = dados.id).all()
+    categorias = []
+    for relacao in idCategoriasRelacionadas:
+        dadosCategoria = Categorias_projetos.query.filter_by(id = relacao.id_categoria).first()
+        infosCategoria = {}
+        infosCategoria['id'] = dadosCategoria.id
+        infosCategoria['nome'] = dadosCategoria.categoria
 
     return jsonify(projeto)
+
+# ====================================================================
+@cp.route('/projetos/categorias', methods=['GET'])
+@token_required
+def get_categorias(current_user):
+    dadosCategorias = Categorias_projetos.query.all()
+
+    listaCategorias = []
+    for dado in dadosCategorias:
+        categoria = {}
+        categoria['id'] = dado.id
+        categoria['nome'] = dado.categoria
+
+        listaCategorias.append(categoria)
+    
+    return jsonify(listaCategorias)
