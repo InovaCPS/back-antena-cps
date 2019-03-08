@@ -17,7 +17,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_mail import Mail
 from helper.config_helper import ConfigHelper
-
+from flasgger import Swagger
 import sys
 
 def config_db_url(resource):
@@ -78,3 +78,9 @@ from views.central_parceiros.aluno import cp
 from views.central_parceiros.projetos import cp
 
 app.register_blueprint(cp)
+
+app.config['SWAGGER'] = {
+    'title': 'Antena CPS', 
+    'description': '#InovaCPS, uma comunidade desenvolvendo a maior e melhor plataforma de conexão entre alunos e o ecossistema, faça parte desse hack!'
+}
+swagger = Swagger(app)

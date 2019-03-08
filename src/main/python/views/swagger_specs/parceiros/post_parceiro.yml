@@ -1,0 +1,28 @@
+summary: Cadastro de um parceiro
+
+tags:
+  - Parceiro
+
+parameters:
+- name: Cadastro
+  in: body
+  description: Cadastro de um parceiro
+  required: true
+  type: string
+  schema:
+    $ref: '#/definitions/ParceiroCadastro'
+responses:
+  '200':
+    description: Cadastrado com sucesso
+definitions:
+  ParceiroCadastro:
+    type: object
+    properties:
+      nome:
+        type: string
+      sobrenome:
+        type: string
+      email:
+        type: string
+      senha:
+        type: string

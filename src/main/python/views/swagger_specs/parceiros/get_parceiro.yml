@@ -1,0 +1,68 @@
+summary: Retorna lista de parceiros
+
+tags:
+  - Parceiro
+
+parameters:
+- name: token
+  in: header
+  description: Token de autenticação
+  required: true
+  type: string
+      
+responses:
+  200:
+    description: Uma lista de parceiros
+    schema:
+      $ref: '#/definitions/Parceiros'
+    examples:
+      [
+        {"email": "joao@email.com", "id_geral": 1, "nivel": "Parceiro", "nome": "João", "sobrenome": "Silva"}, 
+        {"email": "maria@email.com", "id_geral": 2, "nivel": "Parceiro", "nome": "Maria", "sobrenome": "Souza"}
+      ]
+
+definitions:
+  Parceiros:
+    type: array
+    items:
+      $ref: '#/definitions/Parceiro'
+  
+  Parceiro:
+    type: object
+    properties:
+      cargo:
+        type: string
+      cpf:
+        type: string
+      dt_nascimento:
+        type: string
+      email:
+        type: string
+      facebook:
+        type: string
+      foto_perfil:
+        type: string
+      genero:
+        type: string
+      id_geral:
+        type: number
+      idade:
+        type: string
+      lattes:
+        type: string
+      linkedin:
+        type: string
+      local_trabalho:
+        type: string
+      nivel:
+        type: string
+      nome:
+        type: string
+      rg:
+        type: string
+      sobrenome:
+        type: string
+      telefone:
+        type: string
+      twitter:
+        type: string

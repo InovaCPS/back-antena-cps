@@ -1,0 +1,21 @@
+summary: Exclui um parceiro
+
+tags:
+  - Parceiro
+  
+parameters:
+- name: token
+  in: header
+  description: Token de autenticação
+  required: true
+  type: string
+  
+- name: parceiro_id
+  in: path
+  description: ID geral do parceiro
+  required: true
+  type: integer
+
+responses:
+  200:
+    description: Excluido com sucesso

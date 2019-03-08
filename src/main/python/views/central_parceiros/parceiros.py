@@ -14,6 +14,7 @@ from views.central_parceiros.login import token_required
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from sqlalchemy import exc
+from flasgger.utils import swag_from
 
 s = URLSafeTimedSerializer('this-is-secret') #melhorar essa chave de segurança
 
@@ -31,6 +32,7 @@ def getId(current_user):
     return jsonify(infos)
 
 @cp.route('/parceiro', methods=['GET'])
+@swag_from('../swagger_specs/parceiros/get_parceiro.yml')
 @token_required
 def get_parceiro(current_user):
     dados = Parceiros.query.all()
@@ -50,7 +52,8 @@ def get_parceiro(current_user):
     return jsonify(parceiros)
 
 
-@cp.route('/parceiro/<parceiro_id>', methods=['GET'])
+@cp.route('/parceiro/<int:parceiro_id>', methods=['GET'])
+@swag_from('../swagger_specs/parceiros/get_one_parceiro.yml')
 @token_required
 def get_one_parceiro(current_user, parceiro_id):
     info = Parceiros.query.filter_by(id_geral=parceiro_id).first()
@@ -86,6 +89,7 @@ def get_one_parceiro(current_user, parceiro_id):
 
 
 @cp.route('/parceiro', methods=['POST'])
+@swag_from('../swagger_specs/parceiros/post_parceiro.yml')
 def post_parceiro():
     data = request.get_json()
     password = generate_password_hash(data['senha'])
@@ -114,6 +118,7 @@ def post_parceiro():
     return jsonify({'Mensagem': 'Adicionado com sucesso!'})
 
 @cp.route('/parceiro', methods=['PUT'])
+@swag_from('../swagger_specs/parceiros/edit_parceiro.yml')
 @token_required
 def edit_parceiro(current_user):
     parceiro = Parceiros.query.filter_by(id_geral=current_user.id_geral).first()
@@ -212,6 +217,7 @@ def edit_parceiro(current_user):
 
 
 @cp.route('/parceiro/<parceiro_id>', methods=['DELETE'])
+@swag_from('../swagger_specs/parceiros/del_parceiro.yml')
 @token_required
 def del_parceiro(current_user, parceiro_id):
     parceiro = Parceiros.query.filter_by(id_geral=parceiro_id).first()

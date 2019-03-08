@@ -8,6 +8,7 @@ from werkzeug.datastructures import Headers
 import jwt
 import datetime
 from functools import wraps
+from flasgger.utils import swag_from
 
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
@@ -53,6 +54,7 @@ def token_required(f):
 
 
 @app.route('/login', methods=['POST'])
+@swag_from('../swagger_specs/autenticacao/login.yml', methods=['POST'])
 def login():
     auth = request.get_json()
     if not auth or not auth['username'] or not auth['password']:

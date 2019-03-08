@@ -1,0 +1,24 @@
+summary: Autenticação do usuário
+
+tags:
+  - Autenticação
+
+parameters:
+- name: Autenticação
+  in: body
+  description: Autenticação do parceiro
+  required: true
+  type: string
+  schema:
+    $ref: '#/definitions/ParceiroLogin'
+responses:
+  '200':
+    description: Autenticação válida
+definitions:
+  ParceiroLogin:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string

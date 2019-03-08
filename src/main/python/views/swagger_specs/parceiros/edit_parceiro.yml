@@ -1,0 +1,64 @@
+summary: Atualização de um parceiro
+
+tags:
+  - Parceiro
+
+parameters:
+- name: token
+  in: header
+  description: Token de autenticação
+  required: true
+  type: string
+
+- name: Atualização
+  in: body
+  description: Atualização de um parceiro
+  required: true
+  type: string
+  schema:
+    $ref: '#/definitions/Parceiro'
+
+responses:
+  '200':
+    description: Atualizado com sucesso
+
+definitions:  
+  Parceiro:
+    type: object
+    properties:
+      cargo:
+        type: string
+      cpf:
+        type: string
+      dt_nascimento:
+        type: string
+      email:
+        type: string
+      facebook:
+        type: string
+      foto_perfil:
+        type: string
+      genero:
+        type: string
+      id_geral:
+        type: number
+      idade:
+        type: string
+      lattes:
+        type: string
+      linkedin:
+        type: string
+      local_trabalho:
+        type: string
+      nivel:
+        type: string
+      nome:
+        type: string
+      rg:
+        type: string
+      sobrenome:
+        type: string
+      telefone:
+        type: string
+      twitter:
+        type: string
