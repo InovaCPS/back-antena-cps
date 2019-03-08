@@ -90,7 +90,7 @@ ou
     ./runserver.sh
 
 ### Documentação ###
-Utilizamos uma adaptação do Swagger, o [Flasgger](https://github.com/rochacbruno/flasgger) para uma documentação visual da nossa API que pode ser acessada através da rota /apidocs.
+Utilizamos uma adaptação do Swagger, o [Flasgger](https://github.com/rochacbruno/flasgger), para uma documentação visual da nossa API que pode ser acessada através da rota /apidocs.
 
 ### Endpoints: ###
 ```bash
