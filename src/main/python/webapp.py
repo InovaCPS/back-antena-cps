@@ -18,7 +18,17 @@ from flask_cors import CORS
 from flask_mail import Mail
 from helper.config_helper import ConfigHelper
 from flasgger import Swagger
+
 import sys
+import os
+
+'''endpoint = os.environ['API_ENDPOINT']
+
+
+def config_db_url(resource):
+    config = ConfigHelper(resource)
+    url = 'postgresql+psycopg2://{endpoint.inovaBDUser}:{endpoint.inovaBDPassword}@{endpoint.inovaBDHost}:{endpoint.inovaBDPorta}/{endpoint.inovaBDDatasource}'
+    return url'''
 
 def config_db_url(resource):
     config = ConfigHelper(resource)
@@ -32,11 +42,11 @@ def config_db_url(resource):
     return url
 
 
-def get_db_instance(app, db_url):
-    app.config['SECRET_KEY'] = 'thisissecret'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    return SQLAlchemy(app)
+def get_db_instance(application, db_url):
+    application.config['SECRET_KEY'] = 'thisissecret'
+    application.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    return SQLAlchemy(application)
 
 # Se '-t' estiver na lista de parâmetros so sistema o arquivo de configuração do banco é alterado
 # indicando que os testes estão sendo rodados, caso contrário as configurações do banco
@@ -46,20 +56,20 @@ if '-t' in sys.argv:
     APP_RESOURCE = './src/main/resources/application_qa.properties'
 
 DB_URL = config_db_url(APP_RESOURCE)
-app = Flask(__name__)
-api = Api(app)
-CORS(app)
-db = get_db_instance(app, DB_URL)
+application = Flask(__name__)
+api = Api(application)
+CORS(application)
+db = get_db_instance(application, DB_URL)
 
 app.config['UPLOAD_FOLDER'] = '../arquivos/'
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'gmail@gmail.com'
-app.config['MAIL_PASSWORD'] = 'senha gmail'
-app.config['MAIL_USE_SSL'] = True
+application.config['MAIL_SERVER']='smtp.gmail.com'
+application.config['MAIL_PORT'] = 465
+application.config['MAIL_USERNAME'] = 'gmail@gmail.com'
+application.config['MAIL_PASSWORD'] = 'senha gmail'
+application.config['MAIL_USE_SSL'] = True
 
-mail = Mail(app)
+mail = Mail(application)
 
 cp = Blueprint('cp', __name__, url_prefix='/cp')
 
@@ -77,7 +87,10 @@ from views.central_parceiros.adm import cp
 from views.central_parceiros.aluno import cp
 from views.central_parceiros.projetos import cp
 
-app.register_blueprint(cp)
+application.register_blueprint(cp)
+
+
+#db.create_all()
 
 app.config['SWAGGER'] = {
     'title': 'Antena CPS', 

@@ -11,7 +11,7 @@ import os.path
 path.append('src/main/python/')
 
 from helper.config_helper import ConfigHelper
-from webapp import app, APP_RESOURCE
+from webapp import application, APP_RESOURCE
 
 # Load server configuration
 helper = ConfigHelper(APP_RESOURCE)
@@ -21,4 +21,5 @@ cdebug = bool(helper.get_property_by_section('server', 'inova.debug'))
 
 # Start Web Server for all hosts
 
-app.run(host=chost, debug=cdebug, port=cport)
+if __name__ == "__main__":
+    application.run(host=chost, debug=cdebug, port=cport)

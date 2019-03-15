@@ -1,4 +1,4 @@
-from webapp import app, db
+from webapp import application, db
 from models.table_parceiros import Parceiros
 from flask import request, jsonify, make_response, redirect, url_for, session
 from flask_cors import cross_origin
@@ -26,7 +26,7 @@ google_blueprint = make_google_blueprint(
     ]
 )
 
-app.register_blueprint(google_blueprint, url_prefix='/google_login')
+application.register_blueprint(google_blueprint, url_prefix='/google_login')
 google_blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user_required=False)
 
 def token_required(f):
@@ -43,7 +43,7 @@ def token_required(f):
         if not token:
             return jsonify({'Mensagem': 'Você precisa de uma Token para ter acesso!'}), 401
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, application.config['SECRET_KEY'])
             current_user = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
         except:
             return jsonify({'Mensagem': 'Token invalida!'}), 401
@@ -53,7 +53,7 @@ def token_required(f):
     return decoreted
 
 
-@app.route('/login', methods=['POST'])
+@application.route('/login', methods=['POST'])
 @swag_from('../swagger_specs/autenticacao/login.yml', methods=['POST'])
 def login():
     auth = request.get_json()
@@ -66,7 +66,7 @@ def login():
         return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
     
     if check_password_hash(parceiro.senha, auth['password']):
-        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
         
         # session['token'] = token.decode('UTF-8')
         # return jsonify({'Mensagem': 'Bem Vindo {}!'.format(parceiro.nome)})
@@ -74,7 +74,7 @@ def login():
     
     return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-@app.route('/login/google', methods=['GET', 'POST'])
+@application.route('/login/google', methods=['GET', 'POST'])
 @cross_origin()
 def google_login():
     resp = redirect(url_for('google.login'))
@@ -111,7 +111,7 @@ def google_logged_in(blueprint, token):
             db.session.commit()
 
         
-        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, app.config['SECRET_KEY'])
+        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
         # response = make_response()
         # response.headers.set('Access-Control-Allow-Origin', '*')
 

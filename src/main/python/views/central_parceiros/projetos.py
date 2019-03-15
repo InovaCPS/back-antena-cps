@@ -1,4 +1,4 @@
-from webapp import db, cp, app
+from webapp import db, cp, application
 from models.table_projetos import Projetos
 from models.table_arquivos import Arquivos
 from models.table_cursos import Cursos
