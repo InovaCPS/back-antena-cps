@@ -22,13 +22,26 @@ from flasgger import Swagger
 import sys
 import os
 
-'''endpoint = os.environ['API_ENDPOINT']
+'''
+
+inovaBDUser = os.environ.get['INOVA_USER']
+inovaBDPassword = os.environ.get['INOVA_PSWD']
+inovaBDHost = os.environ.get['INOVA_HOST']
+inovaBDPorta = os.environ.get['INOVA_PORT']
+inovaBDDatasource = os.environ.get['INOVA_DB']
 
 
 def config_db_url(resource):
     config = ConfigHelper(resource)
-    url = 'postgresql+psycopg2://{endpoint.inovaBDUser}:{endpoint.inovaBDPassword}@{endpoint.inovaBDHost}:{endpoint.inovaBDPorta}/{endpoint.inovaBDDatasource}'
-    return url'''
+    url = 'postgresql+psycopg2://{user}:{pw}@{host}:{port}/{db}'.format(
+        db=inovaBDDatasource,
+        host=inovaBDHost,
+        port=inovaBDPorta,
+        user=inovaBDUser,
+        pw=inovaBDPassword
+    )
+    return url
+'''
 
 def config_db_url(resource):
     config = ConfigHelper(resource)
@@ -40,7 +53,6 @@ def config_db_url(resource):
         pw=config.get_property_by_section('datasource', 'inova.db.password')
     )
     return url
-
 
 def get_db_instance(application, db_url):
     application.config['SECRET_KEY'] = 'thisissecret'
@@ -61,13 +73,14 @@ api = Api(application)
 CORS(application)
 db = get_db_instance(application, DB_URL)
 
-app.config['UPLOAD_FOLDER'] = '../arquivos/'
+application.config['UPLOAD_FOLDER'] = '../arquivos/'
 
-application.config['MAIL_SERVER']='smtp.gmail.com'
-application.config['MAIL_PORT'] = 465
-application.config['MAIL_USERNAME'] = 'gmail@gmail.com'
-application.config['MAIL_PASSWORD'] = 'senha gmail'
-application.config['MAIL_USE_SSL'] = True
+application.config['MAIL_SERVER']=''
+application.config['MAIL_PORT'] = 587
+application.config['MAIL_USERNAME'] = ''
+application.config['MAIL_PASSWORD'] = ''
+application.config['MAIL_USE_TLS'] = True
+
 
 mail = Mail(application)
 
@@ -92,8 +105,8 @@ application.register_blueprint(cp)
 
 #db.create_all()
 
-app.config['SWAGGER'] = {
+application.config['SWAGGER'] = {
     'title': 'Antena CPS', 
     'description': '#InovaCPS, uma comunidade desenvolvendo a maior e melhor plataforma de conexão entre alunos e o ecossistema, faça parte desse hack!'
 }
-swagger = Swagger(app)
+swagger = Swagger(application)

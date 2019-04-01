@@ -8,7 +8,7 @@ from models.table_diretores import Diretores
 from models.table_atividades import Atividades
 from models.table_mensagens import Mensagens
 from models.table_avaliacoes import Avaliacoes
-from flask import request, jsonify, url_for
+from flask import request, jsonify, url_for, redirect, render_template
 from werkzeug.security import generate_password_hash
 from views.central_parceiros.login import token_required
 from flask_mail import Message
@@ -104,18 +104,20 @@ def post_parceiro():
     parceiro.nome = data['nome']
     parceiro.sobrenome = data['sobrenome']
     
+    func = 'email_confirm'
+    texto = 'Olá, Tudo bem? \n\n Seja bem vindo ao Antena CPS, click no link abaixo, para ser autenticado!'
 
     try:
         db.session.add(parceiro)
         db.session.commit()
+        
     except exc.IntegrityError as e:
         db.session().rollback()
         return jsonify({'Mensagem': 'O email informado já está cadastrado!'})
 
     
-    # return send_email_confirm(parceiro.email)
+    return send_email_confirm(parceiro.email, texto, func)
 
-    return jsonify({'Mensagem': 'Adicionado com sucesso!'})
 
 @cp.route('/parceiro', methods=['PUT'])
 @swag_from('../swagger_specs/parceiros/edit_parceiro.yml')
@@ -173,10 +175,10 @@ def edit_parceiro(current_user):
         if data['email']:
             parceiro.email = data['email']
 
-        if data['senha']:
-            if not parceiro.senha == 'Google account':
-                senha = generate_password_hash(data['senha'])
-                parceiro.senha = senha
+        #if data['senha']:
+            #if not parceiro.senha == 'Google account':
+                #senha = generate_password_hash(data['senha'])
+                #parceiro.senha = senha
 
         if data['rg']:
             parceiro.rg = data['rg']
@@ -276,23 +278,22 @@ def del_parceiro(current_user, parceiro_id):
 
 
 #********************************* Enviar Email  ***********************
-def send_email_confirm(email):
+def send_email_confirm(email, texto, func):
     token = s.dumps(email, salt='email-confirm')
 
-    msg = Message('Confirm Email', sender='dudsgrabbel@gmail.com', recipients=[email])
+    msg = Message('Confirmar E-mail', sender='inovacps.agencia@gmail.com', recipients=[email])
 
-    link = url_for('.email_confirm', token = token, external = True)
+    link = url_for('.{}'.format(func), token = token, external = True)
 
-    msg.body = 'Copie e Cole o link no seu navegador para confirmar seu email: \n\n {}'.format(link)    
+    msg.body = '{}: \nhttp://localhost:8080{}'.format(texto,link)    
+    
     mail.send(msg)
-
-    return jsonify({'Mensagem': 'Cadastrado com sucesso! Entre no seu E-mail para confirmar!'})
-
+    return jsonify({'Mensagem': 'E-mail enviado com sucesso!'})
 
 @cp.route('/emailconfirm/<token>')
 def email_confirm(token):
     try:
-        email = s.loads(token, salt='email-confirm', max_age = 90)
+        email = s.loads(token, salt='email-confirm')
 
         parceiro = Parceiros.query.filter_by(email = email).first()
 
@@ -305,4 +306,53 @@ def email_confirm(token):
     except SignatureExpired:        
         return "link expirado!"
 
-    return jsonify({'Mensagem': "E-mail verificado com sucesso!"})
+    return redirect('http://front-antena-cps.s3-website-sa-east-1.amazonaws.com/#/')
+
+
+@cp.route('/forgot_password', methods=['POST'])
+def forgot_password():
+    auth = request.get_json()
+
+    parceiro = Parceiros.query.filter_by(email = auth['email']).first()
+
+    if not parceiro:
+        return jsonify({'Mensagem': 'Parceiro não encontrado!'})
+    
+    func = 'validar_token'
+    texto = 'Olá, Tudo bem? \n\nPelo visto você esqueceu sua senha! Não tem problema, click no link abaixo para troca-la!'
+    
+
+    return send_email_confirm(parceiro.email, texto, func)
+
+@cp.route('/validar_token/<token>')
+def validar_token(token):
+    try:
+        email = s.loads(token, salt='email-confirm')
+
+        parceiro = Parceiros.query.filter_by(email = email).first()
+
+        if not parceiro:
+            return jsonify({'Mensagem': 'Parceiro não encontrado'})        
+        
+    except SignatureExpired:        
+        return "link expirado!"
+
+    return jsonify({'Mensagem': 'Redirecionar para tela de redeficição de senha'})
+
+@cp.route('/reset_password', methods = ['PUT'])
+def reset_password():
+    data = request.get_json()
+
+    parceiro = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
+
+    if not parceiro:
+        return jsonify({'Mensagem': 'Usuário não encontrado'})        
+    
+
+    if data['senha']:
+        password = generate_password_hash(data['senha'])
+        usuario.senha = password
+
+    db.session.commit()
+
+    return jsonify({'Mensagem': 'Senha alterado com sucesso!'})

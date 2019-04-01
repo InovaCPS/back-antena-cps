@@ -63,7 +63,7 @@ def login():
     parceiro = Parceiros.query.filter_by(email = auth['username']).first()
 
     if not parceiro:
-        return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return jsonify({'Mensagem': 'Não foi possivel verificar'})
     
     if check_password_hash(parceiro.senha, auth['password']):
         token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
@@ -72,7 +72,7 @@ def login():
         # return jsonify({'Mensagem': 'Bem Vindo {}!'.format(parceiro.nome)})
         return jsonify({'token': token.decode('UTF-8')})
     
-    return make_response('Não foi possivel verificar', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return jsonify({'Mensagem': 'Senha Incorreta!'})
 
 @application.route('/login/google', methods=['GET', 'POST'])
 @cross_origin()
