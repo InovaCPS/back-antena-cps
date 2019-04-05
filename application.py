@@ -19,7 +19,7 @@ chost = helper.get_property_by_section('server', 'inova.host')
 cport = int(helper.get_property_by_section('server', 'inova.port'))
 cdebug = bool(helper.get_property_by_section('server', 'inova.debug'))
 
-# Start Web Server for all hosts
+# Start Web Server for all hosts, ssl_context=('cert.pem', 'key.pem')
 
 if __name__ == "__main__":
     application.run(host=chost, debug=cdebug, port=cport)

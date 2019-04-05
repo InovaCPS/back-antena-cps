@@ -285,7 +285,7 @@ def send_email_confirm(email, texto, func):
 
     link = url_for('.{}'.format(func), token = token, external = True)
 
-    msg.body = '{}: \nhttp://localhost:8080{}'.format(texto,link)    
+    msg.body = '{}: \nhttp://antenacpsbackend-env.xryvsu2wzz.sa-east-1.elasticbeanstalk.com{}'.format(texto,link)    
     
     mail.send(msg)
     return jsonify({'Mensagem': 'E-mail enviado com sucesso!'})
@@ -337,22 +337,30 @@ def validar_token(token):
     except SignatureExpired:        
         return "link expirado!"
 
-    return jsonify({'Mensagem': 'Redirecionar para tela de redeficição de senha'})
+    tokenID = s.dumps(parceiro.id_geral, salt='token-chage-passwd')
+    return redirect('http://front-antena-cps.s3-website-sa-east-1.amazonaws.com/#/change-password/{}'.format(tokenID))
 
 @cp.route('/reset_password', methods = ['PUT'])
 def reset_password():
     data = request.get_json()
+    try:
+        id = s.loads(data['token'], salt='token-chage-passwd')
 
-    parceiro = Parceiros.query.filter_by(id_geral = data['id_geral']).first()
+        parceiro = Parceiros.query.filter_by(id_geral = id).first()
 
-    if not parceiro:
-        return jsonify({'Mensagem': 'Usuário não encontrado'})        
+        if not parceiro:
+            return jsonify({'Mensagem': 'Parceiro não encontrado'}) 
+
+        if data['senha']:
+            password = generate_password_hash(data['senha'])
+            parceiro.senha = password
+
+        db.session.commit()
+
+        return jsonify({'Mensagem': 'Senha alterado com sucesso!'})      
+        
+    except SignatureExpired:        
+        return "link expirado!"    
     
 
-    if data['senha']:
-        password = generate_password_hash(data['senha'])
-        usuario.senha = password
-
-    db.session.commit()
-
-    return jsonify({'Mensagem': 'Senha alterado com sucesso!'})
+   

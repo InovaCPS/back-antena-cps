@@ -75,10 +75,10 @@ db = get_db_instance(application, DB_URL)
 
 application.config['UPLOAD_FOLDER'] = '../arquivos/'
 
-application.config['MAIL_SERVER']=''
+application.config['MAIL_SERVER']='*****'
 application.config['MAIL_PORT'] = 587
-application.config['MAIL_USERNAME'] = ''
-application.config['MAIL_PASSWORD'] = ''
+application.config['MAIL_USERNAME'] = '*****'
+application.config['MAIL_PASSWORD'] = '****'
 application.config['MAIL_USE_TLS'] = True
 
 
