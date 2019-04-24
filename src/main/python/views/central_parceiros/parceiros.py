@@ -292,6 +292,13 @@ def send_email_confirm(email, texto, func):
     mail.send(msg)
     return jsonify({'Mensagem': 'E-mail enviado com sucesso!'})
 
+def get_link(email, func):
+    token = s.dumps(email, salt='email-confirm')    
+
+    link = url_for('.{}'.format(func), token = token, external = True)   
+    
+    return link
+
 @cp.route('/emailconfirm/<token>')
 def email_confirm(token):
     try:
@@ -321,10 +328,14 @@ def forgot_password():
         return jsonify({'Mensagem': 'Parceiro não encontrado!'})
     
     func = 'validar_token'
-    texto = 'Olá, Tudo bem? \n\nPelo visto você esqueceu sua senha! Não tem problema, click no link abaixo para troca-la!'
-    
+    link = get_link(parceiro.email, func)
 
-    return send_email_confirm(parceiro.email, texto, func)
+    msg = Message('Redefinição de Senha', sender='inovacps.agencia@gmail.com', recipients=[parceiro.email])
+    msg.html = render_template('mensagem.html', nome = parceiro.nome, link = link)
+
+    mail.send(msg)
+    return jsonify({'Mensagem': 'E-mail enviado com sucesso!'})
+
 
 @cp.route('/validar_token/<token>')
 def validar_token(token):
