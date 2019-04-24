@@ -9,8 +9,6 @@ import jwt
 import datetime
 from functools import wraps
 from flasgger.utils import swag_from
-from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
-from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
 from flask_dance.consumer import oauth_authorized
 from models.table_oauth import OAuth
@@ -18,27 +16,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 import os 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
-google_blueprint = make_google_blueprint(
-    client_id="1092697945658-mm49tuj821b1a3jni5epplc0l54ofj0s.apps.googleusercontent.com",
-    client_secret="XSK0EQfS9PEG3KN9bUySkjsz",
-    scope=[
-        "https://www.googleapis.com/auth/plus.me",
-        "https://www.googleapis.com/auth/userinfo.email",
-    ]
-)
-blFacebook = make_facebook_blueprint(
-    client_id="381484502603093",
-    client_secret="1558acef090349bdedfc13c075d573cb",
-    scope=[
-        "email",
-    ])
-
-application.register_blueprint(google_blueprint, url_prefix='/google_login')
-application.register_blueprint(blFacebook, url_prefix="/login")
-
-google_blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user_required=False)
-blFacebook.backend = SQLAlchemyBackend(OAuth, db.session, user_required=False)
 
 
 def token_required(f):
@@ -86,82 +63,51 @@ def login():
     
     return jsonify({'Mensagem': 'Senha Incorreta!'})
 
-@application.route('/login/google', methods=['GET', 'POST'])
-@cross_origin()
+
+@application.route('/login/google', methods=['POST'])
 def google_login():
-    resp = redirect(url_for('google.login'))
+    account_info_json = request.get_json()
 
-    # resp.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
-    # resp.headers = Headers({'Access-Control-Allow-Origin': 'http://localhost:4200'})
-    # resp.headers = Headers.add_header('Access-Control-Allow-Origin', 'http://localhost:4200')
-    resp.headers = {
-        'Access-Control-Allow-Origin': '*', 
-        'Location': 'http://localhost:8080/google_login/google'
-    }
-    # resp.headers.set('Access-Control-Allow-Origin', 'http://localhost:4200')
-    # resp.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+    parceiro = Parceiros.query.filter_by(email=account_info_json['email']).first()
 
-    return resp
+    if not parceiro:
+        parceiro = Parceiros(
+            nivel='Parceiro', 
+            email=account_info_json['email'], 
+            senha='Google account', 
+            validado=True
+        )
+        parceiro.nome = account_info_json['name']
+        parceiro.sobrenome = account_info_json['lastName'] 
 
-@oauth_authorized.connect_via(google_blueprint)
-def google_logged_in(blueprint, token):
-    account_info = blueprint.session.get('/oauth2/v2/userinfo')
-
-    if account_info.ok:
-        account_info_json = account_info.json()
-
-        parceiro = Parceiros.query.filter_by(email=account_info_json['email']).first()
-
-        if not parceiro:
-            parceiro = Parceiros(
-                nivel='Parceiro', 
-                email=account_info_json['email'], 
-                senha='Google account', 
-                validado=False
-            )
-            db.session.add(parceiro)
-            db.session.commit()
-
-        
-        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
-        # response = make_response()
-        # response.headers.set('Access-Control-Allow-Origin', '*')
-
-        return jsonify({'token': token.decode('UTF-8')})
+        db.session.add(parceiro)
+        db.session.commit()
 
 
-@application.route("/facebook")
-@cross_origin(origin='*')
+    token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
+
+    return jsonify({'token': token.decode('UTF-8')})
+    
+
+
+@application.route("/login/facebook", methods=['POST'])
 def facebook_login():
-    resp = redirect(url_for('facebook.login'))
-    return resp
+    account_info_json = request.get_json()
 
-@oauth_authorized.connect_via(blFacebook)
-def facebook_logged_in(blFacebook, token):
+    parceiro = Parceiros.query.filter_by(email = account_info_json['email'])
 
-    account_info = blFacebook.session.get("/me?&fields={fields}".format(fields=['email, first_name, last_name']))
+    if not parceiro:
+        parceiro = Parceiros(
+            nivel='Parceiro',
+            email= account_info_json['email'], 
+            senha='Facebook account', 
+            validado= True
+        )
+        parceiro.nome = account_info_json['first_name']
+        parceiro.sobrenome = account_info_json['last_name'] 
+        db.session.add(parceiro)
+        db.session.commit()
 
-    if account_info.ok:
-        account_info_json = account_info.json()
-        print(account_info_json)
-
-        query = Parceiros.query.filter_by(email = account_info_json['email'])
-
-        try:
-            parceiro = query.one()
-        except NoResultFound:
-            parceiro = Parceiros(
-                nivel='Parceiro',
-                email= account_info_json['email'], 
-                senha='Facebook account', 
-                validado= True
-            )
-
-            parceiro.nome = account_info_json['first_name']
-            parceiro.sobrenome = account_info_json['last_name'] 
-
-            db.session.add(parceiro)
-            db.session.commit()
-
-        token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
-        return jsonify({'token': token.decode('UTF-8')})     
+    token = jwt.encode({'id_geral': parceiro.id_geral, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 40)}, application.config['SECRET_KEY'])
+    
+    return jsonify({'token': token.decode('UTF-8')})     

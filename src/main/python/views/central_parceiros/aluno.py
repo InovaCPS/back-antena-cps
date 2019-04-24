@@ -57,6 +57,7 @@ def get_one_aluno(current_user, id):
     info['escola'] = unidade.nome
     info['escola_cidade'] = unidade.cidade
     info['idade'] = ''
+    info['termos'] = str(parceiro.termos)
 
     if parceiro.dt_nascimento:
         info['idade'] = calculate_age(parceiro.dt_nascimento)

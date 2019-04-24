@@ -33,6 +33,7 @@ class Parceiros(UserMixin, db.Model):
     linkedin = db.Column(db.String(500))
     twitter = db.Column(db.String(500))
     validado = db.Column(db.Boolean)
+    termos = db.Column(db.Boolean)
 
     def __init__(self, nivel, email, senha, validado):
         self.nivel = nivel

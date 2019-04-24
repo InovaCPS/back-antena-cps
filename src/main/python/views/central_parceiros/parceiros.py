@@ -46,6 +46,7 @@ def get_parceiro(current_user):
         parceiro['nome'] = info.nome
         parceiro['sobrenome'] = info.sobrenome
         parceiro['email'] = info.email
+        parceiro['termos'] = info.termos
 
         parceiros.append(parceiro)
 
@@ -80,6 +81,7 @@ def get_one_parceiro(current_user, parceiro_id):
     parceiro['linkedin'] = info.linkedin 
     parceiro['twitter'] = info.twitter
     parceiro['idade'] = ""
+    parceiro['termos'] = info.termos
 
     if info.dt_nascimento:
         parceiro['idade'] = calculate_age(info.dt_nascimento)
@@ -363,4 +365,22 @@ def reset_password():
         return "link expirado!"    
     
 
-   
+@cp.route('/parceiro/termo', methods=['PUT'])
+@token_required
+def parceiro_accept_terms(current_user):
+    parceiro = Parceiros.query.filter_by(id_geral=current_user.id_geral).first()
+
+    if not parceiro:
+        return jsonify({'Mensagem': 'Não encontrado!'})
+
+    else:
+        data = request.get_json()        
+
+        if data['termos'] == True:
+            parceiro.termos = True
+        else:
+            parceiro.termos = False
+
+        db.session.commit()
+
+        return jsonify({'Mensagem': 'Alterado com sucesso!'})
