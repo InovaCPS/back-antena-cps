@@ -50,6 +50,28 @@ def post_projeto(current_user):
             db.session.add(projetoCoop)
             db.session.commit()
     
+    if data['arquivos']:
+        arquivos = data['arquivos']
+
+        for arquivo in arquivos:
+            postArquivo = Arquivos(
+                tipo = arquivo['tipo'],
+                titulo = arquivo['titulo'],
+                descricao = arquivo['legenda'],
+                codigo = arquivo['link'],
+                id_parceiro = current_user.id_geral
+            )
+            db.session.add(postArquivo)
+            db.session.commit()
+
+            projetoArquivo = Rel_projeto_arquivo(
+                id_projeto = projeto.id, 
+                id_arquivo = postArquivo.id
+            )
+
+            db.session.add(projetoArquivo)
+            db.session.commit()       
+
     db.session.commit()
     return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
 
@@ -146,7 +168,7 @@ def get_projeto(current_user, id):
     for relacao in idArquivosRelacionados:
         arquivo = Arquivos.query.filter_by(id = relacao.id_arquivo).first()
         infosArquivo = {}
-        infosArquivo['midia'] = arquivo.midia
+        infosArquivo['tipo'] = arquivo.tipo
         infosArquivo['titulo'] = arquivo.titulo
         infosArquivo['descricao'] = arquivo.descricao
         infosArquivo['codigo'] = arquivo.codigo

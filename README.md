@@ -433,7 +433,49 @@ PUT - Atualiza o RA do aluno
 DELETE - Deleta um aluno
 /cp/aluno/<ra>
 ```
-
+```bash
+POST - Cadastra um Projeto
+/cp/projetos
+{
+    "titulo":"titulo do projeto",
+    "orientador":"orientador do projeto",
+    "descricao": "Descricao do projeto",
+    "status":"Status do projeto",
+    "tipo":"Tipo do projeto",
+    "tema":"Tema do projeto",
+    "coops":[
+    	{"email": "edu@hotmail.com"},
+    	{"email": "exemplo@gmail.com"}
+    ],
+    "textoProjeto":"Texto projeto",
+    "linkTexto": "Link Texto projeto",
+    "arquivos":[
+    	{
+    		"tipo": "Midia",
+    		"titulo": "Titulo Midia projeto",
+    		"legenda": "legenda midia projeto",
+    		"link": "Link midia projeto"
+    	},
+    	{
+    		"tipo": "Arquivo",
+    		"titulo": "Titulo Arquivo projeto",
+    		"legenda": "legenda Arquivo projeto",
+    		"link": "Link Arquivo projeto"
+    	},
+    	{
+    		"tipo": "Codigo",
+    		"titulo": "Titulo Codigo projeto",
+    		"legenda": "legenda Codigo projeto",
+    		"link": "Link Codigo projeto"
+    	},{
+    		"tipo": "Detalhe",
+    		"titulo": "Titulo Detalhe projeto",
+    		"legenda": "legenda Detalhe projeto",
+    		"link": "Link Detalhe projeto"
+    	}
+    ]
+}
+```
 ### Instruções Login - Postman ###
 
 ```bash
