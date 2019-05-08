@@ -10,6 +10,8 @@ class Projetos(db.Model):
     status = db.Column(db.String(50))
     tipo = db.Column(db.String(50))
     tema = db.Column(db.String(100))
+    textoProjeto = db.Column(db.String(1000))
+    linkTexto = db.Column(db.String(200))
 
     def __init__(self, titulo, descricao, orientador, status, tipo, tema):
         self.titulo = titulo

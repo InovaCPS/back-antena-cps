@@ -28,6 +28,10 @@ def post_projeto(current_user):
         tipo = data['tipo'],
         tema = data['tema']
     )
+    if data['textoProjeto']:
+        projeto.textoProjeto = data['textoProjeto']
+    if data['linkTexto']:
+        projeto.linkTexto = data['linkTexto']     
 
     db.session.add(projeto)    
 
