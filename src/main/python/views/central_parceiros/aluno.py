@@ -4,6 +4,7 @@ from models.table_parceiros import Parceiros
 from models.table_diretores import Diretores
 from models.table_unidades import Unidades
 from models.table_cursos import Cursos
+from models.table_rel_curso_unidade import Rel_Curso_Unidade
 from views.central_parceiros.parceiros import calculate_age
 from views.central_parceiros.login import token_required
 from flask import jsonify, request, redirect, url_for
@@ -36,6 +37,7 @@ def get_one_aluno(current_user, id):
 
     parceiro = Parceiros.query.filter_by(id_geral = id).first()
     unidade = Unidades.query.filter_by(id=aluno.id_unidades).first()
+    curso = Cursos.query.filter_by(id = aluno.id_curso).first()
 
     info = {}
     info['nome'] = parceiro.nome
@@ -56,6 +58,7 @@ def get_one_aluno(current_user, id):
     info['twitter'] = parceiro.twitter
     info['escola'] = unidade.nome
     info['escola_cidade'] = unidade.cidade
+    info['escola_curso'] = curso.nome
     info['idade'] = ''
     info['termos'] = str(parceiro.termos)
 
@@ -90,15 +93,23 @@ def del_aluno(current_user, ra):
 @cp.route('/cursos', methods=['GET'])
 @token_required
 def get_cursos(current_user):
-    cursos = Cursos.query.all()
+    unidades_cursos = []
+    unidades = Unidades.query.all()
+    _cursos_unidade = []
+    for unidade in unidades:
+        unidade_cursos = {}
+        cursos_unidade = Rel_Curso_Unidade.query.filter_by(id_unidade = unidade.id).all()
+        _unidade = {}
+        for curso_unidade in cursos_unidade:
+            data_cursos = Cursos.query.filter_by(id = curso_unidade.id_curso).all()        
 
-    listaCursos = []
+            for curso in data_cursos:
+                cursos = {}
+                cursos['id_curso'] = curso.id
+                cursos['nome_curso'] = curso.nome
+                _cursos_unidade.append(cursos)
 
-    for curso in cursos:
-        infoCurso = {}
-        infoCurso['id'] = curso.id
-        infoCurso['nome'] = curso.nome
+            _unidade['{}'.format(unidade.nome)] = _cursos_unidade            
+    unidades_cursos.append(_unidade)
 
-        listaCursos.append(infoCurso)
-    
-    return jsonify(listaCursos)
+    return jsonify(unidades_cursos)

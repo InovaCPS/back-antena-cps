@@ -5,9 +5,8 @@ from models.table_cursos import Cursos
 from models.table_links import Links
 from models.table_palavras_chave import Palavras_chave
 from models.table_relacao_projeto_arquivo import Rel_projeto_arquivo
-from models.table_relacao_projeto_curso import Rel_projeto_curso
 from models.table_relacao_projeto_parceiro import Rel_projeto_colaborador
-from models.table_relacao_projeto_unidade import Rel_projeto_unidade
+from models.table_rel_curso_unidade import Rel_Curso_Unidade
 from models.table_relacao_projeto_categoria import Rel_projeto_categoria
 from models.table_parceiros import Parceiros
 from models.table_unidades import Unidades
@@ -19,126 +18,35 @@ import os, datetime, json
 @cp.route('/projetos', methods=['POST'])
 @token_required
 def post_projeto(current_user):
-    data = json.loads(request.form['projeto'])
+    data = request.get_json()
 
     projeto = Projetos(
         titulo = data['titulo'], 
         descricao = data['descricao'], 
-        id_parceiro = current_user.id_geral, 
-        premiado = data['premiado']
+        orientador = data['orientador'],
+        status = data['status'],
+        tipo = data['tipo'],
+        tema = data['tema']
     )
 
-    db.session.add(projeto)
-    db.session.commit()
+    db.session.add(projeto)    
 
-    unidades = data['unidades']
-    for unidade in unidades:
-        unidade = Unidades.query.filter_by(id = unidade).first()
-        if not unidade:
-            pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
-        else:
-            projetoUnidade = Rel_projeto_unidade(
-                id_projeto = projeto.id, 
-                id_unidade = unidade.id
-            )
-        
-            db.session.add(projetoUnidade)
-            db.session.commit()
+    coops = data['coops']
+    for coop in coops:
+        parceiro = Parceiros.query.filter_by(email = coop['email']).first()
 
-    cursos = data['cursos']
-    for curso in cursos:
-        curso = Cursos.query.filter_by(id=curso).first()
-        if not curso:
-            pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
+        if not parceiro:
+            return jsonify({"Mensagem": "Usuario {} não encontrado".format(coop['email'])})
         else:
-            projetoCurso = Rel_projeto_curso(
+            projetoCoop = Rel_projeto_colaborador(
                 id_projeto = projeto.id, 
-                id_curso = curso.id
+                id_colaborador = parceiro.id_geral
             )
 
-            db.session.add(projetoCurso)
-            db.session.commit()
-
-
-    palavrasChave = data['palavrasChave']
-    for palavra in palavrasChave:
-        palavra = palavra.strip(" ")
-        novaPalavra = Palavras_chave(
-            id_projeto = projeto.id, 
-            palavra = palavra
-        )
-
-        db.session.add(novaPalavra)
-        db.session.commit()
- 
-
-    colaboradores = data['colaboradores']
-    for colaborador in colaboradores:
-        colaborador = colaborador.strip(" ")        
-        colaborador = Parceiros.query.filter_by(email = colaborador).first()
-        if not colaborador:
-            pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
-        else:
-            projetoColaborador = Rel_projeto_colaborador(
-                id_projeto = projeto.id, 
-                id_colaborador = colaborador.id_geral
-            )
-
-            db.session.add(projetoColaborador)
+            db.session.add(projetoCoop)
             db.session.commit()
     
-    if projeto.premiado == True:
-        links = data['links']
-        for link in links:
-            link = link.strip(" ")
-            link = Links(
-                id_projeto = projeto.id, 
-                url = link
-            )
-
-            db.session.add(link)
-            db.session.commit()
-
-    categorias = data['categorias']
-    for categoria in categorias:
-        projetoCategoria = Rel_projeto_categoria(
-            id_projeto = projeto.id, 
-            id_categoria = categoria['id']
-        )
-
-        db.session.add(projetoCategoria)
-        db.session.commit()
-
-    dadosArquivos = data['arquivos']
-    for dado in dadosArquivos:
-        nomeArquivo = dado['nomeMidia']
-        extensao = nomeArquivo.split(".")[1]
-        novoNome = str(hash('{}{}{}'.format(current_user.id_geral, str(datetime.datetime.now()), nomeArquivo))) + "." + extensao
-        arquivo = request.files[dado['nomeMidia']]
-        arquivo.filename = novoNome
-        dado['nomeMidia'] = novoNome 
-
-        arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], arquivo.filename))
-
-        infoArquivo = Arquivos(
-            midia = dado['nomeMidia'], 
-            titulo = dado['titulo'], 
-            descricao = dado['descricao'], 
-            codigo = dado['codigo'], 
-            id_parceiro = current_user.id_geral
-        )
-
-        db.session.add(infoArquivo)
-        db.session.commit()
-
-        projetoArquivo = Rel_projeto_arquivo(
-            id_projeto = projeto.id, 
-            id_arquivo = infoArquivo.id
-        )
-
-        db.session.add(projetoArquivo)
-        db.session.commit()
-
+    db.session.commit()
     return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
 
 @cp.route('/projetos', methods=['GET'])
@@ -282,3 +190,85 @@ def get_categorias(current_user):
         listaCategorias.append(categoria)
     
     return jsonify(listaCategorias)
+
+
+'''
+palavrasChave = data['palavrasChave']
+    for palavra in palavrasChave:
+        palavra = palavra.strip(" ")
+        novaPalavra = Palavras_chave(
+            id_projeto = projeto.id, 
+            palavra = palavra
+        )
+
+        db.session.add(novaPalavra)
+        db.session.commit()
+ 
+
+    colaboradores = data['colaboradores']
+    for colaborador in colaboradores:
+        colaborador = colaborador.strip(" ")        
+        colaborador = Parceiros.query.filter_by(email = colaborador).first()
+        if not colaborador:
+            pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
+        else:
+            projetoColaborador = Rel_projeto_colaborador(
+                id_projeto = projeto.id, 
+                id_colaborador = colaborador.id_geral
+            )
+
+            db.session.add(projetoColaborador)
+            db.session.commit()
+    
+    if projeto.premiado == True:
+        links = data['links']
+        for link in links:
+            link = link.strip(" ")
+            link = Links(
+                id_projeto = projeto.id, 
+                url = link
+            )
+
+            db.session.add(link)
+            db.session.commit()
+
+    categorias = data['categorias']
+    for categoria in categorias:
+        projetoCategoria = Rel_projeto_categoria(
+            id_projeto = projeto.id, 
+            id_categoria = categoria['id']
+        )
+
+        db.session.add(projetoCategoria)
+        db.session.commit()
+
+    dadosArquivos = data['arquivos']
+    for dado in dadosArquivos:
+        nomeArquivo = dado['nomeMidia']
+        extensao = nomeArquivo.split(".")[1]
+        novoNome = str(hash('{}{}{}'.format(current_user.id_geral, str(datetime.datetime.now()), nomeArquivo))) + "." + extensao
+        arquivo = request.files[dado['nomeMidia']]
+        arquivo.filename = novoNome
+        dado['nomeMidia'] = novoNome 
+
+        arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], arquivo.filename))
+
+        infoArquivo = Arquivos(
+            midia = dado['nomeMidia'], 
+            titulo = dado['titulo'], 
+            descricao = dado['descricao'], 
+            codigo = dado['codigo'], 
+            id_parceiro = current_user.id_geral
+        )
+
+        db.session.add(infoArquivo)
+        db.session.commit()
+
+        projetoArquivo = Rel_projeto_arquivo(
+            id_projeto = projeto.id, 
+            id_arquivo = infoArquivo.id
+        )
+
+        db.session.add(projetoArquivo)
+        db.session.commit()
+'''

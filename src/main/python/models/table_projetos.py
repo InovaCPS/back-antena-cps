@@ -6,11 +6,15 @@ class Projetos(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     titulo = db.Column(db.String(100))
     descricao = db.Column(db.String(500))
-    id_parceiro = db.Column(db.Integer, db.ForeignKey('parceiros.id_geral'))
-    premiado = db.Column(db.Boolean)
+    orientador = db.Column(db.String(100))
+    status = db.Column(db.String(50))
+    tipo = db.Column(db.String(50))
+    tema = db.Column(db.String(100))
 
-    def __init__(self, titulo, descricao, id_parceiro, premiado):
+    def __init__(self, titulo, descricao, orientador, status, tipo, tema):
         self.titulo = titulo
         self.descricao = descricao
-        self.id_parceiro = id_parceiro
-        self.premiado = premiado
+        self.orientador = orientador
+        self.status = status
+        self.tipo = tipo
+        self.tema = tema
