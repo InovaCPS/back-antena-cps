@@ -437,42 +437,45 @@ DELETE - Deleta um aluno
 POST - Cadastra um Projeto
 /cp/projetos
 {
-    "titulo":"titulo do projeto",
+    "titulo":"teste Detalhe",
     "orientador":"orientador do projeto",
     "descricao": "Descricao do projeto",
     "status":"Status do projeto",
     "tipo":"Tipo do projeto",
     "tema":"Tema do projeto",
     "coops":[
-    	{"email": "edu@hotmail.com"},
-    	{"email": "exemplo@gmail.com"}
+    	{"email": "edu@hotmail.com"}
     ],
     "textoProjeto":"Texto projeto",
     "linkTexto": "Link Texto projeto",
     "arquivos":[
     	{
-    		"tipo": "Midia",
+    		"tipo": "teste detalhe2",
     		"titulo": "Titulo Midia projeto",
     		"legenda": "legenda midia projeto",
     		"link": "Link midia projeto"
     	},
     	{
-    		"tipo": "Arquivo",
+    		"tipo": "teste detalhe2",
     		"titulo": "Titulo Arquivo projeto",
     		"legenda": "legenda Arquivo projeto",
     		"link": "Link Arquivo projeto"
-    	},
-    	{
-    		"tipo": "Codigo",
-    		"titulo": "Titulo Codigo projeto",
-    		"legenda": "legenda Codigo projeto",
-    		"link": "Link Codigo projeto"
-    	},{
-    		"tipo": "Detalhe",
-    		"titulo": "Titulo Detalhe projeto",
-    		"legenda": "legenda Detalhe projeto",
-    		"link": "Link Detalhe projeto"
     	}
+    ],
+    "detalhes":
+    	{
+    		"categoria1": "teste categoria1",
+    		"categoria2": "teste categoria2",
+    		"premio1": "teste premio1",
+    		"premio2": "teste premio2",
+    		"recurso1": "teste recurso1",
+    		"recurso2": "teste recurso2",
+    		"credito1": "teste credito1",
+    		"credito2": "teste credito2",
+    		"direitos": "teste direitos"
+    	},
+    "colaboradores":[
+    	{"email": "edu@hotmail.com"}
     ]
 }
 ```

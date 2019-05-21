@@ -8,6 +8,7 @@ from models.table_relacao_projeto_arquivo import Rel_projeto_arquivo
 from models.table_relacao_projeto_parceiro import Rel_projeto_colaborador
 from models.table_rel_curso_unidade import Rel_Curso_Unidade
 from models.table_relacao_projeto_categoria import Rel_projeto_categoria
+from models.table_relacao_projeto_detalhes import Rel_projeto_detalhe
 from models.table_parceiros import Parceiros
 from models.table_unidades import Unidades
 from models.table_categorias_projeto import Categorias_projetos
@@ -44,12 +45,46 @@ def post_projeto(current_user):
         else:
             projetoCoop = Rel_projeto_colaborador(
                 id_projeto = projeto.id, 
-                id_colaborador = parceiro.id_geral
+                id_colaborador = parceiro.id_geral,
+                tipo = "Coop"
             )
 
-            db.session.add(projetoCoop)
-            db.session.commit()
-    
+            db.session.add(projetoCoop)     
+
+    if data['detalhes']: 
+        detalhes = data['detalhes']       
+
+        postDetalhes = Rel_projeto_detalhe(
+            id_projeto = projeto.id,
+            categoria1 = detalhes['categoria1'],
+            categoria2 = detalhes['categoria2'],
+            premio1 = detalhes['premio1'],
+            premio2 = detalhes['premio2'],
+            recurso1 = detalhes['recurso1'],
+            recurso2 = detalhes['recurso2'],
+            credito1 = detalhes['credito1'],
+            credito2 = detalhes['credito2'],
+            direitos = detalhes['direitos']
+        )
+        db.session.add(postDetalhes)
+
+    if data['colaboradores']:
+        colaboradores = data['colaboradores']
+        for colaborador in colaboradores:
+            parceiro = Parceiros.query.filter_by(email = colaborador['email']).first()
+
+            if not parceiro:
+                return jsonify({"Mensagem": "Usuario {} não encontrado".format(colaborador['email'])})
+            else:
+                projetoColaborador = Rel_projeto_colaborador(
+                    id_projeto = projeto.id, 
+                    id_colaborador = parceiro.id_geral,
+                    tipo = "Colaborador"
+                )
+                db.session.add(projetoColaborador)
+                db.session.commit()
+
+                
     if data['arquivos']:
         arquivos = data['arquivos']
 
@@ -61,6 +96,7 @@ def post_projeto(current_user):
                 codigo = arquivo['link'],
                 id_parceiro = current_user.id_geral
             )
+
             db.session.add(postArquivo)
             db.session.commit()
 
@@ -69,9 +105,13 @@ def post_projeto(current_user):
                 id_arquivo = postArquivo.id
             )
 
+            db.session.commit()
             db.session.add(projetoArquivo)
-            db.session.commit()       
+    
+    if data['detalhes']: 
+        db.session.commit()
 
+    db.session.commit()
     db.session.commit()
     return jsonify({'Mensagem': 'Cadastrado com sucesso!'})
 
