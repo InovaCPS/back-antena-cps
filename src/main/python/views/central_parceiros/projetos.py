@@ -2,6 +2,7 @@ from webapp import db, cp, application
 from models.table_projetos import Projetos
 from models.table_arquivos import Arquivos
 from models.table_cursos import Cursos
+from models.table_alunos import Alunos
 from models.table_links import Links
 from models.table_palavras_chave import Palavras_chave
 from models.table_relacao_projeto_arquivo import Rel_projeto_arquivo
@@ -143,101 +144,74 @@ def get_projeto(current_user, id):
     projeto = {}
     projeto['titulo'] = dados.titulo
     projeto['descricao'] = dados.descricao
+    projeto['orientador'] = dados.orientador
+    projeto['status'] = dados.status
+    projeto['tipo'] = dados.tipo
+    projeto['tema'] = dados.tema
+    projeto['textoProjeto'] = dados.textoProjeto
+    projeto ['linkTexto'] = dados.linkTexto
 
-    # PARCEIRO
-    parceiro = Parceiros.query.filter_by(id_geral = dados.id_parceiro).first()
-    if parceiro is not None:
-        projeto['id_parceiro'] = parceiro.id_geral
-        projeto['nome_parceiro'] = "{} {}".format(parceiro.nome, parceiro.sobrenome)
-
-    # UNIDADES
-    idUnidadesRelacionadas = Rel_projeto_unidade.query.filter_by(id_projeto = dados.id).all()
-    unidades = []
-    for relacao in idUnidadesRelacionadas:
-        unidade = Unidades.query.filter_by(id = relacao.id_unidade).first()
-        infosUnidade = {}
-        infosUnidade['id'] = unidade.id
-        infosUnidade['nome'] = unidade.nome
-        infosUnidade['cidade'] = unidade.cidade
-
-        unidades.append(infosUnidade)
-    
-    projeto['unidades'] = unidades
-
-    # CURSOS
-    idCursosRelacionados = Rel_projeto_curso.query.filter_by(id_projeto = dados.id).all()
-    cursos = []
-    for relacao in idCursosRelacionados:
-        curso = Cursos.query.filter_by(id = relacao.id_curso).first()
-        infosCurso = {}
-        infosCurso['id'] = curso.id
-        infosCurso['nome'] = curso.nome
-
-        cursos.append(infosCurso)
-    
-    projeto['cursos'] = cursos
-
-    # PALAVRAS-CHAVE
-    listaPalavras = Palavras_chave.query.filter_by(id_projeto = dados.id).all()
-    palavrasChave = []
-    for item in listaPalavras:
-        infosPalavra = {}
-        infosPalavra['palavra'] = item.palavra
-
-        palavrasChave.append(infosPalavra)
-    
-    projeto['palavras-chave'] = palavrasChave
-
-    # COLABORADORES
-    idColaboradoresRelacionados = Rel_projeto_colaborador.query.filter_by(id_projeto = dados.id).all()
+    # COOPS
+    coops = Rel_projeto_colaborador.query.filter_by(id_projeto = dados.id).all()
     colaboradores = []
-    for relacao in idColaboradoresRelacionados:
-        colaborador = Parceiros.query.filter_by(id_geral = relacao.id_colaborador).first()
-        infosColaborador = {}
-        infosColaborador['id'] = id
-        infosColaborador['nome'] = "{} {}".format(colaborador.nome, colaborador.sobrenome)
-        infosColaborador['email'] = colaborador.email
+    cooperadores = []
+    for coop in coops:        
+        colaborador = Parceiros.query.filter_by(id_geral = coop.id_colaborador).first()
+        if coop.tipo == "Coop":
+            aluno = Alunos.query.filter_by(id_parceiros=colaborador.id_geral).first()
+            unidade = Unidades.query.filter_by(id=aluno.id_unidades).first()
+            curso = Cursos.query.filter_by(id = aluno.id_curso).first()
 
-        colaboradores.append(infosColaborador)
+            info = {}
+            info['email'] = colaborador.email
+            info['escola'] = unidade.nome
+            info['escola_curso'] = curso.nome
 
-    projeto['colaboradores'] = colaboradores
+            cooperadores.append(info)
+        else:
+            infosColaborador = {}
+            infosColaborador['id'] = id
+            infosColaborador['nome'] = "{} {}".format(colaborador.nome, colaborador.sobrenome)
+            infosColaborador['email'] = colaborador.email
+
+            colaboradores.append(infosColaborador)
+
+    projeto['coops'] = cooperadores
+    projeto['colaboradores'] = colaboradores  
 
     # ARQUIVOS
-    idArquivosRelacionados = Rel_projeto_arquivo.query.filter_by(id_projeto = dados.id).all()
+    data_arquivos = Rel_projeto_arquivo.query.filter_by(id_projeto = dados.id).all()
     arquivos = []
-    for relacao in idArquivosRelacionados:
-        arquivo = Arquivos.query.filter_by(id = relacao.id_arquivo).first()
-        infosArquivo = {}
-        infosArquivo['tipo'] = arquivo.tipo
-        infosArquivo['titulo'] = arquivo.titulo
-        infosArquivo['descricao'] = arquivo.descricao
-        infosArquivo['codigo'] = arquivo.codigo
+    if data_arquivos:
+        for data_arquivo in data_arquivos:
+            arquivo = Arquivos.query.filter_by(id = data_arquivo.id_arquivo).first()
+            infosArquivo = {}
+            infosArquivo['tipo'] = arquivo.tipo
+            infosArquivo['titulo'] = arquivo.titulo
+            infosArquivo['legenda'] = arquivo.descricao
+            infosArquivo['link'] = arquivo.codigo
 
-        arquivos.append(infosArquivo)
+            arquivos.append(infosArquivo)
 
-    projeto['arquivos'] = arquivos
+    projeto['arquivos'] = arquivos  
 
-    # PREMIADO
-    projeto['premiado'] = dados.premiado
-    links = []
-    if dados.premiado == True:
-        linksRelacionados = Links.query.filter_by(id_projeto = dados.id).all()
-        for link in linksRelacionados:
-            infosLink = {}
-            infosLink['URL'] = link.url
+    #Detalhes
 
-            links.append(infosLink)
+    data_detalhes = Rel_projeto_detalhe.query.filter_by(id_projeto = dados.id).first()
+   
+    detalhes = {}
+    if data_detalhes:
+        detalhes['categoria1'] = data_detalhes.categoria1
+        detalhes['categoria2'] = data_detalhes.categoria2
+        detalhes['premio1'] = data_detalhes.premio1
+        detalhes['premio2'] = data_detalhes.premio2
+        detalhes['recurso1'] = data_detalhes.recurso1
+        detalhes['recurso2'] = data_detalhes.recurso2
+        detalhes['credito1'] = data_detalhes.credito1
+        detalhes['credito2'] = data_detalhes.credito2
+        detalhes['direitos'] = data_detalhes.direitos
 
-    projeto['links'] = links
-
-    # CATEGORIAS
-    idCategoriasRelacionadas = Rel_projeto_categoria.query.filter_by(id_projeto = dados.id).all()
-    categorias = []
-    for relacao in idCategoriasRelacionadas:
-        dadosCategoria = Categorias_projetos.query.filter_by(id = relacao.id_categoria).first()
-        infosCategoria = {}
-        infosCategoria['id'] = dadosCategoria.id
-        infosCategoria['nome'] = dadosCategoria.categoria
+    projeto['detalhes'] = detalhes
 
     return jsonify(projeto)
 
@@ -256,85 +230,3 @@ def get_categorias(current_user):
         listaCategorias.append(categoria)
     
     return jsonify(listaCategorias)
-
-
-'''
-palavrasChave = data['palavrasChave']
-    for palavra in palavrasChave:
-        palavra = palavra.strip(" ")
-        novaPalavra = Palavras_chave(
-            id_projeto = projeto.id, 
-            palavra = palavra
-        )
-
-        db.session.add(novaPalavra)
-        db.session.commit()
- 
-
-    colaboradores = data['colaboradores']
-    for colaborador in colaboradores:
-        colaborador = colaborador.strip(" ")        
-        colaborador = Parceiros.query.filter_by(email = colaborador).first()
-        if not colaborador:
-            pass # TEM Q FAZER TRATAMENTO DE EXCESSÃO AQUI
-        else:
-            projetoColaborador = Rel_projeto_colaborador(
-                id_projeto = projeto.id, 
-                id_colaborador = colaborador.id_geral
-            )
-
-            db.session.add(projetoColaborador)
-            db.session.commit()
-    
-    if projeto.premiado == True:
-        links = data['links']
-        for link in links:
-            link = link.strip(" ")
-            link = Links(
-                id_projeto = projeto.id, 
-                url = link
-            )
-
-            db.session.add(link)
-            db.session.commit()
-
-    categorias = data['categorias']
-    for categoria in categorias:
-        projetoCategoria = Rel_projeto_categoria(
-            id_projeto = projeto.id, 
-            id_categoria = categoria['id']
-        )
-
-        db.session.add(projetoCategoria)
-        db.session.commit()
-
-    dadosArquivos = data['arquivos']
-    for dado in dadosArquivos:
-        nomeArquivo = dado['nomeMidia']
-        extensao = nomeArquivo.split(".")[1]
-        novoNome = str(hash('{}{}{}'.format(current_user.id_geral, str(datetime.datetime.now()), nomeArquivo))) + "." + extensao
-        arquivo = request.files[dado['nomeMidia']]
-        arquivo.filename = novoNome
-        dado['nomeMidia'] = novoNome 
-
-        arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], arquivo.filename))
-
-        infoArquivo = Arquivos(
-            midia = dado['nomeMidia'], 
-            titulo = dado['titulo'], 
-            descricao = dado['descricao'], 
-            codigo = dado['codigo'], 
-            id_parceiro = current_user.id_geral
-        )
-
-        db.session.add(infoArquivo)
-        db.session.commit()
-
-        projetoArquivo = Rel_projeto_arquivo(
-            id_projeto = projeto.id, 
-            id_arquivo = infoArquivo.id
-        )
-
-        db.session.add(projetoArquivo)
-        db.session.commit()
-'''
