@@ -173,6 +173,7 @@ def get_projeto(current_user, id):
     projeto['tema'] = dados.tema
     projeto['textoProjeto'] = dados.textoProjeto
     projeto ['linkTexto'] = dados.linkTexto
+    projeto ['capa'] = dados.capa
 
     # COOPS
     coops = Rel_projeto_colaborador.query.filter_by(id_projeto = dados.id).all()
@@ -187,6 +188,7 @@ def get_projeto(current_user, id):
 
             info = {}
             info['id'] = coop.id
+            info['id_parceiro'] = colaborador.id_geral
             info['email'] = colaborador.email
             info['escola'] = unidade.nome
             info['escola_curso'] = curso.nome
@@ -194,7 +196,8 @@ def get_projeto(current_user, id):
             cooperadores.append(info)
         else:
             infosColaborador = {}
-            infosColaborador['id'] = colaborador.id_geral
+            infosColaborador['id'] = coop.id
+            infosColaborador['id_parceiro'] = colaborador.id_geral
             infosColaborador['nome'] = "{} {}".format(colaborador.nome, colaborador.sobrenome)
             infosColaborador['email'] = colaborador.email
 
@@ -204,16 +207,16 @@ def get_projeto(current_user, id):
     projeto['colaboradores'] = colaboradores  
 
     # ARQUIVOS
-    data_arquivos = Rel_projeto_arquivo.query.filter_by(id_projeto = dados.id).all()
+    data_arquivos = Arquivos.query.filter_by(id_projeto = dados.id).all()
     arquivos = []
     if data_arquivos:
         for data_arquivo in data_arquivos:
-            arquivo = Arquivos.query.filter_by(id = data_arquivo.id_arquivo).first()
             infosArquivo = {}
-            infosArquivo['tipo'] = arquivo.tipo
-            infosArquivo['titulo'] = arquivo.titulo
-            infosArquivo['legenda'] = arquivo.descricao
-            infosArquivo['link'] = arquivo.codigo
+            infosArquivo['id_arquivo'] = data_arquivo.id
+            infosArquivo['tipo'] = data_arquivo.tipo
+            infosArquivo['titulo'] = data_arquivo.titulo
+            infosArquivo['legenda'] = data_arquivo.descricao
+            infosArquivo['link'] = data_arquivo.codigo
 
             arquivos.append(infosArquivo)
 
@@ -225,6 +228,7 @@ def get_projeto(current_user, id):
    
     detalhes = {}
     if data_detalhes:
+        detalhes['id_detalhes'] = data_detalhes.id
         detalhes['categoria1'] = data_detalhes.categoria1
         detalhes['categoria2'] = data_detalhes.categoria2
         detalhes['premio1'] = data_detalhes.premio1
