@@ -33,7 +33,9 @@ def post_projeto(current_user):
     if data['textoProjeto']:
         projeto.textoProjeto = data['textoProjeto']
     if data['linkTexto']:
-        projeto.linkTexto = data['linkTexto']     
+        projeto.linkTexto = data['linkTexto']
+    if data['capa']:
+        projeto.linkTexto = data['linkTexto']       
 
     db.session.add(projeto)    
 
@@ -133,6 +135,26 @@ def get_projetos(current_user):
 
     return jsonify(projetos)
 
+@cp.route('/projetos/aluno', methods=['GET'])
+@token_required
+def get_projetos_aluno(current_user):
+    coop = Rel_projeto_colaborador.query.filter_by(id_colaborador = current_user.id_geral).all()
+
+    if not coop:
+       return jsonify({'Mensagem': 'Nenhum projeto cadastrado!'})
+
+    projetos = []
+    for data_projeto in coop:
+        dados = Projetos.query.filter_by(id = data_projeto.id_projeto).first() 
+
+        projeto = {}
+        projeto['id'] = dados.id
+        projeto['titulo'] = dados.titulo
+        projeto['descricao'] = dados.descricao
+        projetos.append(projeto)
+
+    return jsonify(projetos)
+
 @cp.route('/projetos/<int:id>', methods=['GET'])
 @token_required
 def get_projeto(current_user, id):
@@ -142,6 +164,7 @@ def get_projeto(current_user, id):
         return jsonify({'Mensagem': 'Projeto não encontrado!'})
     
     projeto = {}
+    projeto['id_projeto'] = dados.id
     projeto['titulo'] = dados.titulo
     projeto['descricao'] = dados.descricao
     projeto['orientador'] = dados.orientador
@@ -163,6 +186,7 @@ def get_projeto(current_user, id):
             curso = Cursos.query.filter_by(id = aluno.id_curso).first()
 
             info = {}
+            info['id'] = colaborador.id_geral
             info['email'] = colaborador.email
             info['escola'] = unidade.nome
             info['escola_curso'] = curso.nome
@@ -170,7 +194,7 @@ def get_projeto(current_user, id):
             cooperadores.append(info)
         else:
             infosColaborador = {}
-            infosColaborador['id'] = id
+            infosColaborador['id'] = colaborador.id_geral
             infosColaborador['nome'] = "{} {}".format(colaborador.nome, colaborador.sobrenome)
             infosColaborador['email'] = colaborador.email
 
@@ -230,3 +254,139 @@ def get_categorias(current_user):
         listaCategorias.append(categoria)
     
     return jsonify(listaCategorias)
+
+@cp.route('/projetos', methods=['PUT'])
+@token_required
+def put_projeto(current_user):
+    data = request.get_json()
+
+    dados = Projetos.query.filter_by(id = data.id).first()
+
+    if not dados:
+        return jsonify({"Mensagem": "projeto não econtrado!"})
+
+    dados.titulo = data['titulo']
+    dados.descricao = data['descricao']
+    dados.orientador = data['orientador']
+    dados.status = data['status']
+    dados.tipo = data['tipo']
+    dados.tema = data['tema']
+    
+    if data['textoProjeto']:
+        dados.projeto.textoProjeto = data['textoProjeto']
+    if data['linkTexto']:
+        dados.projeto.linkTexto = data['linkTexto']     
+
+    db.session.commit()
+
+#POST ou PUT dos COOPS
+    if data['coops']:
+        coops = data['coops']
+
+        post_coops = [c for c in coops if not c['id']]
+
+        for coop in post_coops:
+            parceiro = Parceiros.query.filter_by(email = coop['email']).first()
+
+            if not parceiro:
+                return jsonify({"Mensagem": "Usuario {} não encontrado".format(coop['email'])})
+            else:
+                projetoCoop = Rel_projeto_colaborador(
+                    id_projeto = projeto.id, 
+                    id_colaborador = parceiro.id_geral,
+                    tipo = "Coop"
+                )
+
+                db.session.add(projetoCoop)
+
+        put_coops = [c for c in coops if c['id']]
+        for coop in put_coops:
+            cooperador = Rel_projeto_colaborador.query.filter_by(id_colaborador = coop['id']).first()
+
+            if not cooperador:
+                return jsonify({"Mensagem": "Usuario {} não encontrado".format(coop['email'])})
+            else:
+                cooperador.id_colaborador = parceiro.id_geral
+
+                db.session.commit()       
+
+    if data['detalhes']:         
+        detalhes = data['detalhes']
+
+        data_detalhes = Rel_projeto_detalhe.query.filter_by(id_projeto = dados.id).first()
+        
+        if not data_detalhes:
+            pass
+        else:
+            data_detalhes.categoria1 = detalhes['categoria1']
+            data_detalhes.categoria2 = detalhes['categoria2']
+            data_detalhes.premio1 = detalhes['premio1']
+            data_detalhes.premio2 = detalhes['premio2']
+            data_detalhes.recurso1 = detalhes['recurso1']
+            data_detalhes.recurso2 = detalhes['recurso2']
+            data_detalhes.credito1 = detalhes['credito1']
+            data_detalhes.credito2 = detalhes['credito2']
+            data_detalhes.direitos = detalhes['direitos']
+
+            db.session.commit()       
+
+    if data['colaboradores']:
+        colaboradores = data['colaboradores']
+
+        post_colaborador = [c for c in colaboradores if not c['id']]
+        for colaborador in post_colaborador:
+            parceiro = Parceiros.query.filter_by(email = colaborador['email']).first()
+
+            if not parceiro:
+                return jsonify({"Mensagem": "Usuario {} não encontrado".format(colaborador['email'])})
+            else:
+                projetoColaborador = Rel_projeto_colaborador(
+                    id_projeto = projeto.id, 
+                    id_colaborador = parceiro.id_geral,
+                    tipo = "Colaborador"
+                )
+                db.session.add(projetoColaborador)
+                db.session.commit()
+
+
+        put_colaboradores = [c for c in colaboradores if c['id']]
+        for colaborador in put_colaboradores:
+            colab = Rel_projeto_colaborador.query.filter_by(id_colaborador = colaborador['id']).first()
+
+            if not colab:
+                return jsonify({"Mensagem": "Usuario {} não encontrado".format(coop['email'])})
+            else:
+                colab.id_colaborador = parceiro.id_geral
+
+                db.session.commit() 
+
+                
+    if data['arquivos']:
+        arquivos = data['arquivos']
+
+        for arquivo in arquivos:
+            postArquivo = Arquivos(
+                tipo = arquivo['tipo'],
+                titulo = arquivo['titulo'],
+                descricao = arquivo['legenda'],
+                codigo = arquivo['link'],
+                id_parceiro = current_user.id_geral
+            )
+
+            db.session.add(postArquivo)
+            db.session.commit()
+
+            projetoArquivo = Rel_projeto_arquivo(
+                id_projeto = projeto.id, 
+                id_arquivo = postArquivo.id
+            )
+
+            db.session.commit()
+            db.session.add(projetoArquivo)
+    
+    if data['detalhes']: 
+        db.session.commit()
+
+    db.session.commit()
+    db.session.commit()
+    return jsonify({'Mensagem': 'Alterado com sucesso!'})
