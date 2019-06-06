@@ -443,8 +443,10 @@ POST - Cadastra um Projeto
     "status":"Status do projeto",
     "tipo":"Tipo do projeto",
     "tema":"Tema do projeto",
+    "capa":"",
     "coops":[
-    	{"email": "edu@hotmail.com"}
+    	{"email": "edu@hotmail.com"},
+    	{"email": "teste1@hotmail.com"}
     ],
     "textoProjeto":"Texto projeto",
     "linkTexto": "Link Texto projeto",
@@ -475,7 +477,7 @@ POST - Cadastra um Projeto
     		"direitos": "teste direitos"
     	},
     "colaboradores":[
-    	{"email": "edu@hotmail.com"}
+    	{"email": "edu-simao@outlook.com"}
     ]
 }
 ```
