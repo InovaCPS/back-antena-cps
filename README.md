@@ -481,6 +481,19 @@ POST - Cadastra um Projeto
     ]
 }
 ```
+```bash
+GET - Retorna todos os projetos cadastrado
+/cp/projetos
+```
+```bash
+GET - Retorna todos os projetos cadastrado do Aluno
+/cp/projetos/aluno
+```
+```bash
+GET - Retorna todos os dados do projeto
+/cp/projetos/<id_projeto>
+```
+
 ### Instruções Login - Postman ###
 
 ```bash
