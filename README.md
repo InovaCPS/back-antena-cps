@@ -493,6 +493,77 @@ GET - Retorna todos os projetos cadastrado do Aluno
 GET - Retorna todos os dados do projeto
 /cp/projetos/<id_projeto>
 ```
+```bash
+PUT - Atualiza todos os dados do projeto
+/cp/projetos
+{
+    "arquivos": [
+        {
+            "id_arquivo": "id_arquivo",
+            "legenda": "legenda midia projeto",
+            "link": "Link midia projeto",
+            "tipo": "teste detalhe2",
+            "titulo": "Titulo Midia projeto"
+        },
+        {
+            "id_arquivo": "id_arquivo",
+            "legenda": "legenda Arquivo projeto",
+            "link": "Link Arquivo projeto",
+            "tipo": "teste detalhe2",
+            "titulo": "Titulo Arquivo projeto"
+        },
+        {
+            "id_arquivo": "",
+            "legenda": "legenda Codigo projeto",
+            "link": "Link Arquivo projeto",
+            "tipo": "codigo",
+            "titulo": "Titulo Codigo projeto"
+        }
+    ],
+    "capa": "",
+    "colaboradores": [
+        {
+            "email": "edu-simao@outlook.com",
+            "id": "id_colaboradores"
+        },
+        {
+            "email": "teste1@hotmail.com",
+            "id": ""
+        }
+    ],
+    "coops": [
+        {
+            "email": "edu@hotmail.com",
+            "id": "id_coop"
+        },
+        {
+            "email": "edu@hotmail.com",
+            "id": ""
+        }
+    ],
+    "descricao": "teste Detalhe",
+    "detalhes": {
+        "categoria1": "teste categoria1",
+        "categoria2": "teste categoria2",
+        "credito1": "teste credito1",
+        "credito2": "teste credito2",
+        "direitos": "teste direitos",
+        "id_detalhes": "11",
+        "premio1": "teste premio1",
+        "premio2": "teste premio2",
+        "recurso1": "teste recurso1",
+        "recurso2": "teste recurso2"
+    },
+    "id_projeto": "id_projeto",
+    "linkTexto": "Link Texto projeto",
+    "orientador": "orientador do projeto",
+    "status": "Status do projeto",
+    "tema": "Tema do projeto",
+    "textoProjeto": "Texto projeto",
+    "tipo": "Tipo do projeto",
+    "titulo": "teste Detalhe"
+}
+```
 
 ### Instruções Login - Postman ###
 
