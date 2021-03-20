@@ -36,7 +36,7 @@ future==0.16.0
 idna==2.7
 imagesize==1.1.0
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 jmespath==0.9.4
 jsonschema==2.6.0
 lazy==1.3
