@@ -12,7 +12,7 @@ boto3==1.9.122
 botocore==1.12.122
 cached-property==1.5.1
 cement==2.8.2
-certifi==2018.8.24
+certifi==2022.12.7
 chardet==3.0.4
 click==6.7
 colorama==0.3.9
